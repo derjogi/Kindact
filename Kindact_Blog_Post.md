@@ -58,7 +58,11 @@ Kindact facilitates a complete cycle of collective action:
 
 Throughout this process, **verified identity** ensures one-person-one-vote integrity, while **economic incentives** (tokens, demurrage, burns) keep value circulating toward ongoing contribution.
 
-The following sections explain each phase in detail.
+### Modular and Extensible Design
+
+Kindact is designed as a **modular open-source platform** where many mechanisms are available as optional components that can be turned on, off, or adjusted by community moderators. Different voting modules can be created and experimented with. Different ranking and sorting algorithms for deliberation can be developed and tested. This extensibility allows the platform to evolve based on real-world experimentation and community needs, rather than being locked into a single predetermined approach.
+
+The following sections explain each phase in detail, each with an envisioned 'base set' of modules.
 
 ---
 
@@ -133,6 +137,14 @@ The anonymization is **not** absolute. The platform can identify users if necess
 
 Once an issue has been thoroughly discussed and synthesized, the community needs to make decisions. Kindact supports multiple decision-making modes.
 
+### Legitimacy Without High Turnout
+
+Traditional democracy prizes high voter turnout as a measure of legitimacy. Kindact takes a different approach, inspired by how large cooperatives like Mondragon handle governance.
+
+The core insight: **low turnout doesn't necessarily mean low legitimacy**. If only a small percentage of eligible voters actively engage with an issue, that might indicate "silent agreement"—people are okay with how things are going and don't feel the need to object. The system remains legitimate because if a controversial or critical issue arises, turnout can spike dramatically as people feel compelled to engage.
+
+This dynamic legitimacy model reduces the pressure to manufacture engagement and allows the system to be responsive when it matters most. It also means that it's ok if people don't vote if they haven't engaged with the issue and lack a basic understanding.
+
 ### Voting: Fluid and Ongoing
 
 Most political systems have a single moment of voting: you cast your ballot, there's a cutoff date where votes get counted, and that's it. Kindact uses **fluid, ongoing voting** where decisions are never truly "final". Votes can be changed at any time, delegations can be revoked, and as new information emerges, the community's position can evolve.
@@ -151,15 +163,13 @@ The principle of "one person, one vote" is important for legitimate decision-mak
 
 ### Competence Verification
 
-Before voting on an issue, users must pass a **basic comprehension test** related to the synthesized summary. This isn't about being an expert—it's about ensuring that voters have actually read and understood what they're deciding. The tests are designed to be easy; reading the summary is enough to pass.
+Before voting on an issue, users must pass a **basic eligibility test** related to the synthesized summary. This isn't about being an expert—it's about ensuring that voters have actually engaged with and understood what they're deciding, and to ensure that they have _some_ stake in the outcome.
 
-### Legitimacy Without High Turnout
-
-Traditional democracy prizes high voter turnout as a measure of legitimacy. Kindact takes a different approach, inspired by how large cooperatives like Mondragon handle governance.
-
-The core insight: **low turnout doesn't necessarily mean low legitimacy**. If only 15% of eligible voters actively engage with an issue, that might indicate "silent agreement"—people are okay with how things are going and don't feel the need to object. The system remains legitimate because if a controversial or critical issue arises, turnout can spike dramatically as people feel compelled to engage.
-
-This dynamic legitimacy model reduces the pressure to manufacture engagement and allows the system to be responsive when it matters most.
+**The purpose of the test:**
+- Ensure voters are informed to a basic degree regarding the issue. (As Thomas Jefferson already stated: "An informed citizenry is at the heart of a dynamic democracy.")
+- Include only stakeholders (which could potentially be 'everyone' for global issues, or a small group for renovating the local library)
+- Keep the test easy enough that it doesn't exclude legitimate participants (the test shall not make it an 'elitist' or purely meritocratic system)
+- Ensure decisions reflect those most affected while preventing outside interference.
 
 ---
 
