@@ -90,19 +90,36 @@ The platform doesn't impose rigid boundaries. Communities can form around shared
 
 ## Step 2: Deliberate — Bias-Adjusted Discussion
 
-Traditional social media amplifies popularity and creates echo chambers. Kindact tries to solve this through several mechanisms designed to minimize bias and maximize collective intelligence.
+Once an issue is created, the community engages in deliberation. This is where ideas are explored, refined, and tested through structured discussion.
 
-### Anonymization
+### How Discussion Works
 
-Comments are shown without author identities during the initial ranking phase. This reduces "signaling" behavior where people post to look good rather than to contribute meaningfully. When you can't see who's posting, you're forced to evaluate ideas by their merits.
+Users can contribute to an issue in multiple ways:
 
-### Randomized Display
+- **Comments**: Traditional threaded discussion where users share thoughts, ask questions, and respond to each other
+- **Pro/Con Arguments**: Kialo-style structured arguments where users articulate supporting points and counterarguments
+- **Proposal Updates**: Users can edit the main proposal body wiki-style, gradually refining the suggested solution(s). AI assists by:
+  - Verifying that updates don't inappropriately change existing content
+  - Ensuring updates reflect the current state of discussion
+  - Flagging significant changes that may need community review
 
-Comments are shown based on a mix of factors—some randomness, some outlier detection, some upvotes—rather than pure popularity. This prevents the most popular (but not necessarily best) ideas from dominating. You encounter perspectives you might not naturally seek out.
+- **AI Summarization**: Throughout the discussion, AI continuously generates summaries that capture:
+  - The main points raised
+  - Key arguments on each side
+  - Areas of consensus and disagreement
+  - Outstanding questions that need addressing
 
-### Wikipedia-Style Synthesis
+This creates a "living document" that evolves with the discussion, always providing newcomers with a current snapshot of where things stand.
 
-As discussions evolve, they're condensed into neutral, compact summaries that capture the key points of view and arguments. This creates a shared foundation of understanding rather than requiring everyone to read through hundreds of comments. The synthesis is continuously updated as the discussion progresses.
+### Mechanisms to Minimize Bias
+
+Traditional social media amplifies popularity and creates echo chambers. Kindact addresses this through several mechanisms:
+
+- **Anonymization**: During the ranking and display phase, comments are shown without author identities. This reduces "signaling" behavior where people post to look good rather than to contribute meaningfully, and when you can't see who's posting, you're forced to evaluate ideas by their merits.
+
+- **Randomized Display**: Comments are shown based on a mix of factors—some randomness, some outlier detection, some upvotes—rather than pure popularity. This prevents the most popular (but not necessarily best) ideas from dominating. You encounter perspectives you might not naturally seek out.
+
+- **Wikipedia-Style Evolution**: The proposal body itself evolves collaboratively, with AI ensuring changes reflect the collective understanding rather than individual agendas.
 
 ### The Role of Anonymity
 
