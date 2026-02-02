@@ -47,26 +47,17 @@ The name "Kindact" tries to reflect this: an amalgamation of "humankind acts," "
 
 ---
 
-## The Foundation: Verified Identity and Democratic Integrity
+## How Kindact Works: A Brief Overview
 
-One of the core mechanisms in any governance system is ensuring that decisions reflect real people's will, not manipulated artificial consensus. Kindact leverages existing technologies and approaches that have already been developed and prove that despite many old-school critics we _can_ use online governance securely.
+Kindact facilitates a complete cycle of collective action:
 
-### One Person, One Vote—But Not Just Voting
+1. **Identify**: Any verified human can create an issue or propose a question
+2. **Deliberate**: Communities discuss with bias-reduced mechanisms (anonymization, randomized display, synthesis)
+3. **Decide**: Decisions are made through voting, delegation, or consensus-based approaches
+4. **Implement**: Approved solutions are executed with proof of (real) work
+5. **Reward**: Contributors receive tokens that recognize their positive impact
 
-The principle of "one person, one vote" is important for legitimate decision-making, but **voting is only one part** of Kindact's governance toolkit. Some decisions might use voting, while others might iterate on proposals until dissenting voices are heard and addressed (moving toward consensus). The system is flexible enough to support multiple decision-making modes.
-
-### Leveraging Existing Technology
-
-Kindact will use existing solutions like **zero-knowledge proofs (ZKPs)** and other cryptographic tools that allow users to prove they're a unique real person without revealing their actual identity. This means:
-- No centralized authority controls who can participate
-- Privacy is protected while still ensuring integrity
-- Kindact benefits from ongoing advances in cryptography without having to develop them itself
-
-### Verified Identity: One Component Among Many
-
-Verified identity and democratic integrity are **important but not the only crucial mechanism** in Kindact. They work in concert with the deliberation process, economic incentives, and the other components described below. None of these mechanisms is more important than the others—they reinforce each other.
-
-Once verified, each user has equal voting power. But Kindact doesn't require everyone to participate in every decision. Instead, it offers **delegated voting**—the ability to delegate your vote on specific topics to someone you trust, while retaining the ability to take back your vote at any time.
+Throughout this process, **verified identity** ensures one-person-one-vote integrity, while **economic incentives** (tokens, demurrage, burns) keep value circulating toward ongoing contribution.
 
 ---
 
@@ -95,6 +86,29 @@ Before voting on an issue, users must pass a **basic comprehension test** relate
 Most political systems have a single moment of voting: you cast your ballot, and that's it. Kindact uses **fluid, ongoing voting** where decisions are never truly "final." Votes can be changed at any time, delegations can be revoked, and as new information emerges, the community's position can evolve.
 
 This mirrors how scientific understanding works: we don't vote on whether evolution is true and consider the matter settled forever. We update our understanding as evidence accumulates.
+
+---
+
+## The Foundation: Verified Identity and Democratic Integrity
+
+One of the core mechanisms in any governance system is ensuring that decisions reflect real people's will, not manipulated artificial consensus. Kindact leverages existing technologies and approaches that have already been developed and prove that despite many old-school critics we _can_ use online governance securely.
+
+### One Person, One Vote—But Not Just Voting
+
+The principle of "one person, one vote" is important for legitimate decision-making, but **voting is only one part** of Kindact's governance toolkit. Some decisions might use voting, while others might iterate on proposals until dissenting voices are heard and addressed (moving toward consensus). The system is flexible enough to support multiple decision-making modes.
+
+### Leveraging Existing Technology
+
+Kindact will use existing solutions like **zero-knowledge proofs (ZKPs)** and other cryptographic tools that allow users to prove they're a unique real person without revealing their actual identity. This means:
+- No centralized authority controls who can participate
+- Privacy is protected while still ensuring integrity
+- Kindact benefits from ongoing advances in cryptography without having to develop them itself
+
+### Verified Identity: One Component Among Many
+
+Verified identity and democratic integrity are **important but not the only crucial mechanism** in Kindact. They work in concert with the deliberation process, economic incentives, and the other components described below. None of these mechanisms is more important than the others—they reinforce each other.
+
+Once verified, each user has equal voting power. But Kindact doesn't require everyone to participate in every decision. Instead, it offers **delegated voting**—the ability to delegate your vote on specific topics to someone you trust, while retaining the ability to take back your vote at any time.
 
 ---
 
