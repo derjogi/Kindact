@@ -14,7 +14,7 @@ Kindact is an attempt to answer a deceptively simple question: **What if there w
 
 This isn't about replacing governments. It's not about creating a utopia overnight. It's about building a **parallel layer**—a voluntary system that operates alongside existing institutions, complementing them where they work and filling the gaps where they fail.
 
-In this post, I'll explain what Kindact is, how it works, and why it might help address some of the most pressing challenges we face. This is still a vision in progress, and I'm writing this document to explore and refine that vision together (TODO: - and to ask for your support doing that and ultimately implementing this vision to make it real!)
+In this post, I'll explain what Kindact is, how it works, and why it might help address some of the most pressing challenges we face. This is still a vision in progress, and I'm writing this document to explore and refine that vision together—and to find collaborators who want to help make it real.
 
 ---
 
@@ -27,11 +27,11 @@ Before diving into how Kindact works, it's worth briefly understanding the lands
 **At the social level**, we've lost the local institutions that used to bring communities together—clubs, unions, religious groups, neighborhood associations. We can no longer have conversations with people who vote differently than we do. We've created intergenerational injustice, leaving our children a worse world than we inherited.
 
 **At the national level**, governments lack the capacity to respond to modern challenges. Leaders focus on the next election rather than the next generation. Laws move so slowly that by the time they're passed, the problems they address have already evolved.
-(TODO: add a brief version of the following sentiment: nation states have the obligation to care for their citizens wellbeing first - in the past that was ok, and competition helped us thrive. But now this competition is forcing us into negative spirals (e.g. low interest rates to keep international corporations), and has global impact that is more negative than positive. Self-protecting nations are becoming more hostile and individualistig, instead we should grow together to solve global problems together!)
+[TODO: make this shorter! `There's another dimension to consider: nation-states have an obligation to care for their citizens' wellbeing first. In the past, this competition between nations helped drive innovation and progress. But today, this same competition is forcing countries into negative spirals—race-to-the-bottom policies on taxation, regulation, and environmental standards that ultimately harm everyone. Self-protecting nations are becoming increasingly hostile and individualistic, unable to coordinate on problems that cross borders. To solve global challenges, we need to grow beyond national competition toward genuine global cooperation.` (More something like: "Nation-states' obligation to care for their citizens forces race-to-the-bottom policies that ultimately harm everyone. Protectionism makes them more hostile and hinders crucial coordination, which would be necessary to solve global problems.")]
 
 **At the global level**, we're causing ecological collapse that threatens the natural systems we depend on. Climate change is making large parts of the planet increasingly dangerous to live in. The AI race poses genuine existential risks to humanity's future. The international order that prevented world wars is crumbling.
 
-These largely aren't partisan issues - (TODO: I don't have the data, but I'd bet that ...) most people across political spectrums would agree that most of these problems exist, even if they disagree on solutions.
+These largely aren't partisan issues. While I don't have comprehensive data to prove it, I'd bet that most people across political spectrums would agree that most of these problems exist, even if they disagree on solutions.
 
 ---
 
@@ -49,18 +49,22 @@ The name "Kindact" tries to reflect this: an amalgamation of "humankind acts," "
 
 ## The Foundation: Verified Identity and Democratic Integrity
 
-[TODO: This needs reworking. 
-* 1 person - 1 vote is mainly necessary for VOTING, but voting is only ONE part (and might even be optional) for governance. (Alternatives could be e.g. to iterate on proposals until there aren't any dissenting voices (consensus))
-* Kindact doesn't solve this itself - it's just making use of already existing solutions (ZKP - zero-knowledge proofs etc, look this up online).
-* Generally, many technological things aren't done by kindact itself, it's just using other tech. This is something good to acknowledge, because this makes it more likely that people will think this project can succeed. (If we'd have to 'invent' all of these things ourselves we wouldn't have a chance - we have to stand on the shoulders of giants!)
-* Verified identity & integrity is important, but it is only ONE of the important parts I think, it's not more important than many of the other mechanisms.
-]
+One of the core mechanisms in any governance system is ensuring that decisions reflect real people's will, not manipulated artificial consensus. Kindact leverages existing technologies and approaches that have already been developed and prove that despite many old-school critics we _can_ use online governance securely.
 
-For any governance system to work, it needs to solve a basic problem: **How do we ensure one person, one vote without allowing manipulation?**
+### One Person, One Vote—But Not Just Voting
 
-Kindact addresses this through a **verified e-identity system**. Every participant must be a verified "real person," preventing Sybil attacks where a single entity creates multiple fake accounts to manipulate outcomes.
+The principle of "one person, one vote" is important for legitimate decision-making, but **voting is only one part** of Kindact's governance toolkit. Some decisions might use voting, while others might iterate on proposals until dissenting voices are heard and addressed (moving toward consensus). The system is flexible enough to support multiple decision-making modes.
 
-This verification doesn't require government documents or centralized authority. The system is designed to be accessible to anyone with an internet connection, bypassing geographic or national restrictions to participation. The exact mechanisms for verification are still being designed, but the principle is clear: authenticity matters.
+### Leveraging Existing Technology
+
+Kindact will use existing solutions like **zero-knowledge proofs (ZKPs)** and other cryptographic tools that allow users to prove they're a unique real person without revealing their actual identity. This means:
+- No centralized authority controls who can participate
+- Privacy is protected while still ensuring integrity
+- Kindact benefits from ongoing advances in cryptography without having to develop them itself
+
+### Verified Identity: One Component Among Many
+
+Verified identity and democratic integrity are **important but not the only crucial mechanism** in Kindact. They work in concert with the deliberation process, economic incentives, and the other components described below. None of these mechanisms is more important than the others—they reinforce each other.
 
 Once verified, each user has equal voting power. But Kindact doesn't require everyone to participate in every decision. Instead, it offers **delegated voting**—the ability to delegate your vote on specific topics to someone you trust, while retaining the ability to take back your vote at any time.
 
