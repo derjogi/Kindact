@@ -26,8 +26,7 @@ Before diving into how Kindact works, it's worth briefly understanding the lands
 
 **At the social level**, we've lost the local institutions that used to bring communities together—clubs, unions, religious groups, neighborhood associations. We can no longer have conversations with people who vote differently than we do. We've created intergenerational injustice, leaving our children a worse world than we inherited.
 
-**At the national level**, governments lack the capacity to respond to modern challenges. Leaders focus on the next election rather than the next generation. Laws move so slowly that by the time they're passed, the problems they address have already evolved.
-Nation-states' obligation to care for their citizens forces race-to-the-bottom policies that ultimately harm everyone. Protectionism makes them more hostile and hinders crucial coordination, which would be necessary to solve global problems.
+**At the national level**, governments lack the capacity to respond to modern challenges. Leaders focus on the next election rather than the next generation. Laws move so slowly that by the time they're passed, the problems they address have already evolved. Nation-states' obligation to care for their citizens forces race-to-the-bottom policies that ultimately harm everyone. Protectionism makes them more hostile and hinders crucial coordination, which would be necessary to solve global problems.
 
 **At the global level**, we're causing ecological collapse that threatens the natural systems we depend on. Climate change is making large parts of the planet increasingly dangerous to live in. The AI race poses genuine existential risks to humanity's future. The international order that prevented world wars is crumbling.
 
@@ -51,68 +50,91 @@ The name "Kindact" tries to reflect this: an amalgamation of "humankind acts," "
 
 Kindact facilitates a complete cycle of collective action:
 
-1. **Identify**: Any verified human can create an issue or propose a question
+1. **Identify**: Anyone can create an issue or propose a question
 2. **Deliberate**: Communities discuss with bias-reduced mechanisms (anonymization, randomized display, synthesis)
 3. **Decide**: Decisions are made through voting, delegation, or consensus-based approaches
-4. **Implement**: Approved solutions are executed with proof of (real) work
+4. **Implement**: Approved solutions are executed with proof of work
 5. **Reward**: Contributors receive tokens that recognize their positive impact
 
 Throughout this process, **verified identity** ensures one-person-one-vote integrity, while **economic incentives** (tokens, demurrage, burns) keep value circulating toward ongoing contribution.
 
+The following sections explain each phase in detail.
+
 ---
 
-## From Problem to Action: The Deliberation Arc
+## Step 1: Identify — Creating Issues
 
-Kindact follows a multi-stage process designed to minimize bias and maximize collective intelligence:
+The process begins when someone identifies a problem worth addressing. Unlike traditional political systems where only elected representatives or formal institutions can propose solutions, Kindact allows **anyone** to create a "Call to Action" or pose a "Question."
 
-### 1. Issue Identification
+### What Makes a Good Issue
 
-Anyone can create a "Call to Action" or pose a "Question" on the platform. These aren't just complaints—they're invitations to solve specific problems. A user might propose: "Our neighborhood has too much plastic waste; what if we created a community composting program?"
+An issue isn't just a complaint—it's an invitation to solve a specific problem. Good issues are:
+- **Actionable**: They propose something concrete that can be done
+- **Scoped**: They're narrow enough to address, but broad enough to attract community interest
+- **Verifiable**: Their success can be measured (trees planted, meals served, laws changed)
 
-### 2. Bias-Adjusted Discussion
+For example: "Our neighborhood has too much plastic waste" is a problem statement. "What if we created a community composting program?" is an issue that invites action.
 
-Traditional social media amplifies popularity and creates echo chambers. Kindact tries to solve this through several mechanisms:
+### Issue Categories
 
-- **Anonymization**: Comments are shown without author identities during the initial ranking phase, reducing "signaling" behavior where people post to look good rather than to contribute meaningfully.
-- **Randomized display**: Comments are shown based on a mix of factors—some randomness, some outlier detection, some upvotes—rather than pure popularity. This prevents the most popular (but not necessarily best) ideas from dominating.
-- **Wikipedia-style synthesis**: As discussions evolve, they're condensed into neutral, compact summaries that capture the key points of view and arguments. This creates a shared foundation of understanding rather than requiring everyone to read through hundreds of comments.
+Issues can span any domain:
+- **Local**: Community garden, street safety, local business support
+- **National**: Policy reform, infrastructure projects, educational reform
+- **Global**: Climate action, AI safety, pandemic preparedness
 
-### 3. Competence Verification
+The platform doesn't impose artificial boundaries—communities form around shared interests regardless of geography.
 
-Before voting on an issue, users must pass a **basic comprehension test** related to the synthesized summary. This isn't about being an expert—it's about ensuring that voters have actually read and understood what they're deciding. The tests are designed to be easy; reading the summary is enough to pass.
+---
 
-### 4. Fluid Voting
+## Step 2: Deliberate — Bias-Adjusted Discussion
+
+Traditional social media amplifies popularity and creates echo chambers. Kindact tries to solve this through several mechanisms designed to minimize bias and maximize collective intelligence.
+
+### Anonymization
+
+Comments are shown without author identities during the initial ranking phase. This reduces "signaling" behavior where people post to look good rather than to contribute meaningfully. When you can't see who's posting, you're forced to evaluate ideas by their merits.
+
+### Randomized Display
+
+Comments are shown based on a mix of factors—some randomness, some outlier detection, some upvotes—rather than pure popularity. This prevents the most popular (but not necessarily best) ideas from dominating. You encounter perspectives you might not naturally seek out.
+
+### Wikipedia-Style Synthesis
+
+As discussions evolve, they're condensed into neutral, compact summaries that capture the key points of view and arguments. This creates a shared foundation of understanding rather than requiring everyone to read through hundreds of comments. The synthesis is continuously updated as the discussion progresses.
+
+### The Role of Anonymity
+
+Kindact's anonymized discussion mechanisms are designed specifically to bridge divides. When you can't see who's posting, you can't dismiss ideas based on who holds them. This is crucial in polarized times—when discussing anything controversial, from climate policy to housing reform, people's ideological labels often short-circuit genuine engagement with ideas.
+
+The anonymization is **not** absolute. The platform can identify users if necessary (for moderation, fraud prevention, or legal compliance), but this information is segregated from the public-facing discussion layer. This maintains accountability while preserving the cognitive benefits of anonymous evaluation.
+
+---
+
+## Step 3: Decide — Decision-Making and Legitimacy
+
+Once an issue has been thoroughly discussed and synthesized, the community needs to make decisions. Kindact supports multiple decision-making modes.
+
+### Voting: Fluid and Ongoing
 
 Most political systems have a single moment of voting: you cast your ballot, and that's it. Kindact uses **fluid, ongoing voting** where decisions are never truly "final." Votes can be changed at any time, delegations can be revoked, and as new information emerges, the community's position can evolve.
 
 This mirrors how scientific understanding works: we don't vote on whether evolution is true and consider the matter settled forever. We update our understanding as evidence accumulates.
 
----
+### Delegated Voting (Liquid Democracy)
 
-## The Foundation: Verified Identity and Democratic Integrity
+Kindact doesn't require everyone to participate in every decision. Instead, it offers **delegated voting**—the ability to delegate your vote on specific topics to someone you trust. You can delegate differently for different issue categories (environment, technology, local community).
 
-One of the core mechanisms in any governance system is ensuring that decisions reflect real people's will, not manipulated artificial consensus. Kindact leverages existing technologies and approaches that have already been developed and prove that despite many old-school critics we _can_ use online governance securely.
+Delegation is always revocable. If your delegate votes in ways you disagree with, you can take back your voting power instantly. This creates a dynamic system where "experts" can accumulate influence through demonstrated judgment, but never lock in permanent power.
 
-### One Person, One Vote—But Not Just Voting
+### Beyond Voting: Consensus and Iteration
 
-The principle of "one person, one vote" is important for legitimate decision-making, but **voting is only one part** of Kindact's governance toolkit. Some decisions might use voting, while others might iterate on proposals until dissenting voices are heard and addressed (moving toward consensus). The system is flexible enough to support multiple decision-making modes.
+The principle of "one person, one vote" is important for legitimate decision-making, but **voting is only one part** of Kindact's toolkit. Some decisions might use voting, while others might iterate on proposals until dissenting voices are heard and addressed (moving toward consensus). The system is flexible enough to support multiple decision-making modes depending on the context.
 
-### Leveraging Existing Technology
+### Competence Verification
 
-Kindact will use existing solutions like **zero-knowledge proofs (ZKPs)** and other cryptographic tools that allow users to prove they're a unique real person without revealing their actual identity. This means:
-- No centralized authority controls who can participate
-- Privacy is protected while still ensuring integrity
-- Kindact benefits from ongoing advances in cryptography without having to develop them itself
+Before voting on an issue, users must pass a **basic comprehension test** related to the synthesized summary. This isn't about being an expert—it's about ensuring that voters have actually read and understood what they're deciding. The tests are designed to be easy; reading the summary is enough to pass.
 
-### Verified Identity: One Component Among Many
-
-Verified identity and democratic integrity are **important but not the only crucial mechanism** in Kindact. They work in concert with the deliberation process, economic incentives, and the other components described below. None of these mechanisms is more important than the others—they reinforce each other.
-
-Once verified, each user has equal voting power. But Kindact doesn't require everyone to participate in every decision. Instead, it offers **delegated voting**—the ability to delegate your vote on specific topics to someone you trust, while retaining the ability to take back your vote at any time.
-
----
-
-## Legitimacy Without High Turnout
+### Legitimacy Without High Turnout
 
 Traditional democracy prizes high voter turnout as a measure of legitimacy. Kindact takes a different approach, inspired by how large cooperatives like Mondragon handle governance.
 
@@ -122,15 +144,45 @@ This dynamic legitimacy model reduces the pressure to manufacture engagement and
 
 ---
 
-## The Economic Engine: Incentivizing Good Deeds
+## Step 4: Implement — Execution and Verification
+
+Once a decision is made, someone needs to execute it. Kindact's implementation phase is where words become actions.
+
+### Proof of Work
+
+Kindact operates on a fundamental principle: **tokens are exclusively minted when community-approved work is verifiably implemented**. If the community votes that "planting 100 trees in the park is a valuable goal," and someone actually plants those trees and submits proof, new tokens are created and awarded to them.
+
+This creates a direct link between doing good and receiving economic value. Unlike traditional systems where funding comes from taxes or donations before work is done, Kindact pays for results.
+
+### Implementation Reports
+
+Implementers must file **implementation reports** that document:
+- What- How long it took
+- work was done
+ What resources were used
+- What impact was achieved
+
+These reports serve as proof of work and as publicly visible data about how effective a particular approach is. Over time, this creates a knowledge base of what actually works.
+
+### Verification Mechanisms
+
+How does the platform verify that work was actually done? This is an ongoing challenge, but potential approaches include:
+- **Photo/video evidence**: Geotagged images of completed work
+- **Third-party verification**: Trusted community members or professional auditors
+- **Cryptographic proofs**: Work that can be verified on-chain (e.g., smart contract interactions)
+- **Peer confirmation**: Multiple community members attesting to completion
+
+No system is perfect, but the combination of these approaches creates strong incentives for honest reporting while making fraud difficult and detectable.
+
+---
+
+## Step 5: Reward — Economic Incentives
 
 Governance without incentives is just discussion. Kindact creates a market for "good deeds" through a cryptocurrency token system, currently referred to as **$CC (Community Currency)** or "Deeds."
 
 ### How Tokens Are Created
 
-Unlike traditional money, which is often created through debt and centralized decisions, $CC tokens are **exclusively minted when community-approved work is verifiably implemented**. If the community votes that "planting 100 trees in the park is a valuable goal," and someone actually plants those trees and submits proof, new tokens are created and awarded to them.
-
-This creates a direct link between doing good and receiving economic value.
+Unlike traditional money, which is often created through debt and centralized decisions, $CC tokens are **exclusively minted when community-approved work is verifiably implemented**. This creates a direct link between doing good and receiving economic value.
 
 ### The Hybrid Dissolving Model (Demurrage)
 
@@ -144,6 +196,45 @@ This mechanism ensures that tokens circulate rather than stagnate, constantly in
 ### Platform Access and Token Burns
 
 To further control token supply, the platform charges **access fees in $CC** for active participation. Users who want to create issues, vote extensively, or engage deeply with the system pay these fees. Crucially, **all fees are burned**—removed permanently from circulation rather than going to any central authority.
+
+### Token Value
+
+What gives $CC its value? Several factors:
+- **Utility**: You need tokens to participate actively in the system
+- **Reputation**: Tokens signal contribution to the community
+- **Tradeability**: Tokens can be exchanged for goods and services
+- **Scarcity**: The dissolving mechanism creates predictable scarcity
+
+Over time, as the platform grows, token utility may expand—accepting $CC at local businesses, using it for community services, or trading it for other currencies.
+
+---
+
+## Technology and Infrastructure
+
+Kindact requires infrastructure that is transparent enough to trust but private enough to protect individual freedom.
+
+### Blockchain Foundation
+
+All interactions—discussions, votes, implementation reports, token transactions—are recorded on a **distributed ledger** (blockchain or similar technology). This ensures:
+
+- **Transparency**: Anyone can verify that the system is working as intended
+- **Immutability**: Past decisions can't be erased or altered
+- **Censorship resistance**: No single entity can shut down the system or exclude participants arbitrarily
+
+The system is designed to be **chain-agnostic**, meaning it could operate on any appropriate blockchain technology, avoiding lock-in to any single platform.
+
+### Verified Identity
+
+One of the core mechanisms in any governance system is ensuring that decisions reflect real people's will, not manipulated artificial consensus. Kindact leverages existing technologies and approaches that have already been developed and prove that despite many old-school critics we _can_ use online governance securely.
+
+Kindact will use existing solutions like **zero-knowledge proofs (ZKPs)** and other cryptographic tools that allow users to prove they're a unique real person without revealing their actual identity. This means:
+- No centralized authority controls who can participate
+- Privacy is protected while still ensuring integrity
+- Kindact benefits from ongoing advances in cryptography without having to develop them itself
+
+### Privacy Through Zero-Knowledge Proofs
+
+While the system is transparent, it doesn't need to expose individual users. **Zero-knowledge proofs** allow the system to verify that votes are legitimate and that users meet participation requirements without revealing who voted for what or how much token value they hold.
 
 ---
 
@@ -165,27 +256,7 @@ At scale, similar mechanisms could incentivize medical research. If the communit
 
 ---
 
-## The Technology Layer: Transparency Without Exposure
-
-Kindact requires infrastructure that is transparent enough to trust but private enough to protect individual freedom.
-
-### Blockchain Foundation
-
-All interactions—discussions, votes, implementation reports, token transactions—are recorded on a **distributed ledger** (blockchain or similar technology). This ensures:
-
-- **Transparency**: Anyone can verify that the system is working as intended
-- **Immutability**: Past decisions can't be erased or altered
-- **Censorship resistance**: No single entity can shut down the system or exclude participants arbitrarily
-
-The system is designed to be **chain-agnostic**, meaning it could operate on any appropriate blockchain technology, avoiding lock-in to any single platform.
-
-### Privacy Through Zero-Knowledge Proofs
-
-While the system is transparent, it doesn't need to expose individual users. **Zero-knowledge proofs** allow the system to verify that votes are legitimate and that users meet participation requirements without revealing who voted for what or how much token value they hold.
-
----
-
-## Addressing the Full Spectrum of Challenges
+## How Kindact Addresses the Challenges We Face
 
 Given this infrastructure, how might Kindact actually help solve the problems we identified earlier?
 
@@ -279,7 +350,7 @@ Operating across borders with a token-based economic system raises complex legal
 
 ### Preventing Abuse
 
-Any reward system attracts attempts to game it. How do we verify that reported work was actually done? What prevents people from creating fake issues to generate rewards for themselves? The platform needs robust mechanisms for detecting and punishing fraud.
+Any reward system attracts attempts to game it. How do we verify that work was actually done? What prevents people from creating fake issues to generate rewards for themselves? The platform needs robust mechanisms for detecting and punishing fraud.
 
 ### Addressing Moloch
 
