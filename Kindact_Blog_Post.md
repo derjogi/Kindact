@@ -64,25 +64,27 @@ The following sections explain each phase in detail.
 
 ## Step 1: Identify — Creating Issues
 
-The process begins when someone identifies a problem worth addressing. Unlike traditional political systems where only elected representatives or formal institutions can propose solutions, Kindact allows **anyone** to create a "Call to Action" or pose a "Question."
+The process begins when someone identifies a problem worth addressing. Unlike traditional political systems where only elected representatives or formal institutions can propose solutions, Kindact allows **anyone** to create an issue.
 
-### What Makes a Good Issue
+### Issues Can Be Simple
 
-An issue isn't just a complaint—it's an invitation to solve a specific problem. Good issues are:
-- **Actionable**: They propose something concrete that can be done
-- **Scoped**: They're narrow enough to address, but broad enough to attract community interest
-- **Verifiable**: Their success can be measured (trees planted, meals served, laws changed)
+You don't need to have a fully-formed solution. An issue can start as a simple observation or complaint: "Our neighborhood has too much plastic waste." The community can then collaboratively work out the solution—perhaps a community composting program. The important thing is identifying that something needs attention.
 
-For example: "Our neighborhood has too much plastic waste" is a problem statement. "What if we created a community composting program?" is an issue that invites action.
+### AI-Assisted Issue Creation
 
-### Issue Categories
+The platform uses AI and other intelligent mechanisms to help in several ways:
+- **Duplicate detection**: Similar existing issues are surfaced, so discussions can be consolidated rather than scattered across multiple threads
+- **Improvement suggestions**: AI assists users in refining and strengthening their issue descriptions
+- **Categorization**: Topics and tags are user-added and AI-suggested, creating a flexible taxonomy that evolves with the community
 
-Issues can span any domain:
-- **Local**: Community garden, street safety, local business support
-- **National**: Policy reform, infrastructure projects, educational reform
-- **Global**: Climate action, AI safety, pandemic preparedness
+### Issue Categories and Tags
 
-The platform doesn't impose artificial boundaries—communities form around shared interests regardless of geography.
+Issues can span any domain and geography:
+- **Topics**: Environment, economy, technology, health, education, etc.
+- **Scope**: Local, national, global—or any combination
+- **Tags**: User-created and AI-suggested, allowing flexible organization
+
+The platform doesn't impose rigid boundaries. Communities can form around shared interests regardless of where members live.
 
 ---
 
