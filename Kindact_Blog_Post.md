@@ -31,7 +31,7 @@ Before diving into how Kindact works, it's worth briefly understanding the lands
 
 **At the global level**, we're causing ecological collapse that threatens the natural systems we depend on. Climate change is making large parts of the planet increasingly dangerous to live in. The AI race poses genuine existential risks to humanity's future. The international order that prevented world wars is crumbling.
 
-These aren't partisan issues. Research suggests that most people across political spectrums would agree that most of these problems exist, even if they disagree on solutions.
+These largely aren't partisan issues - (TODO: I don't have the data, but I'd bet that ...) most people across political spectrums would agree that most of these problems exist, even if they disagree on solutions.
 
 ---
 
@@ -39,15 +39,22 @@ These aren't partisan issues. Research suggests that most people across politica
 
 Kindact operates on a fundamental principle: **it does not seek to replace existing governments or laws**. Instead, it creates a voluntary framework that anyone can join, where communities can identify problems, deliberate on solutions, and incentivize action.
 
-Think of it as an additional layer of governance that sits alongside—rather than on top of—existing structures. If a government wants to implement a Kindact-approved solution, they can. If they choose not to, the community can still organize around the issue independently, creating economic pressure and social recognition for those who take action.
+Think of it as an additional layer of governance that sits alongside—rather than on top of—existing structures. If a government wants to implement a Kindact-approved solution, they can. If they choose not to, the community can still organize around the issue independently, creating economic benefits, pressure and social recognition for those who take action.
 
 This voluntary nature is crucial. It means Kindact doesn't require revolutionary change to existing institutions. It works with the world as it is, while creating incentives for the world as it could be.
 
-The name "Kindact" reflects this: an amalgamation of "humankind acts," "kind act," and "code of conduct." It's about collective action rooted in doing good.
+The name "Kindact" tries to reflect this: an amalgamation of "humankind acts," "kind act," and "code of conduct." It's about collective action rooted in doing good.
 
 ---
 
 ## The Foundation: Verified Identity and Democratic Integrity
+
+[TODO: This needs reworking. 
+* 1 person - 1 vote is mainly necessary for VOTING, but voting is only ONE part (and might even be optional) for governance. (Alternatives could be e.g. to iterate on proposals until there aren't any dissenting voices (consensus))
+* Kindact doesn't solve this itself - it's just making use of already existing solutions (ZKP - zero-knowledge proofs etc, look this up online).
+* Generally, many technological things aren't done by kindact itself, it's just using other tech. This is something good to acknowledge, because this makes it more likely that people will think this project can succeed. (If we'd have to 'invent' all of these things ourselves we wouldn't have a chance - we have to stand on the shoulders of giants!)
+* Verified identity & integrity is important, but it is only ONE of the important parts I think, it's not more important than many of the other mechanisms.
+]
 
 For any governance system to work, it needs to solve a basic problem: **How do we ensure one person, one vote without allowing manipulation?**
 
