@@ -135,7 +135,7 @@ Once an issue has been thoroughly discussed and synthesized, the community needs
 
 ### Voting: Fluid and Ongoing
 
-Most political systems have a single moment of voting: you cast your ballot, and that's it. Kindact uses **fluid, ongoing voting** where decisions are never truly "final." Votes can be changed at any time, delegations can be revoked, and as new information emerges, the community's position can evolve.
+Most political systems have a single moment of voting: you cast your ballot, there's a cutoff date where votes get counted, and that's it. Kindact uses **fluid, ongoing voting** where decisions are never truly "final". Votes can be changed at any time, delegations can be revoked, and as new information emerges, the community's position can evolve.
 
 This mirrors how scientific understanding works: we don't vote on whether evolution is true and consider the matter settled forever. We update our understanding as evidence accumulates.
 
@@ -157,7 +157,7 @@ Before voting on an issue, users must pass a **basic comprehension test** relate
 
 Traditional democracy prizes high voter turnout as a measure of legitimacy. Kindact takes a different approach, inspired by how large cooperatives like Mondragon handle governance.
 
-The core insight: **low turnout doesn't necessarily mean low legitimacy**. If only 15% of eligible voters actively engage with an issue, that might indicate "silent agreement"—people are okay with how things are going and don't feel the need to object. The system remains legitimate because if a controversial or critical issue arises, turnout can spike dramatically (potentially to 80% or more) as people feel compelled to engage.
+The core insight: **low turnout doesn't necessarily mean low legitimacy**. If only 15% of eligible voters actively engage with an issue, that might indicate "silent agreement"—people are okay with how things are going and don't feel the need to object. The system remains legitimate because if a controversial or critical issue arises, turnout can spike dramatically as people feel compelled to engage.
 
 This dynamic legitimacy model reduces the pressure to manufacture engagement and allows the system to be responsive when it matters most.
 
