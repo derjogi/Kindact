@@ -213,7 +213,7 @@ Implementers must file **implementation reports** that document:
 - What resources were used
 - What impact was achieved
 
-These reports serve as proof of work and as publicly visible data about how effective a particular approach is. Over time, this creates a knowledge base of what actually works.
+These reports serve as proof of work and as publicly visible data for auditing purposes.
 
 ### Verification Mechanisms
 
@@ -229,7 +229,7 @@ No system is perfect, but the combination of these approaches creates strong inc
 
 ## Step 5: Reward — Economic Incentives
 
-Governance without incentives is just discussion. Kindact creates a market for "good deeds" through a cryptocurrency token system, currently referred to as **$CC (Community Currency)** or "Deeds."
+Governance without incentives is just discussion. Kindact creates a market for "good deeds" through a cryptocurrency token system, **$CC (Community Currency)**."
 
 ### How Tokens Are Created
 
