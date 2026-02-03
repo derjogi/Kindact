@@ -242,8 +242,8 @@ A common problem with any currency is wealth concentration. Those who accumulate
 
 - **The Free Floor**: A base amount of tokens is exempt from any taxes, giving everyone a personal "savings" safety net.
 - **The Dissolving Tax**: Tokens held above the floor lose a small percentage of value: 
-  - Losing value over time: This mechanism ensures that tokens circulate rather than stagnate, constantly incentivizing new contributions. 
-  - Losing value per trade: This represents the "distance" from the original act of contribution and encourages reinvestment into new community actions.
+    - Losing value over time: This mechanism ensures that tokens circulate rather than stagnate, constantly incentivizing new contributions. 
+    - Losing value per trade: This represents the "distance" from the original act of contribution and encourages reinvestment into new community actions.
 
 ### Platform Access and Token Burns
 
@@ -255,7 +255,7 @@ What gives $CC its value? Several factors:
 - **Utility**: You need tokens to participate actively in the system
 - **Reputation**: Tokens signal contribution to the community
 - **Tradeability**: Tokens can be exchanged for goods and services
-- **Scarcity**: The dissolving mechanism creates predictable scarcity
+- **Inflation Management**: The dissolving mechanism (demurrage) manages inflationary pressure by ensuring tokens circulate rather than stagnate, creating value and stability.
 
 Over time, as the platform grows, token utility may expand—accepting $CC at local businesses, using it for community services, or trading it for other currencies.
 
