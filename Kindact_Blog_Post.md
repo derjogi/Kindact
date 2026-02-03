@@ -207,7 +207,7 @@ This creates a direct link between doing good and receiving economic value. Unli
 
 ### Implementation Reports
 
-Implementers must file **implementation reports** that document:
+Implementers must file regular **implementation reports** that document:
 - What was done
 - How long it took
 - What resources were used
@@ -229,7 +229,8 @@ No system is perfect, but the combination of these approaches creates strong inc
 
 ## Step 5: Reward — Economic Incentives
 
-Governance without incentives is just discussion. Kindact creates a market for "good deeds" through a cryptocurrency token system, **$CC (Community Currency)**."
+Governance without incentives is just discussion. Kindact creates a market for "good deeds" through a cryptocurrency token system, **$CC (Community Currency)**.
+The economic system outlined below is only a starting point, and the community will have the opportunity to vote on changes to the system.
 
 ### How Tokens Are Created
 
@@ -240,13 +241,13 @@ Unlike traditional money, which is often created through debt and centralized de
 A common problem with any currency is wealth concentration. Those who accumulate tokens can sit on them, extracting value without contributing further. Kindact addresses this through a **hybrid dissolving model**:
 
 - **The Free Floor**: A base amount of tokens is exempt from any taxes, giving everyone a personal "savings" safety net.
-- **The Dissolving Tax**: Tokens held above the floor lose a small percentage of value over time (approximately 1% annually) or during trades. This represents the "distance" from the original act of contribution and encourages reinvestment into new community actions.
-
-This mechanism ensures that tokens circulate rather than stagnate, constantly incentivizing new contributions.
+- **The Dissolving Tax**: Tokens held above the floor lose a small percentage of value: 
+  - Losing value over time: This mechanism ensures that tokens circulate rather than stagnate, constantly incentivizing new contributions. 
+  - Losing value per trade: This represents the "distance" from the original act of contribution and encourages reinvestment into new community actions.
 
 ### Platform Access and Token Burns
 
-To further control token supply, the platform charges **access fees in $CC** for active participation. Users who want to create issues, vote extensively, or engage deeply with the system pay these fees. Crucially, **all fees are burned**—removed permanently from circulation rather than going to any central authority.
+To further control token supply, the platform charges **access fees in $CC** for active participation. A base level participation (Voting, Claiming Rewards, 3 comments/month, 1 issue creation/month) will always be free in order to not exclude anyone. Users who want to contribute more will have to pay a small fee. Crucially, **all fees are burned**—removed permanently from circulation.
 
 ### Token Value
 
