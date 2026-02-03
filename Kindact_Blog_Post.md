@@ -131,11 +131,33 @@ Kindact's anonymized discussion mechanisms are designed specifically to bridge d
 
 The anonymization is **not** absolute. The platform can identify users if necessary (for moderation, fraud prevention, or legal compliance), but this information is segregated from the public-facing discussion layer. This maintains accountability while preserving the cognitive benefits of anonymous evaluation.
 
+### Metrics and Predictions: Informed Decision-Making
+
+A critical part of deliberation is understanding the likely impacts of different options. Each issue displays **metrics and predictions** that estimate the effects of proposed solutions across Social and Planetary Boundaries, and economic & time requirements.
+
+When an issue compares different approaches (e.g., renovating vs. replacing a building), the platform shows separate estimates of impacts on each relevant dimension.
+
+**Sources of Metric Data:**
+- **AI Estimation**: Machine learning models trained on relevant data provide initial estimates
+- **Prediction Markets**: Community-based forecasting on likely outcomes
+- **User & Expert Input**: Users with relevant knowledge and specialists can contribute informed estimates
+- **User Flagging**: Community members can mark estimates as disputed or unsupported
+
+All metrics include confidence levels and are automatically revised as new information emerges. Small, local issues have lower scrutiny thresholds than large, consequential decisions—reflecting that some mistakes are more forgivable than others.
+Dimensions that aren't affected are marked as neutral.
+
+The metrics system is itself modular and will be extended as prediction technology and data availability improve.
+
 ---
 
 ## Step 3: Decide — Decision-Making and Legitimacy
 
 Once an issue has been thoroughly discussed and synthesized, the community needs to make decisions. Kindact supports multiple decision-making modes.
+
+### Voting Requirements Based on Metrics
+- Voting is not permitted until relevant metrics are determined for each significant impact area
+- Voting is only allowed if the overall outcome is positive and negative effects fall within acceptable thresholds
+- Thresholds for acceptable impact are defined collaboratively by the community
 
 ### Legitimacy Without High Turnout
 
