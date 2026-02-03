@@ -135,7 +135,7 @@ The anonymization is **not** absolute. The platform can identify users if necess
 
 A critical part of deliberation is understanding the likely impacts of different options. Each issue displays **metrics and predictions** that estimate the effects of proposed solutions across Social and Planetary Boundaries, and economic & time requirements.
 
-When an issue compares different approaches (e.g., renovating vs. replacing a building), the platform shows separate estimates of impacts on each relevant dimension.
+When an issue compares different approaches (e.g., renovating vs. replacing a building), the platform shows separate estimates of impacts on each relevant dimension. This helps ensure that only net-positive issues can proceed to voting. While metrics can't guarantee perfect outcomes, they create a strong filter against proposals that would clearly harm people or the planet.
 
 **Sources of Metric Data:**
 - **AI Estimation**: Machine learning models trained on relevant data provide initial estimates
@@ -201,16 +201,16 @@ Once a decision is made, someone needs to execute it. Kindact's implementation p
 
 ### Proof of Work
 
-Kindact operates on a fundamental principle: **tokens are exclusively minted when community-approved work is verifiably implemented**. If the community votes that "planting 100 trees in the park is a valuable goal," and someone actually plants those trees and submits proof, new tokens are created and awarded to them.
+Kindact operates on a fundamental principle: **tokens are exclusively minted when community-approved work is verifiably implemented**. If the community votes that "planting 100 trees in the park is a valuable goal", and someone actually plants those trees and submits proof, new tokens are created and awarded to them.
 
 This creates a direct link between doing good and receiving economic value. Unlike traditional systems where funding comes from taxes or donations before work is done, Kindact pays for results.
 
 ### Implementation Reports
 
 Implementers must file **implementation reports** that document:
-- What- How long it took
-- work was done
- What resources were used
+- What was done
+- How long it took
+- What resources were used
 - What impact was achieved
 
 These reports serve as proof of work and as publicly visible data about how effective a particular approach is. Over time, this creates a knowledge base of what actually works.
