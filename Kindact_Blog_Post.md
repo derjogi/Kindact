@@ -1,6 +1,6 @@
-# Kindact: A New Paradigm for Governance and Collective Action
+# A New Paradigm for Governance and Collective Action
 
-*An informative guide to understanding how Kindact could reshape how we solve problems together*
+*A novel systemic platform that could reshape how we solve problems together*
 
 ---
 
@@ -72,7 +72,7 @@ The process begins when someone identifies a problem worth addressing. Unlike tr
 
 ### Issues Can Be Simple
 
-You don't need to have a fully-formed solution. An issue can start as a simple observation or complaint: "Our neighborhood has too much plastic waste." The community can then collaboratively work out the solution—perhaps a community composting program. The important thing is identifying that something needs attention.
+You don't need to have a fully-formed solution. An issue can start as a simple observation or complaint: "Our neighborhood has too much plastic waste." The community can then collaboratively work out the solution — perhaps a community composting program. The important thing is identifying that something needs attention.
 
 ### AI-Assisted Issue Creation
 
@@ -143,8 +143,7 @@ When an issue compares different approaches (e.g., renovating vs. replacing a bu
 - **User & Expert Input**: Users with relevant knowledge and specialists can contribute informed estimates
 - **User Flagging**: Community members can mark estimates as disputed or unsupported
 
-All metrics include confidence levels and are automatically revised as new information emerges. Small, local issues have lower scrutiny thresholds than large, consequential decisions, reflecting that some mistakes are more forgivable than others.
-Dimensions that aren't affected are marked as neutral.
+All metrics include confidence levels and are automatically revised as new information emerges. Small, local issues have lower scrutiny thresholds than large, consequential decisions, reflecting that some mistakes are more forgivable than others. Dimensions that aren't affected are marked as neutral.
 
 The metrics system is itself modular and will be extended as prediction technology and data availability improve.
 
@@ -185,13 +184,15 @@ The principle of "one person, one vote" is important for legitimate decision-mak
 
 ### Competence Verification
 
-Before voting on an issue, users must pass a **basic eligibility test** related to the synthesized summary. This isn't about being an expert; it's about ensuring that voters have actually engaged with and understood what they're deciding, and to ensure that they have _some_ stake in the outcome.
+Before voting on an issue, users must pass a **basic eligibility test** to... 
+... ensure voters are informed to a basic degree regarding the issue. (As Thomas Jefferson already stated: "An informed citizenry is at the heart of a dynamic democracy.")
+... include only stakeholders (which could potentially be 'everyone' for global issues, or a small group for renovating the local library)
+... keep the test easy enough that it doesn't exclude legitimate participants (the test shall not make it an 'elitist' or purely meritocratic system)
+... ensure decisions reflect those most affected while preventing outside interference.
 
-**The purpose of the test:**
-- Ensure voters are informed to a basic degree regarding the issue. (As Thomas Jefferson already stated: "An informed citizenry is at the heart of a dynamic democracy.")
-- Include only stakeholders (which could potentially be 'everyone' for global issues, or a small group for renovating the local library)
-- Keep the test easy enough that it doesn't exclude legitimate participants (the test shall not make it an 'elitist' or purely meritocratic system)
-- Ensure decisions reflect those most affected while preventing outside interference.
+The test has two components. First, a few simple questions about the issue summary (true/false, multiple choice) to confirm the voter understands what's being decide (NOT what their opinion about the issue is). Second, a relevance check: if the user's profile already shows a clear connection (they live in the affected area, work in a related field), they're admitted automatically. Otherwise, they briefly explain their stake. A climate scientist can vote on a local emissions policy even if they live elsewhere; a resident can vote even without specialized knowledge. The test filters out drive-by voting while keeping the barrier low enough that it doesn't become elitist.
+
+*Note: I know having an 'eligibility test' might be controversial, especially for those growing up in democracies where one of the highest values is "everyone gets a vote", or where some groups have been unjustly excluded from voting in the past. I believe this test can safely be designed to be inclusive, and that excluding those who haven't engaged with the issue can be very beneficial, but as with almost all mechanisms on this platform, the community can vote to modify or abolish it, and I'd be happy to discuss this further in the comments.*
 
 ---
 
@@ -229,7 +230,7 @@ No system is perfect, but the combination of these approaches creates strong inc
 
 ## Step 5: Reward — Economic Incentives
 
-Governance without incentives is just discussion. Kindact creates a market for "good deeds" through a cryptocurrency token system, **$CC (Community Currency)**. The economic system outlined below is a starting point—the platform governs itself, so the community can vote to modify any of these mechanisms.
+Governance without incentives is just discussion. Kindact creates a market for "good deeds" through a cryptocurrency token system, **$CC (Community Currency)**. The economic system outlined below is a starting point — the platform governs itself, so the community can vote to modify any of these mechanisms.
 
 ### What $CC Is
 
@@ -282,7 +283,7 @@ What gives $CC its value?
 - **Reputation**: Early scarcity establishes meaning; provenance transparency maintains it
 - **Tradeability**: Purchasing tokens supports contributors ("donate to the cause")
 
-The system rewards effort and progress, not just outcomes—contributors receive payments for reasonable work regardless of whether projects ultimately succeed.
+The system rewards effort and progress, not just outcomes: contributors receive payments for reasonable work regardless of whether projects ultimately succeed.
 
 *For a deeper exploration of the economic mechanisms, see the separate [Economic Deep Dive](Kindact_Economics_Deep_Dive.md).*
 
