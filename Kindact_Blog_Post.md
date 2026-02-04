@@ -358,13 +358,13 @@ The process of **finding common ground**—through the Wikipedia-style synthesis
 
 Kindact doesn't replace governments; it **enhances** them. When civic priorities align with state intentions, the combination of community pressure and economic incentives strengthens capacity to achieve goals. When they diverge, communities can act independently.
 
-The system also solves **short-termism** through its fluid voting model. Because votes never close permanently, long-term thinking can actually pay off. You can invest in a 30-year project knowing that the community can maintain support even as individual voters change their minds.
+The system also addresses **short-termism** through its fluid voting model. Because votes never close permanently, long-term thinking can actually pay off. You can invest in a 30-year reforestation project knowing that the community can maintain support even as individual voters come and go.
 
 ### Global Level: Coordinating Across Borders
 
 Most global problems require global coordination, but nation-states naturally prioritize their own interests. Kindact allows **interest-based groups** to form across any geographic boundary. Climate activists in Brazil can directly coordinate with climate activists in Norway, creating transnational pressure that nation-states can't easily ignore.
 
-The **AI race** can be slowed down or stopped when the global community can coordinate on safety standards, rewarding those who research responsible AI rather than those who race ahead recklessly, or there could be other mechanisms invented on the platform that makes 'stopping' AI development alltogether more appealing than to continue.
+Problems like the **AI race**—where everyone would benefit from coordination but no one wants to move first—require exactly this kind of cross-border framework. Kindact could help by making safety commitments visible and verifiable, rewarding AI safety research that markets undervalue, and building transnational consensus that applies social and economic pressure to reckless actors. Whether this can succeed at such scale remains to be seen, but it provides the infrastructure to try.
 
 ---
 
