@@ -322,11 +322,15 @@ Kindact will use existing solutions like **zero-knowledge proofs (ZKPs)** and ot
 
 ## Real-World Economic Examples
 
-To illustrate how the incentive system changes behavior, consider two scenarios:
+To illustrate how the incentive system creates value, consider three scenarios at different scales:
+
+### Recognizing Unpaid Care Work
+
+Some of the most valuable work in society goes entirely uncompensated: raising children, caring for elderly parents, supporting a sick family member. Kindact could create issues that recognize this labor—for example, rewarding parents during the intensive early years of childcare, with support gradually tapering as children grow. This doesn't replace government support; it creates community recognition for work that markets ignore.
 
 ### Everyday Actions: Challenges
 
-Communities can create "challenges" that reward individual users for daily choices: biking instead of driving, choosing sustainable products, reducing energy consumption. These micro-rewards create visible incentives for behavior that's good for the community but typically goes unrecognized. The cumulative effect of thousands of small actions becomes measurable and rewarded.
+Communities can also create "challenges" that reward positive daily choices: volunteering time, mentoring others, contributing to shared resources, using the bike instead of a car. These micro-rewards make visible the countless small contributions that strengthen communities but typically go unrecognized.
 
 ### Systemic Change: Outcome-Based Incentives
 
