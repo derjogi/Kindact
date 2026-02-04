@@ -294,44 +294,43 @@ Kindact requires infrastructure that is transparent enough to trust but private 
 
 ### Blockchain Foundation
 
-All interactions—discussions, votes, implementation reports, token transactions—are recorded on a **distributed ledger** (blockchain or similar technology). This ensures:
+All interactions—discussions, votes, implementation reports, token transactions—are recorded on a **distributed ledger** (blockchain, holochain or similar technology). This ensures:
 
 - **Transparency**: Anyone can verify that the system is working as intended
 - **Immutability**: Past decisions can't be erased or altered
 - **Censorship resistance**: No single entity can shut down the system or exclude participants arbitrarily
 
-The system is designed to be **chain-agnostic**, meaning it could operate on any appropriate blockchain technology, avoiding lock-in to any single platform.
+The system should be designed to be **chain-agnostic**, meaning it should be able to operate on any appropriate blockchain technology, avoiding lock-in to any single platform.
 
-### Verified Identity
+### Verified Identity and Privacy
 
-One of the core mechanisms in any governance system is ensuring that decisions reflect real people's will, not manipulated artificial consensus. Kindact leverages existing technologies and approaches that have already been developed and prove that despite many old-school critics we _can_ use online governance securely.
+One of the core mechanisms in any governance system is ensuring that decisions reflect real people's will, not manipulated artificial consensus. Kindact leverages existing technologies and approaches that have already been developed to show that we can use online governance securely.
 
 Kindact will use existing solutions like **zero-knowledge proofs (ZKPs)** and other cryptographic tools that allow users to prove they're a unique real person without revealing their actual identity. This means:
 - No centralized authority controls who can participate
 - Privacy is protected while still ensuring integrity
+- Votes can be verified as legitimate without revealing who voted for what
 - Kindact benefits from ongoing advances in cryptography without having to develop them itself
 
-### Privacy Through Zero-Knowledge Proofs
-
-While the system is transparent, it doesn't need to expose individual users. **Zero-knowledge proofs** allow the system to verify that votes are legitimate and that users meet participation requirements without revealing who voted for what or how much token value they hold.
+**How privacy works in practice:**
+- **Identity verification** happens once (via existing services like BrightID, government ID, or similar) and generates a cryptographic credential stored locally
+- **On-chain interactions** use pseudonymous public keys—observers see "Wallet 0x7F3..." voted, not your real name
+- **ZKPs bridge the gap**—you can prove "this wallet belongs to a verified unique human" without revealing *which* human
+- **Sensitive data stays local** or encrypted off-chain; only hashes/commitments go on-chain to prevent tampering
 
 ---
 
 ## Real-World Economic Examples
 
-To make this concrete, let's walk through how the economic system might work in practice:
+To illustrate how the incentive system changes behavior, consider two scenarios:
 
-### Local Example: The Bakery
+### Everyday Actions: Challenges
 
-A community notices that the local bakery mostly sells unhealthy bread. They want to encourage healthier options. They create an issue on Kindact: "Reward bakers with $CC for using wholemeal flour."
+Communities can create "challenges" that reward individual users for daily choices: biking instead of driving, choosing sustainable products, reducing energy consumption. These micro-rewards create visible incentives for behavior that's good for the community but typically goes unrecognized. The cumulative effect of thousands of small actions becomes measurable and rewarded.
 
-In the early "Seeding" phase (0-10 users), the only value of $CC is **reputation**. The bakery displays a counter showing how many $CC they've earned. Community members, who understand the significance, start patronizing the bakery with the highest $CC count. More bakeries notice and join, creating competitive pressure to improve.
+### Systemic Change: Outcome-Based Incentives
 
-Eventually, the community garden decides to grant access to those who hold $CC—giving the tokens real utility. The bakery might accept $CC as payment, or sell their tokens to customers who want garden access but can't earn $CC themselves.
-
-### Global Example: Medical Research
-
-At scale, similar mechanisms could incentivize medical research. If the community identifies "developing a malaria vaccine" as valuable, researchers could receive $CC for completing milestones. The tokens could be used to access platform resources, pay for collaboration tools, or traded for traditional currency to fund laboratory work.
+At larger scales, Kindact can reshape how we incentivize entire industries. Consider medical research: current systems pay pharmaceutical companies based on *how much medication they sell*, not *how many people get healed*. Kindact could flip this—rewarding verifiable health outcomes rather than sales volume. The same logic applies to education, environmental remediation, or infrastructure maintenance.
 
 ---
 
@@ -341,7 +340,7 @@ Given this infrastructure, how might Kindact actually help solve the problems we
 
 ### Individual Level: Restoring Agency
 
-For those who feel powerless, Kindact offers **direct participation** in decisions that matter. You can find issues you care about, contribute to discussions, and see your ideas implemented. This isn't symbolic—it's real action with real consequences, verified and rewarded on the blockchain.
+For those who feel powerless, Kindact offers **direct participation** in decisions that matter. You can find issues you care about, contribute to discussions, and see your ideas implemented. This isn't symbolic—it's real action with real visible or experiential consequences.
 
 The psychological impact matters: when we see our actions producing results, despair gives way to agency. Eco-anxiety decreases when we witness concrete improvements.
 
@@ -361,34 +360,7 @@ The system also solves **short-termism** through its fluid voting model. Because
 
 Most global problems require global coordination, but nation-states naturally prioritize their own interests. Kindact allows **interest-based groups** to form across any geographic boundary. Climate activists in Brazil can directly coordinate with climate activists in Norway, creating transnational pressure that nation-states can't easily ignore.
 
-The **AI race** becomes less inevitable when the global community can coordinate on safety standards, rewarding those who research responsible AI rather than those who race ahead recklessly.
-
----
-
-## Growth and Adoption: The Stages Model
-
-A critical question: How does a system like this go from zero users to meaningful influence? The current model outlines several stages:
-
-### Seeding (0-10 users)
-
-In the very beginning, the system's value is primarily **reputational**. Early adopters participate because they believe in the vision. The economic mechanism has little practical effect, but the community begins to form.
-
-### Sprouting (10-100 users)
-
-As more people join, **marketplace utility** emerges. Users begin exchanging tokens for real goods and services. The first businesses might accept $CC. The community garden grants access to token holders. The system starts having real economic effects.
-
-### Growth (100-10,000 users)
-
-Similar dynamics spread to multiple communities. Inter-community trade begins. Token utility expands. The system starts to become difficult for mainstream actors to ignore.
-
-### Stability (>10,000 users)
-
-At scale, the system becomes self-reinforcing. Wide distribution of tokens creates broad base of stakeholders. High utility makes tokens valuable. External actors—from governments to corporations—begin adapting their behavior to participate.
-
-This is one possible model. Alternative approaches might include:
-- **Viral adoption** through specific high-impact use cases (disaster response, mutual aid)
-- **Institutional partnerships** with existing organizations
-- **Regulatory pilots** with forward-thinking governments
+The **AI race** can be slowed down or stopped when the global community can coordinate on safety standards, rewarding those who research responsible AI rather than those who race ahead recklessly, or there could be other mechanisms invented on the platform that makes 'stopping' AI development alltogether more appealing than to continue.
 
 ---
 
@@ -437,9 +409,11 @@ Economist Robin Hanson coined "Moloch" to describe the traps our collective syst
 
 Kindact creates incentives to break these traps, but powerful interests benefit from the status quo. How does the system handle resistance from those who profit from dysfunction?
 
-### Building Enough Size
+### Bootstrapping and the Cold-Start Problem
 
-The cold-start problem is real: a platform isn't valuable until it has users, but it won't get users until it's valuable. Breaking through this requires finding the right entry point—possibly a specific community, a specific use case, or a specific crisis that demonstrates the system's value.
+How does a system like this go from zero users to meaningful influence? Honestly, we don't know. It could start with a tight-knit local community where early adopters participate primarily for reputation and shared purpose. It could catch on during a crisis where mutual aid becomes essential. It could grow through partnerships with existing organizations. It could remain small and experimental for years.
+
+What we do know: the platform isn't valuable until it has users, and it won't get users until it's valuable. Breaking through this requires finding the right entry point—and being honest that the path is uncertain.
 
 ---
 
