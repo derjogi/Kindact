@@ -368,9 +368,49 @@ Problems like the **AI race**—where everyone would benefit from coordination b
 
 ---
 
-## The Ecosystem: Weaving Together Existing Tools
+## Challenges and Open Questions
 
-Kindact won't reinvent the wheel, but will stand on the shoulders of giants. The vision is to **weave together** existing projects and tools that are already solving pieces of this puzzle. The following are only some of the projects that we already have connections to and that are working on different relevant pieces:
+No vision this ambitious comes without challenges. Several areas require further thought:
+
+### Legal and Regulatory Uncertainty
+
+Operating across borders with a token-based economic system raises complex legal questions. How do securities regulations apply? What about money transmission requirements? These questions haven't been thoroughly analyzed and will need careful attention.
+
+### Preventing Abuse
+
+Any reward system attracts attempts to game it. How do we verify that work was actually done? What prevents people from creating fake issues to generate rewards for themselves? The platform needs robust mechanisms for detecting and punishing fraud. Many obvious abuse vectors are already addressed, but there are without doubt more that need to be considered, and the system needs to continuously evolve.
+
+### Addressing Moloch
+
+Scott Alexander's essay "[Meditations on Moloch](https://slatestarcodex.com/2014/07/30/meditations-on-moloch/)" describes the traps our collective systems fall into—situations where everyone would be better off cooperating, but individual incentives lead to destructive competition. Climate change is the classic example: everyone benefits from reducing emissions, but no individual country wants to bear the cost alone.
+
+Kindact creates incentives to break these traps, but powerful interests benefit from the status quo. How does the system handle resistance from those who profit from dysfunction? Might even the release of this idea be seen as a threat, and the development of Kindact be thwarted by those who would prefer to keep the status quo?
+
+### Bootstrapping and the Cold-Start Problem
+
+How does a system like this go from zero users to meaningful influence? Honestly, we don't know. It could start with a tight-knit local community where early adopters participate primarily for reputation and shared purpose. It could catch on during a crisis where mutual aid becomes essential. It could grow through partnerships with existing organizations. It could remain small and experimental for years.
+
+What we do know: the platform isn't valuable until it has users, and it won't get users until it's valuable. Breaking through this requires finding the right entry point—and being honest that the path is uncertain.
+
+---
+
+## The Road Ahead
+
+Kindact remains a vision in progress. The concepts outlined here have been developed over years of thinking, reading, and conversation, but they're not yet implemented or tested. Writing this document is part of refining that vision.
+
+The next steps involve:
+- Continuing to develop and clarify the vision through discussion
+- Identifying potential collaborators and partners
+- Exploring legal and regulatory considerations
+- Eventually, building and testing a minimum viable product
+
+If any part of this resonates with you, I'd love to hear your thoughts. What resonates? What concerns you? What have I missed?
+
+---
+
+## The Ecosystem: Standing on the Shoulders of Giants
+
+Kindact won't reinvent the wheel. The vision is to **weave together** existing projects and tools that are already solving pieces of this puzzle. The following are only some of the projects that we already have connections to and that are working on different relevant pieces:
 
 ### Deliberation and Decision-Making
 - [Society Library](https://www.societylibrary.org/) and [Kialo](https://www.kialo.com/) for argument mapping
@@ -399,46 +439,6 @@ Several organizations are already working on governance innovation and could pro
 - And many more...
 
 The goal is interoperability—creating a unified experience that draws on the best existing tools rather than rebuilding everything.
-
----
-
-## Challenges and Open Questions
-
-No vision this ambitious comes without challenges. Several areas require further thought:
-
-### Legal and Regulatory Uncertainty
-
-Operating across borders with a token-based economic system raises complex legal questions. How do securities regulations apply? What about money transmission requirements? These questions haven't been thoroughly analyzed and will need careful attention.
-
-### Preventing Abuse
-
-Any reward system attracts attempts to game it. How do we verify that work was actually done? What prevents people from creating fake issues to generate rewards for themselves? The platform needs robust mechanisms for detecting and punishing fraud.
-
-### Addressing Moloch
-
-Economist Robin Hanson coined "Moloch" to describe the traps our collective systems fall into—situations where everyone would be better off cooperating, but individual incentives lead to destructive competition. Climate change is the classic example: everyone benefits from reducing emissions, but no individual country wants to bear the cost alone.
-
-Kindact creates incentives to break these traps, but powerful interests benefit from the status quo. How does the system handle resistance from those who profit from dysfunction?
-
-### Bootstrapping and the Cold-Start Problem
-
-How does a system like this go from zero users to meaningful influence? Honestly, we don't know. It could start with a tight-knit local community where early adopters participate primarily for reputation and shared purpose. It could catch on during a crisis where mutual aid becomes essential. It could grow through partnerships with existing organizations. It could remain small and experimental for years.
-
-What we do know: the platform isn't valuable until it has users, and it won't get users until it's valuable. Breaking through this requires finding the right entry point—and being honest that the path is uncertain.
-
----
-
-## The Road Ahead
-
-Kindact remains a vision in progress. The concepts outlined here have been developed over years of thinking, reading, and conversation, but they're not yet implemented or tested. Writing this document is part of refining that vision.
-
-The next steps involve:
-- Continuing to develop and clarify the vision through discussion
-- Identifying potential collaborators and partners
-- Exploring legal and regulatory considerations
-- Eventually, building and testing a minimum viable product
-
-If any part of this resonates with you, I'd love to hear your thoughts. What resonates? What concerns you? What have I missed?
 
 ---
 
