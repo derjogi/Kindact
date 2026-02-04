@@ -229,35 +229,62 @@ No system is perfect, but the combination of these approaches creates strong inc
 
 ## Step 5: Reward — Economic Incentives
 
-Governance without incentives is just discussion. Kindact creates a market for "good deeds" through a cryptocurrency token system, **$CC (Community Currency)**.
-The economic system outlined below is only a starting point, and the community will have the opportunity to vote on changes to the system.
+Governance without incentives is just discussion. Kindact creates a market for "good deeds" through a cryptocurrency token system, **$CC (Community Currency)**. The economic system outlined below is a starting point—the platform governs itself, so the community can vote to modify any of these mechanisms.
+
+### What $CC Is
+
+$CC serves multiple roles in order of priority:
+1. **Reward unit (primary)**: Incentivizes community-approved work as a rival to purely market-driven incentives
+2. **Reputation signal**: Accumulated $CC signals past contribution; blockchain provenance shows whether tokens were earned or purchased
+3. **Tradeable medium**: Enables contributors to convert effort into goods/services; buyers directly support contributors
+4. **Access right**: Platform fees create utility demand
 
 ### How Tokens Are Created
 
-Unlike traditional money, which is often created through debt and centralized decisions, $CC tokens are **exclusively minted when community-approved work is verifiably implemented**. This creates a direct link between doing good and receiving economic value.
+$CC tokens are **exclusively minted when community-approved work is verifiably implemented**. Reward amounts are proposed by issue creators (with AI suggestions) and approved through deliberation. Larger rewards require proportionally more voter support—this naturally limits what any individual can award themselves.
 
-### The Hybrid Dissolving Model (Demurrage)
+### Supply Management: Reactive Sinks
 
-A common problem with any currency is wealth concentration. Those who accumulate tokens can sit on them, extracting value without contributing further. Kindact addresses this through a **hybrid dissolving model**:
+Rather than hard issuance caps, Kindact uses **dynamic taxation** that adjusts based on circulation metrics:
 
-- **The Free Floor**: A base amount of tokens is exempt from any taxes, giving everyone a personal "savings" safety net.
-- **The Dissolving Tax**: Tokens held above the floor lose a small percentage of value: 
-    - Losing value over time: This mechanism ensures that tokens circulate rather than stagnate, constantly incentivizing new contributions. 
-    - Losing value per trade: This represents the "distance" from the original act of contribution and encourages reinvestment into new community actions.
+- **Time-based demurrage**: Tokens lose value based on how long they remain unmoved in a wallet. Older tokens move first (FIFO), preventing hoarding.
+- **Transaction fees**: Minimal fees prevent gaming through circular trades between related parties.
+- **Access fees**: Most users pay small fees for active participation; all fees are burned.
 
-### Platform Access and Token Burns
+This functions like automated, transparent taxation—similar to how central banks adjust interest rates, but algorithmic and visible.
 
-To further control token supply, the platform charges **access fees in $CC** for active participation. A base level participation (Voting, Claiming Rewards, 3 comments/month, 1 issue creation/month) will always be free in order to not exclude anyone. Users who want to contribute more will have to pay a small fee. Crucially, **all fees are burned**—removed permanently from circulation.
+### Fraud Prevention
+
+Without requiring upfront staking, the system deters abuse through:
+- **Voter-scaled reward caps**: Small groups can only unlock small rewards
+- **Asymmetric voting**: Objections reduce caps more than approvals increase them
+- **Fluid voting**: Rewards can be adjusted mid-implementation if abuse is detected
+- **Verifier rotation**: Same verifier can't approve the same issue repeatedly
+- **Rate-limited accusations**: Wrong accusations trigger exponential cooldown periods
+- **Retroactive bans**: Confirmed fraud leads to platform restrictions
+
+### Dispute Resolution
+
+When work completion is challenged:
+1. Challenger flags the proof with a small $CC deposit
+2. Community engagement determines the outcome
+3. Payments halt while unresolved; restrictions loosen gradually if no verdict emerges
+4. Default threshold: 2% of original voters (minimum 3 people), 80% agreement to confirm fraud
+
+### Platform Funding
+
+Platform development, audits, and moderation are funded through **regular platform issues**—the same mechanism as any other community work. This ensures transparency and lets the community prioritize what gets built.
 
 ### Token Value
 
-What gives $CC its value? Several factors:
-- **Utility**: You need tokens to participate actively in the system
-- **Reputation**: Tokens signal contribution to the community
-- **Tradeability**: Tokens can be exchanged for goods and services
-- **Inflation Management**: The dissolving mechanism (demurrage) manages inflationary pressure by ensuring tokens circulate rather than stagnate, creating value and stability.
+What gives $CC its value?
+- **Utility**: Required for active platform participation
+- **Reputation**: Early scarcity establishes meaning; provenance transparency maintains it
+- **Tradeability**: Purchasing tokens supports contributors ("donate to the cause")
 
-Over time, as the platform grows, token utility may expand—accepting $CC at local businesses, using it for community services, or trading it for other currencies.
+The system rewards effort and progress, not just outcomes—contributors receive payments for reasonable work regardless of whether projects ultimately succeed.
+
+*For a deeper exploration of the economic mechanisms, see the separate [Economic Deep Dive](Kindact_Economics_Deep_Dive.md).*
 
 ---
 
