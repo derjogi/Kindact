@@ -407,8 +407,6 @@ The next steps involve:
 - Building and testing a minimum viable product
 - Exploring legal and regulatory considerations before scaling up
 
-If any part of this resonates with you, I'd love to hear your thoughts. What resonates? What concerns you? What have I missed?
-
 ---
 
 ## The Ecosystem: Standing on the Shoulders of Giants
@@ -426,7 +424,7 @@ Kindact won't reinvent the wheel. The vision is to **weave together** existing p
 ### Governance & Economic Infrastructure
 - [Forby.io](https://forby.io/) or [Swae](https://swae.io/) for proposal development
 - [SEEDS](https://joinseeds.earth/) and [Hypha](https://hypha.earth/) for decentralized identity and governance
-- [Localscale](https://localscale.org/) for interoperable local currencies via an [oswap mechanism](https://localscale.org/blog/post.jsp?uid=7mc6a15b-ae3a-48f2-af76-42f8ec0ca025)
+- [Localscale](https://localscale.org/) and [RCF (Regen Currency Federation)](https://discord.gg/RBfE7ahU) for interoperable local currencies via an [oswap mechanism](https://localscale.org/blog/post.jsp?uid=7mc6a15b-ae3a-48f2-af76-42f8ec0ca025)
 - [Grassroots Economics](https://software.grassecon.org/) for community currency infrastructure
 - [Abundance Protocol](https://abundance.id/) — a project with similar aspirations for collective coordination
 - [The Wellbeing Protocol](https://www.thewellbeingprotocol.org/) for providing funding distribution mechanisms
@@ -445,9 +443,8 @@ The goal is interoperability—creating a unified experience that draws on the b
 
 ---
 
-*This document is a working draft, written to explore and refine the Kindact vision. Your feedback and contributions are welcome.*
+## Join the Conversation
 
----
+If any part of this resonates—or concerns you—I'd welcome your thoughts. What's missing? What's unclear? What would make you want to participate?
 
-**Document Status**: In Progress
-**Last Updated**: [Current Date]
+Contribute to the discussion below, or join Metagov's slack or the RCF (Regen Currency Federation)'s discord to chat with me.
