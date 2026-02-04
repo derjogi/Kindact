@@ -370,26 +370,33 @@ Problems like the **AI race**—where everyone would benefit from coordination b
 
 ## The Ecosystem: Weaving Together Existing Tools
 
-One of Kindact's strengths is that it doesn't need to build everything from scratch. The vision is to **weave together** existing projects and tools that are already solving pieces of this puzzle:
+Kindact won't reinvent the wheel, but will stand on the shoulders of giants. The vision is to **weave together** existing projects and tools that are already solving pieces of this puzzle. The following are only some of the projects that we already have connections to and that are working on different relevant pieces:
 
 ### Deliberation and Decision-Making
-- **Society Library** for argument mapping
-- **Kialo** for structured debate
-- **Citizen Assembly** methodologies
-- **Discourse** and similar forum software
+- [Society Library](https://www.societylibrary.org/) and [Kialo](https://www.kialo.com/) for argument mapping
+- [Pol.is](https://pol.is/) and [similar](https://patcon.github.io/polislike-opinion-map-painting/) [approaches](https://www.agoracitizen.network/) for opinion mapping
+- [Harmonica](https://www.harmonica.chat/) for structured debate
+- [Talk to the City](https://talktothe.city/) for AI-assisted citizen assemblies and collective sensemaking
+- [Discourse](https://discourse.org/) and similar forum software
+- ... (there are many more that can't all be named)
 
-### Identity and Governance
-- **SEEDS** and **Hypha** for decentralized identity and governance
-- Existing DAO (Decentralized Autonomous Organization) frameworks
-
-### Impact Measurement
-- **WHIF (Wellbeing/Health Impact Framework)** for evaluating proposals
+### Governance & Economic Infrastructure
+- [Forby.io](https://forby.io/) or [Swae](https://swae.io/) for proposal development
+- [SEEDS](https://joinseeds.earth/) and [Hypha](https://hypha.earth/) for decentralized identity and governance
+- [Localscale](https://localscale.org/) for interoperable local currencies via an [oswap mechanism](https://localscale.org/blog/post.jsp?uid=7mc6a15b-ae3a-48f2-af76-42f8ec0ca025)
+- [Grassroots Economics](https://software.grassecon.org/) for community currency infrastructure
+- [Abundance Protocol](https://abundance.id/) — a project with similar aspirations for collective coordination
+- [The Wellbeing Protocol](https://www.thewellbeingprotocol.org/) for providing funding distribution mechanisms
 - **Prediction markets** for forecasting outcomes
 - **SDGs** and **Planetary Boundaries** as constraint frameworks
 
-### Issue Discovery
-- **Forby.io** for proposal development
-- **The Wellbeing Protocol** for identifying valuable initiatives
+### Research and Implementation Partners
+
+Several organizations are already working on governance innovation and could provide research, advice, and implementation support:
+
+- [Metagov](https://metagov.org/) — a research collective focused on digital governance infrastructure (many of the tools listed above are connected to their work)
+- [RnD Ventures](https://www.rnd.ventures/) — supporting and developing tools for collective intelligence and democratic innovation
+- And many more...
 
 The goal is interoperability—creating a unified experience that draws on the best existing tools rather than rebuilding everything.
 
