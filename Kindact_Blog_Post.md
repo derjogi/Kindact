@@ -384,13 +384,15 @@ Any reward system attracts attempts to game it. How do we verify that work was a
 
 Scott Alexander's essay "[Meditations on Moloch](https://slatestarcodex.com/2014/07/30/meditations-on-moloch/)" describes the traps our collective systems fall into—situations where everyone would be better off cooperating, but individual incentives lead to destructive competition. Climate change is the classic example: everyone benefits from reducing emissions, but no individual country wants to bear the cost alone.
 
-Kindact creates incentives to break these traps, but powerful interests benefit from the status quo. How does the system handle resistance from those who profit from dysfunction? Might even the release of this idea be seen as a threat, and the development of Kindact be thwarted by those who would prefer to keep the status quo?
+Kindact creates incentives to break these traps, but powerful interests benefit from the status quo. How does the system handle resistance from those who profit from dysfunction?
 
 ### Bootstrapping and the Cold-Start Problem
 
-How does a system like this go from zero users to meaningful influence? Honestly, we don't know. It could start with a tight-knit local community where early adopters participate primarily for reputation and shared purpose. It could catch on during a crisis where mutual aid becomes essential. It could grow through partnerships with existing organizations. It could remain small and experimental for years.
+How does a system like this go from zero users to meaningful influence? The classic cold-start problem applies: a platform isn't valuable until it has users, and it won't get users until it's valuable.
 
-What we do know: the platform isn't valuable until it has users, and it won't get users until it's valuable. Breaking through this requires finding the right entry point—and being honest that the path is uncertain.
+What gives us hope: there are already *many* communities and organizations that need better coordination infrastructure—housing cooperatives, climate action groups, civic tech networks, progressive institutions experimenting with participatory governance. All these would immediately benefit even from a basic version of Kindact. Furthermore, the ecosystem of aligned projects (Metagov, Hypha, Localscale, and others) provides a foundation and existing network that oculd be built on rather than starting from scratch.
+
+Other projects have crossed this threshold before. Cryptocurrencies, open-source software, and social platforms all faced the same challenge. Many might have failed, but some succeeded—and Kindact arguably offers more genuine utility than most. It's not speculation on token prices; it's coordination infrastructure for solving real problems. 
 
 ---
 
@@ -400,9 +402,10 @@ Kindact remains a vision in progress. The concepts outlined here have been devel
 
 The next steps involve:
 - Continuing to develop and clarify the vision through discussion
-- Identifying potential collaborators and partners
-- Exploring legal and regulatory considerations
-- Eventually, building and testing a minimum viable product
+- Identifying willing collaborators and partners
+- Securing funding to support development
+- Building and testing a minimum viable product
+- Exploring legal and regulatory considerations before scaling up
 
 If any part of this resonates with you, I'd love to hear your thoughts. What resonates? What concerns you? What have I missed?
 
