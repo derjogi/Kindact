@@ -172,10 +172,11 @@ Most political systems have a single moment of voting: you cast your ballot, the
 
 This mirrors how nature or scientific understanding works: we don't vote on whether evolution is true and consider the matter settled forever. We update our understanding as evidence accumulates.
 
-### Conviction
+### Conviction: Balancing Fluidity with Stability
 
-What happens though if the mood swings mid-implementation, or worse goes back-and-forth multiple times? Would that not bring economical & political instability?
+What happens if the community's mood swings mid-implementation? Kindact uses a **conviction mechanism** to balance fluidity with stability: the longer a decision remains uncontested, the more "conviction" it accumulates, making reversals progressively harder. This prevents constant upheaval while still allowing course corrections when genuinely needed.
 
+Reversing direction is also less painful than in traditional systems. In business, stopping a project 80% through means pure sunk cost. In Kindact, implementers receive rewards for verified work along the way, so pivoting doesn't mean total loss. And unlike electoral politics, where incoming governments routinely undo their predecessors' work, Kindact decisions aren't tied to party control. The population votes directly, and opinions tend to shift gradually rather than with election cycles. Major reversals would typically follow genuine new information: a flood, a technological breakthrough, updated scientific consensus. 
 
 ### Delegated Voting (Liquid Democracy)
 
