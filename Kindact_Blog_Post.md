@@ -38,11 +38,11 @@ These largely aren't partisan issues. While I don't have comprehensive data to p
 
 Kindact operates on a fundamental principle: **it does not seek to replace existing governments or laws**. Instead, it creates a voluntary framework that anyone can join, where communities can identify problems, deliberate on solutions, and incentivize action.
 
+The name "Kindact" tries to reflect this: an amalgamation of "humankind acts," "kind act," and "code of conduct." It's about collective action rooted in doing good.
+
 Think of it as an additional layer of governance that sits alongside existing structures, rather than on top of them. If a government wants to implement a Kindact-approved solution, they can. If they choose not to, the community can still organize around the issue independently, creating economic benefits, pressure and social recognition for those who take action.
 
-This voluntary nature is crucial. It means Kindact doesn't require revolutionary change to existing institutions. It works with the world as it is, while creating incentives for the world as it could be.
-
-The name "Kindact" tries to reflect this: an amalgamation of "humankind acts," "kind act," and "code of conduct." It's about collective action rooted in doing good.
+This voluntary nature is crucial. It means Kindact doesn't require revolutionary change to existing institutions. It works with the world as it is, while creating incentives for the world as it could be. Put another way: **Kindact is an incentive layer, not an enforcement layer.** It cannot stop anyone from acting or force anyone to comply — it can only reward actions the community approves. Real-world laws, permits, and physical constraints still apply.
 
 ---
 
@@ -61,6 +61,8 @@ Throughout this process, **verified identity** ensures one-person-one-vote integ
 ### Modular and Extensible Design
 
 Kindact is designed as a **modular open-source platform** where many mechanisms are available as optional components that can be turned on, off, or adjusted by community moderators. Different voting modules can be created and experimented with. Different ranking and sorting algorithms for deliberation can be developed and tested. This extensibility allows the platform to evolve based on real-world experimentation and community needs, rather than being locked into a single predetermined approach.
+
+Crucially, **the platform governs itself through the same mechanisms**. Changes to voting thresholds, eligibility tests, token economics, or any other rule follow the same issue-based process: deliberation, approval voting, verified implementation. Constitutional-level changes (like one-person-one-vote or open-source requirements) demand supermajority quorums of total users, making them more robust.
 
 The following sections explain each phase in detail, each with an envisioned 'base set' of modules.
 

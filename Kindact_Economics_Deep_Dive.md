@@ -283,3 +283,9 @@ The system is intentionally minimal at launch, with built-in mechanisms for the 
 *This document is a working draft. Feedback welcome.*
 
 **Last Updated**: [Current Date]
+
+
+
+Q for econ:
+... Where are the sinks?
+What are 'bids and asks' and their role? Is it important?
