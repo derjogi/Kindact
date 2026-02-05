@@ -53,7 +53,7 @@ Kindact facilitates a complete cycle of collective action:
 1. **Identify**: Anyone can create an issue or propose a question
 2. **Deliberate**: Communities discuss with bias-reduced mechanisms (anonymization, randomized display, synthesis)
 3. **Decide**: Decisions are made through voting, delegation, or consensus-based approaches
-4. **Implement**: Approved solutions are executed with proof of work
+4. **Implement**: Approved solutions are executed with proof of (even partial) implementation
 5. **Reward**: Contributors receive tokens that recognize their positive impact
 
 Throughout this process, **verified identity** ensures one-person-one-vote integrity, while **economic incentives** (tokens, demurrage, burns) keep value circulating toward ongoing contribution.
@@ -156,7 +156,7 @@ Once an issue has been thoroughly discussed and synthesized, the community needs
 ### Voting Requirements Based on Metrics
 - Voting is not permitted until relevant metrics are determined for each significant impact area
 - Voting is only allowed if the overall outcome is positive and negative effects fall within acceptable thresholds
-- Thresholds for acceptable impact are defined collaboratively by the community
+- Thresholds for acceptable impact are defined collaboratively by the community on a platform level
 
 ### Legitimacy Without High Turnout
 
@@ -170,7 +170,12 @@ This dynamic legitimacy model reduces the pressure to manufacture engagement and
 
 Most political systems have a single moment of voting: you cast your ballot, there's a cutoff date where votes get counted, and that's it. Kindact uses **fluid, ongoing voting** where decisions are never truly "final". Votes can be changed at any time, delegations can be revoked, and as new information emerges, the community's position can evolve.
 
-This mirrors how scientific understanding works: we don't vote on whether evolution is true and consider the matter settled forever. We update our understanding as evidence accumulates.
+This mirrors how nature or scientific understanding works: we don't vote on whether evolution is true and consider the matter settled forever. We update our understanding as evidence accumulates.
+
+### Conviction
+
+What happens though if the mood swings mid-implementation, or worse goes back-and-forth multiple times? Would that not bring economical & political instability?
+
 
 ### Delegated Voting (Liquid Democracy)
 
@@ -200,9 +205,9 @@ The test has two components. First, a few simple questions about the issue summa
 
 Once a decision is made, someone needs to execute it. Kindact's implementation phase is where words become actions.
 
-### Proof of Work
+### Proof of Implementation
 
-Kindact operates on a fundamental principle: **tokens are exclusively minted when community-approved work is verifiably implemented**. If the community votes that "planting 100 trees in the park is a valuable goal", and someone actually plants those trees and submits proof, new tokens are created and awarded to them.
+Kindact operates on a fundamental principle: **tokens are exclusively minted when community-approved work is verifiably implemented** - even partially (e.g. monthly progress for bigger projects). If the community votes that "planting 100 trees in the park is a valuable goal", and someone actually plants those trees and submits proof, new tokens are created and awarded to them.
 
 This creates a direct link between doing good and receiving economic value. Unlike traditional systems, where funding comes from taxes or donations before work is done, Kindact pays for results.
 
@@ -259,10 +264,12 @@ This functions like automated, transparent taxation, similar to how central bank
 Without requiring upfront staking, the system deters abuse through:
 - **Voter-scaled reward caps**: Small groups can only unlock small rewards
 - **Asymmetric voting**: Objections reduce caps more than approvals increase them
-- **Fluid voting**: Rewards can be adjusted mid-implementation if abuse is detected
+- **Fluid voting**: Rewards can be adjusted or paused (but not retroactively 'undone') mid-implementation if abuse is detected
 - **Verifier rotation**: Same verifier can't approve the same issue repeatedly
 - **Rate-limited accusations**: Wrong accusations trigger exponential cooldown periods
 - **Retroactive bans**: Confirmed fraud leads to platform restrictions
+
+The economics of tradeable tokens introduce additional risks: vote-buying, collusion among large holders, and concentration of influence. The fraud prevention mechanisms described above are a starting point, but these dynamics will require ongoing attention as the system scales.
 
 ### Dispute Resolution
 
@@ -280,7 +287,7 @@ Platform development, audits, and moderation are funded through **regular platfo
 
 What gives $CC its value?
 - **Utility**: Required for active platform participation
-- **Reputation**: Early scarcity establishes meaning; provenance transparency maintains it
+- **Reputation**: $CC is a measure of how much a person has contributed to the community; provenance transparency maintains that association
 - **Tradeability**: Purchasing tokens supports contributors ("donate to the cause")
 
 The system rewards effort and progress, not just outcomes: contributors receive payments for reasonable work regardless of whether projects ultimately succeed.
