@@ -166,11 +166,9 @@
 			/>
 		</ScrollReveal>
 
-		<ScrollReveal y={20} duration={0.8}>
-			<div class="mt-12">
-				<CycleDiagram />
-			</div>
-		</ScrollReveal>
+		<div class="mt-12">
+			<CycleDiagram />
+		</div>
 	</div>
 </section>
 
