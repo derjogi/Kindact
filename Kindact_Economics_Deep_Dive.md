@@ -81,6 +81,8 @@ Traditional monetary theory suggests capping supply to prevent inflation. Howeve
 - **Hard caps could discourage good work**—if the monthly cap is reached, valuable work goes unrewarded
 - **Governance can be gamed regardless**—the real concern is fraud/capture, not supply per se
 
+This approach has strong theoretical backing. As economist Bernard Lietaer argued: *"We can produce more than enough food to feed everybody, and there is definitely enough work for everybody, but there is clearly not enough money to pay for it all. The scarcity is in our national currencies."* Conventional money is designed to be scarce—that's the central bank's job. A complementary currency tied to verified real-world production has no reason to impose artificial scarcity on top of that. The real challenge is verification and fraud prevention, not supply control.
+
 ### The Kindact Approach: Dynamic Taxation
 
 Instead of limiting issuance, Kindact adjusts "sink" mechanisms based on circulation metrics. This is analogous to how central banks adjust interest rates, but algorithmic and transparent.
@@ -93,6 +95,10 @@ Instead of limiting issuance, Kindact adjusts "sink" mechanisms based on circula
 | Verification threshold | Regulatory compliance | Large reward requests require more scrutiny |
 
 ### Time-Based Demurrage: How It Works
+
+Demurrage—a small cost applied to money that sits idle—has deep historical roots. Ancient Egypt used grain-based money where storage fees functioned as demurrage; the result was centuries of sustained investment in irrigation, land improvement, and infrastructure that made Egypt the breadbasket of the ancient world. In medieval Europe (10th-13th centuries), local currencies were periodically recalled and reissued with a tax—another form of demurrage. This era produced the great cathedrals: small towns investing in structures that took generations to build and would generate economic activity for centuries. As Lietaer observed, both civilizations created unusual levels of prosperity for ordinary people. In both cases, the prosperity ended when these currencies were replaced by interest-bearing money.
+
+The mechanism works because **interest-bearing money makes us discount the future** (it's rational to cut down a forest and put the money in the bank—it grows faster than trees), while **demurrage money incentivizes investing in things that last** (durable assets, infrastructure, ecological restoration). This directly aligns with Kindact's mission of incentivizing long-term, sustainable value creation.
 
 Each token has metadata tracking how long it has remained unmoved in a wallet.
 
