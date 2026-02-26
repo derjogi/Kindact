@@ -8,7 +8,7 @@
 
 This document provides a comprehensive look at the economic mechanisms underpinning Kindact. While the main Kindact overview covers the basics, this deep dive addresses the questions an economist would ask: How is supply controlled? What prevents fraud? Why should this token have value?
 
-The economic system is designed to be **self-governing**—the community can vote to modify any mechanism through the same platform used for all other issues.
+The economic system is designed to be **self-governing**; the community can vote to modify any mechanism through the same platform used for all other issues.
 
 ---
 
@@ -25,11 +25,11 @@ $CC (Community Currency) serves multiple roles, in order of priority:
 
 ### Why Tradeability Doesn't Undermine Reputation
 
-Economists often argue that tradeable reputation undermines trust—you can buy status. Kindact addresses this:
+Economists often argue that tradeable reputation undermines trust — you can buy status. Kindact addresses this:
 
 1. **Provenance transparency**: The blockchain shows whether tokens were earned (minted from verified work) or purchased. "Earned $CC" and "purchased $CC" are distinguishable.
 
-2. **Buying = supporting**: When you purchase $CC from someone, you're directly funding a contributor. This is itself a reputable act—similar to "donate to the cause."
+2. **Buying = supporting**: When you purchase $CC from someone, you're directly funding a contributor. This is itself a reputable act — similar to "donate to the cause."
 
 3. **Scarcity establishes meaning**: In early stages, $CC is scarce and hard to buy; reputation is the primary value. By the time tokens circulate freely, the reputation signal is already established as common knowledge.
 
@@ -274,7 +274,7 @@ Several areas require ongoing refinement:
 
 ## Conclusion
 
-The Kindact economic system is designed around a core insight: **if tokens are only minted for verified real-world value creation, traditional inflation concerns largely dissolve**. The challenge shifts to verification and fraud prevention—which Kindact addresses through voter scaling, verifier rotation, fluid voting, and community-based dispute resolution.
+The Kindact economic system is designed around a core insight: **if tokens are only minted for verified real-world value creation, traditional inflation concerns largely dissolve**. The challenge shifts to verification and fraud prevention — which Kindact addresses through voter scaling, verifier rotation, fluid voting, and community-based dispute resolution.
 
 The system is intentionally minimal at launch, with built-in mechanisms for the community to add complexity (staking, treasury, new utility sinks) as needed. This reflects Kindact's core philosophy: the platform governs itself.
 
@@ -283,9 +283,3 @@ The system is intentionally minimal at launch, with built-in mechanisms for the 
 *This document is a working draft. Feedback welcome.*
 
 **Last Updated**: [Current Date]
-
-
-
-Q for econ:
-... Where are the sinks?
-What are 'bids and asks' and their role? Is it important?
