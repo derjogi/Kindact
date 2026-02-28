@@ -288,12 +288,13 @@ Platform development, audits, and moderation are funded through **regular platfo
 
 ### Token Value
 
-What gives $CC its value?
-- **Utility**: Required for active platform participation
-- **Reputation**: $CC is a measure of how much a person has contributed to the community; provenance transparency maintains that association
-- **Tradeability**: Purchasing tokens supports contributors ("donate to the cause")
+$CC's value evolves through distinct phases. In the early stages, value is primarily social: $CC functions as recognition — a visible record of contribution. Internal circulation emerges as community members trade $CC for goods and services among themselves. Access fees create a small but steady baseline demand.
 
-The system rewards effort and progress, not just outcomes: contributors receive payments for reasonable work regardless of whether projects ultimately succeed.
+Over time, as Kindact builds a track record of verified, auditable impact, a more powerful demand source develops: **the verified impact marketplace**. Every completed task produces an immutable on-chain record — what was done, by whom, how it was verified. External entities (carbon offset buyers, corporations needing ESG documentation, impact funds, progressive governments) can purchase $CC from contributors as verified impact credentials. The money flows to contributors *after* the community has independently decided what work matters — external buyers fund outcomes, not priorities.
+
+This means $CC's long-term value is anchored to the **quality and credibility of Kindact's verification process**. The better the platform is at ensuring real work gets done, the more valuable the output credentials become.
+
+The system itself doesn't only reward outcomes though, it rewards effort and progress: contributors receive payments for reasonable work regardless of whether projects ultimately succeed.
 
 *For a deeper exploration of the economic mechanisms, see the separate [Economic Deep Dive](Kindact_Economics_Deep_Dive.md).*
 

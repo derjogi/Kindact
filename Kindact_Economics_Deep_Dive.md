@@ -205,13 +205,42 @@ The community may later vote to implement fee splits (X% burned, Y% to treasury)
 
 ## Demand Anchor: Why $CC Has Value
 
-### Current Demand Sources
+$CC's value evolves through distinct phases. Early on, value is primarily social and internal. Over time, external demand emerges as Kindact builds a track record of verified real-world impact.
+
+### Early-Stage Demand Sources (Social Value)
 
 | Source | Strength | Notes |
 |--------|----------|-------|
-| Access fees | Strong | Configured so most users pay (not just power users); negligible but benefits outweigh costs |
 | Reputation signal | Strong, self-reinforcing | Early scarcity establishes meaning; provenance transparency maintains signal |
-| Tradeability | Enabling | "Buying = supporting contributors" adds reputational value to purchases |
+| Access fees | Steady | Configured so most users pay (not just power users); negligible but benefits outweigh costs |
+| Local circulation | Growing | Community members trade $CC for goods and services within their communities |
+| Reward bonding | Emerging | Users stake $CC on issues to increase reward caps, signaling community confidence |
+
+### Later-Stage Demand: The Verified Impact Marketplace
+
+As Kindact accumulates years of auditable, community-verified project completions on-chain, a new demand source emerges: **external entities purchasing $CC from contributors as verified impact credentials**.
+
+Every completed Kindact task produces an immutable record: what was done, by whom, how it was verified, and what the community-assessed impact was. This record is more trustworthy than self-reported charity metrics because the verification came from a community with skin in the game.
+
+**Who buys, and why:**
+
+| Buyer | Motivation | How it works |
+|-------|-----------|--------------|
+| **Carbon/impact offset buyers** | Need verified, auditable proof of environmental outcomes | Purchase $CC from contributors who did verified reforestation, cleanup, etc. The transaction record serves as their impact credential |
+| **Corporations (ESG/CSR)** | Need independently verified social impact documentation | Purchase $CC from contributors; the on-chain audit trail provides stronger evidence than traditional reporting |
+| **Impact funds** | Want to channel resources to verified public goods work | Purchase $CC on the open market; contributors convert to national currency |
+| **Progressive governments** | Want participatory budgeting infrastructure | Allocate existing budgets through Kindact issues rather than traditional procurement |
+
+**The flow:**
+1. Community creates and votes on issues (no external money needed)
+2. Contributors do verified work, earn $CC
+3. External entities that value the verified impact buy $CC from contributors
+4. Contributors convert $CC to national currency
+5. $CC price reflects demand for verified public goods output
+
+This means $CC's value ultimately comes from the **quality and credibility of Kindact's verification process** — the better the platform is at ensuring real work gets done, the more valuable the output credentials become. The community stays fully in control of what gets prioritized; external money enters downstream, not upstream.
+
+**Important caveat:** The impact marketplace requires years of track record, integration with existing certification standards (Verra, Gold Standard, ESG frameworks), and institutional comfort with blockchain-based systems. It is a Phase 3+ demand driver, not a bootstrap mechanism. Early-stage value comes from internal utility and social dynamics.
 
 ### Why Reputation Signal Stays Robust
 
@@ -236,32 +265,42 @@ These mechanisms can be added via community vote if demand instability emerges:
 
 ## Growth Stages and Economic Dynamics
 
-### Stage 1: Seeding (0-10 users)
+### Phase 1: Social Token (0–1,000 users, ~0–2 years)
 
-- Primary value: **Reputation**
-- $CC has near-zero monetary value
-- Early adopters participate because they believe in the vision
+- $CC has **effectively zero monetary value** — and that's fine
+- Participants are idealists, community organizers, people who believe in the vision
+- $CC functions as **recognition**: a visible record of "I contributed"
+- Internal circulation may emerge: trading favors, local service exchanges between community members
+- Access fees create tiny baseline demand
+- No external buyers exist because there's no track record to buy into
 - Fraud risk: Minimal (nothing worth stealing)
 
-### Stage 2: Sprouting (10-100 users)
+This is how every successful community currency started — the WIR, Sarafu, Ithaca Hours all began with social value, not monetary value.
 
-- **Marketplace utility** emerges
-- First businesses might accept $CC
-- Community resources (e.g., garden access) priced in $CC
+### Phase 2: Local Economic Utility (1,000–10,000 users, ~2–5 years)
+
+- $CC starts having **small but real local value**
+- Some local businesses accept $CC (coffee shops, markets, service providers in active Kindact communities)
+- Internal circulation creates velocity — $CC moves between community members for goods and services
+- First aligned organizations (small NGOs, cooperatives, community trusts) use Kindact for coordination
+- $CC may trade on small exchanges at very low prices
+- Access fees and reward bonding create modest internal demand
 - Fraud risk: Low (limited liquidity, social knowledge)
 
-### Stage 3: Growth (100-10,000 users)
+### Phase 3: Credibility Threshold (10,000–100,000 users, ~5–10 years)
 
-- Inter-community trade begins
-- Token utility expands
-- External actors start paying attention
+- Kindact has years of auditable, verified project completions on-chain
+- **Verified impact marketplace begins**: integration with impact certification standards becomes possible; first corporate/institutional buyers emerge for specific verticals (carbon, biodiversity, community development)
+- $CC has a real (if volatile) exchange rate
+- Inter-community trade expands
 - Fraud risk: Moderate (may need to consider staking mechanisms)
 
-### Stage 4: Stability (>10,000 users)
+### Phase 4: Established Marketplace (100,000+ users, ~10+ years)
 
-- Self-reinforcing network effects
-- Wide distribution creates broad stakeholder base
-- Governments and corporations begin adapting behavior to participate
+- Impact marketplace is mature and recognized
+- $CC has stable value supported by diverse demand: access, local circulation, impact buying, institutional use
+- Progressive governments integrate Kindact into participatory processes
+- Self-reinforcing network effects: more verified impact → more institutional demand → higher $CC value → more contributors → more verified impact
 - Fraud risk: Requires mature verification and dispute systems
 
 ---
@@ -275,6 +314,8 @@ Several areas require ongoing refinement:
 3. **Time bounds for disputes**: Maximum resolution periods TBD
 4. **Exchange rate dynamics**: How will $CC interact with external currencies at scale?
 5. **Legal and regulatory considerations**: Securities laws, money transmission, cross-border issues
+6. **Impact marketplace integration**: Which certification standards (Verra, Gold Standard, ESG frameworks) should Kindact target first? What level of verification rigor is needed for institutional credibility?
+7. **Reward bonding calibration**: How much $CC staked should translate to how much additional reward cap? What prevents gaming?
 
 ---
 
