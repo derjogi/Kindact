@@ -247,7 +247,7 @@ No system is perfect, but the combination of these approaches creates strong inc
 $CC serves multiple roles in order of priority:
 1. **Reward unit (primary)**: Incentivizes community-approved work as a rival to purely market-driven incentives
 2. **Reputation signal**: Accumulated $CC signals past contribution; blockchain provenance shows whether tokens were earned or purchased
-3. **Impact token**: Each minted $CC is backed by a verified, auditable record of community-approved work — making it a credential that external entities (carbon offset buyers, ESG funds, impact investors) can recognize and value
+3. **Impact token**: Each minted $CC is backed by a verified, auditable record of community-approved work — making it a credential that external entities (carbon offset buyers, ESG funds, impact investors) can recognize and value. Completed work can also generate a [Hypercert](https://hypercerts.org/) — an on-chain impact certificate recording who did what, when, and with what verified results — creating a standardized, interoperable credential that plugs into the growing ecosystem of impact funding
 4. **Tradeable medium**: Enables contributors to convert effort into goods/services; buyers directly support contributors
 5. **Access right**: Platform fees create utility demand
 
@@ -293,9 +293,13 @@ Platform development, audits, and moderation are funded through **regular platfo
 
 $CC's value evolves through distinct phases. In the early stages, value is primarily social: $CC functions as recognition — a visible record of contribution. Internal circulation emerges as community members trade $CC for goods and services among themselves. Access fees create a small but steady baseline demand.
 
-Over time, as Kindact builds a track record of verified, auditable impact, a more powerful demand source develops: **the verified impact marketplace**. Every completed task produces an immutable on-chain record — what was done, by whom, how it was verified. External entities (carbon offset buyers, corporations needing ESG documentation, impact funds, progressive governments) can purchase $CC from contributors as verified impact credentials. The money flows to contributors *after* the community has independently decided what work matters — external buyers fund outcomes, not priorities.
+Over time, as Kindact builds a track record of verified, auditable impact, a more powerful demand source develops: **the verified impact marketplace**. Every completed task produces an immutable on-chain record — what was done, by whom, how it was verified — and generates a [Hypercert](https://hypercerts.org/), a standardized impact certificate that funders can purchase to claim the represented impact.
 
-This means $CC's long-term value is anchored to the **quality and credibility of Kindact's verification process**. The better the platform is at ensuring real work gets done, the more valuable the output credentials become.
+This isn't speculative. The infrastructure and market for verified impact credentials already exists and is growing rapidly. Optimism's [Retroactive Public Goods Funding](https://retrofunding.optimism.io/) (RetroPGF) program has distributed **over $100 million** to projects based on demonstrated impact rather than promises, with **$1.3 billion reserved** for future rounds. [Gitcoin](https://www.gitcoin.co/) has channeled **$67 million** to 5,000+ projects using quadratic funding, where many small contributions signal community priorities. These programs prove that retroactive, impact-based funding works at scale — and they are actively seeking new domains beyond crypto infrastructure. Kindact's completed, community-verified work would be a natural fit for this kind of external funding, since it produces exactly what these programs reward: auditable, community-assessed proof of real-world impact.
+
+External entities (carbon offset buyers, corporations needing ESG documentation, impact funds, progressive governments) can purchase $CC from contributors — or buy their Hypercerts directly — as verified impact credentials. The money flows to contributors *after* the community has independently decided what work matters — external buyers fund outcomes, not priorities.
+
+This means $CC's long-term value is anchored to the **quality and credibility of Kindact's verification process**. The better the platform is at ensuring real work gets done, the more valuable the output credentials become. By using Hypercerts as the credential format, Kindact doesn't need to build market recognition from scratch — it plugs into an existing and expanding ecosystem of impact funders.
 
 The system itself doesn't only reward outcomes though, it rewards effort and progress: contributors receive payments for reasonable work regardless of whether projects ultimately succeed.
 
@@ -328,7 +332,7 @@ Kindact will use existing solutions like **zero-knowledge proofs (ZKPs)** and ot
 - Kindact benefits from ongoing advances in cryptography without having to develop them itself
 
 **How privacy works in practice:**
-- **Identity verification** happens once (via existing services like BrightID, government ID, or similar) and generates a cryptographic credential stored locally
+- **Identity verification** happens once (via existing services like BrightID, [Human Passport](https://passport.gitcoin.co/) (formerly Gitcoin Passport), government ID, or similar) and generates a cryptographic credential stored locally
 - **On-chain interactions** use pseudonymous public keys; observers see "Wallet 0x7F3..." voted, not your real name
 - **ZKPs bridge the gap**: you can prove "this wallet belongs to a verified unique human" without revealing *which* human
 - **Sensitive data stays local** or encrypted off-chain; only hashes/commitments go on-chain to prevent tampering
@@ -446,6 +450,13 @@ Kindact won't reinvent the wheel. The vision is to **weave together** existing p
 - [ValueFlows](https://www.valueflo.ws/) for standardized resource-flow tracking and impact provenance
 - **Prediction markets** for forecasting outcomes
 - **SDGs** and **Planetary Boundaries** as constraint frameworks
+
+### Impact Funding & Verification
+- [Hypercerts](https://hypercerts.org/) for standardized, on-chain impact certificates — completed Kindact work could generate Hypercerts that are recognizable across the broader impact funding ecosystem
+- [Optimism RetroPGF](https://retrofunding.optimism.io/) as a model (and potential funding source) for retroactive impact-based rewards — the same principle Kindact's $CC minting is built on, proven at $100M+ scale
+- [Gitcoin](https://www.gitcoin.co/) for quadratic funding mechanisms and [Human Passport](https://passport.gitcoin.co/) for sybil-resistant identity verification
+- [Open Source Observer](https://www.opensource.observer/) for open-source impact measurement data infrastructure
+- [EasyRetroPGF](https://easyretropgf.xyz/) for lightweight retroactive funding rounds that Kindact communities could use
 
 ### Domain-Specific Modules
 - [GrowGood](https://growgood.org.au/) — an open-source farm management platform built on ValueFlows that tracks agricultural operations from seed to sale. GrowGood could integrate into Kindact as a domain-specific module for food and agriculture, feeding verified resource-flow data (labor, inputs, harvests, ecological impacts) into Kindact's implementation verification and reward mechanisms. Its "Farm Doughnut" dashboard — which measures performance against both ecological ceilings and social foundations — aligns directly with Kindact's metrics system for ensuring net-positive outcomes.
