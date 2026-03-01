@@ -210,9 +210,9 @@ Once a decision is made, someone needs to execute it. Kindact's implementation p
 
 ### Proof of Implementation
 
-Kindact operates on a fundamental principle: **tokens are exclusively minted when community-approved work is verifiably implemented** - even partially (e.g. monthly progress for bigger projects). If the community votes that "planting 100 trees in the park is a valuable goal", and someone actually plants those trees and submits proof, new tokens are created and awarded to them.
+Kindact operates on a fundamental principle: **tokens are exclusively minted when community-approved tasks are verifiably worked on and implemented** - even partially (e.g. monthly progress for bigger projects). If the community votes that "planting 100 trees in the park is a valuable goal", and someone actually plants those trees and submits proof, new tokens are created and awarded to them.
 
-This creates a direct link between doing good and receiving economic value. Unlike traditional systems, where funding comes from taxes or donations before work is done, Kindact pays for results.
+This creates a direct link between doing good, receiving recognition for your work, and economic value.
 
 ### Implementation Reports
 
@@ -221,6 +221,8 @@ Implementers must file regular **implementation reports** that document:
 - How long it took
 - What resources were used
 - What impact was achieved
+
+To structure this data in a way that's machine-readable, auditable, and interoperable, Kindact can leverage vocabularies like [ValueFlows (VF)](https://www.valueflo.ws/) — an open ontology for modeling economic activity based on the REA (Resources, Events, Agents) accounting model. Rather than ad-hoc text reports, implementers would log economic events (e.g., "consumed 100 saplings," "used 40 labor hours," "produced 100 planted trees") linked into processes with clear inputs and outputs. The resulting data can be **traced backward** (provenance: what went into this outcome?) or **tracked forward** (what happened to these resources?) — creating a structured, verifiable chain of evidence that feeds directly into Kindact's verification and reward mechanisms.
 
 These reports serve as proof of work and as publicly visible data for auditing purposes.
 
@@ -231,6 +233,7 @@ How does the platform verify that work was actually done? This is an ongoing cha
 - **Third-party verification**: Trusted community members or professional auditors
 - **Cryptographic proofs**: Work that can be verified on-chain (e.g., smart contract interactions)
 - **Peer confirmation**: Multiple community members attesting to completion
+- **Structured resource flow data**: When implementation reports use a vocabulary like ValueFlows, the internal consistency of resource flows (inputs consumed, outputs produced, ecological impacts recorded) can be checked algorithmically — flagging reports where the numbers don't add up before human reviewers get involved
 
 No system is perfect, but the combination of these approaches creates strong incentives for honest reporting while making fraud difficult and detectable.
 
@@ -250,7 +253,7 @@ $CC serves multiple roles in order of priority:
 
 ### How Tokens Are Created
 
-$CC tokens are **exclusively minted when community-approved work is verifiably implemented**. Reward amounts are proposed by issue creators (with AI suggestions) and approved through deliberation. Larger rewards require proportionally more voter support—this naturally limits what any individual can award themselves.
+$CC tokens are **exclusively minted when community-approved work is verifiably implemented**. Reward amounts are proposed by issue creators (with AI suggestions) and approved through deliberation. These proposals can be informed by structured data: if implementations use a resource-flow vocabulary like ValueFlows, the platform can analyze comparable past tasks — how much labor, what materials, what ecological impact — to suggest reward amounts grounded in actual resource costs rather than guesswork. Larger rewards require proportionally more voter support—this naturally limits what any individual can award themselves.
 
 ### Supply Management: Reactive Sinks
 
@@ -440,8 +443,12 @@ Kindact won't reinvent the wheel. The vision is to **weave together** existing p
 - [Grassroots Economics](https://software.grassecon.org/) for community currency infrastructure
 - [Abundance Protocol](https://abundance.id/), a project with similar aspirations for collective coordination
 - [The Wellbeing Protocol](https://www.thewellbeingprotocol.org/) for providing funding distribution mechanisms
+- [ValueFlows](https://www.valueflo.ws/) for standardized resource-flow tracking and impact provenance
 - **Prediction markets** for forecasting outcomes
 - **SDGs** and **Planetary Boundaries** as constraint frameworks
+
+### Domain-Specific Modules
+- [GrowGood](https://growgood.org.au/) — an open-source farm management platform built on ValueFlows that tracks agricultural operations from seed to sale. GrowGood could integrate into Kindact as a domain-specific module for food and agriculture, feeding verified resource-flow data (labor, inputs, harvests, ecological impacts) into Kindact's implementation verification and reward mechanisms. Its "Farm Doughnut" dashboard — which measures performance against both ecological ceilings and social foundations — aligns directly with Kindact's metrics system for ensuring net-positive outcomes.
 
 ### Research and Implementation Partners
 
