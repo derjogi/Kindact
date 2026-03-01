@@ -241,15 +241,15 @@ No system is perfect, but the combination of these approaches creates strong inc
 
 ## Step 5: Reward — Economic Incentives
 
-Governance without incentives is just discussion. Kindact creates a market for "good deeds" through a cryptocurrency token system, **$CC (Community Currency)**. The economic system outlined below is a starting point — the platform governs itself, so the community can vote to modify any of these mechanisms.
 
 ### What $CC Is
 
 $CC serves multiple roles in order of priority:
 1. **Reward unit (primary)**: Incentivizes community-approved work as a rival to purely market-driven incentives
 2. **Reputation signal**: Accumulated $CC signals past contribution; blockchain provenance shows whether tokens were earned or purchased
-3. **Tradeable medium**: Enables contributors to convert effort into goods/services; buyers directly support contributors
-4. **Access right**: Platform fees create utility demand
+3. **Impact token**: Each minted $CC is backed by a verified, auditable record of community-approved work — making it a credential that external entities (carbon offset buyers, ESG funds, impact investors) can recognize and value
+4. **Tradeable medium**: Enables contributors to convert effort into goods/services; buyers directly support contributors
+5. **Access right**: Platform fees create utility demand
 
 ### How Tokens Are Created
 
