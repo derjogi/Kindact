@@ -293,19 +293,19 @@ Rather than hard issuance caps, Kindact uses **dynamic taxation** that adjusts b
 - **Transaction fees**: Minimal fees prevent gaming through circular trades between related parties.
 - **Access fees**: Most users pay small fees for active participation; all fees are burned.
 
-This functions like automated, transparent taxation, similar to how central banks adjust interest rates, but algorithmic and visible.
+This functions like automated, transparent taxation, algorithmic and visible.
 
 ### Fraud Prevention
 
 Without requiring upfront staking, the system deters abuse through:
 - **Voter-scaled reward caps**: Small groups can only unlock small rewards
 - **Asymmetric voting**: Objections reduce caps more than approvals increase them
-- **Fluid voting**: Rewards can be adjusted or paused (but not retroactively 'undone') mid-implementation if abuse is detected
+- **Fluid voting**: Rewards can be adjusted, paused or possibly even undone mid-implementation if abuse is detected
 - **Verifier rotation**: Same verifier can't approve the same issue repeatedly
 - **Rate-limited accusations**: Wrong accusations trigger exponential cooldown periods
 - **Retroactive bans**: Confirmed fraud leads to platform restrictions
 
-The economics of tradeable tokens introduce additional risks: vote-buying, collusion among large holders, and concentration of influence. The fraud prevention mechanisms described above are a starting point, but these dynamics will require ongoing attention as the system scales.
+The economics of tradeable tokens might introduce additional risks not directly addressed here. The fraud prevention mechanisms described above are a starting point, but these dynamics will require ongoing attention as the system scales.
 
 ### Dispute Resolution
 
@@ -355,7 +355,7 @@ Kindact will use existing solutions like **zero-knowledge proofs (ZKPs)** and ot
 
 ---
 
-## Real-World Economic Examples
+## Real-World Economic Examples of Supply
 
 To illustrate how the incentive system creates value, consider three scenarios at different scales:
 
