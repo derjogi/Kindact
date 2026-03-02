@@ -246,9 +246,9 @@ No system is perfect, but the combination of these approaches creates strong inc
 
 $CC serves multiple roles in order of priority:
 1. **Reward unit (primary)**: Incentivizes community-approved work as a rival to purely market-driven incentives
-2. **Reputation signal**: Accumulated $CC signals past contribution; blockchain provenance shows whether tokens were earned or purchased
-3. **Impact token**: Each minted $CC is backed by a verified, auditable record of community-approved work — making it a credential that external entities (carbon offset buyers, ESG funds, impact investors) can recognize and value
-4. **Tradeable medium**: Enables contributors to convert effort into goods/services; buyers directly support contributors
+2. **Impact-backed asset**: Each $CC is minted against verified work; external demand for that verified impact (via Hypercerts) creates real economic backing — [see Token Value below](#token-value)
+3. **Tradeable medium**: Enables contributors to convert effort into goods/services; buyers directly support contributors
+4. **Reputation signal**: Accumulated $CC signals past contribution; blockchain provenance shows whether tokens were earned or purchased
 5. **Access right**: Platform fees create utility demand
 
 ### How Tokens Are Created
