@@ -244,16 +244,46 @@ No system is perfect, but the combination of these approaches creates strong inc
 
 ### What $CC Is
 
-$CC serves multiple roles in order of priority:
-1. **Reward unit (primary)**: Incentivizes community-approved work as a rival to purely market-driven incentives
+$CC serves multiple roles (in rough order of priority):
+1. **Reward unit**: Incentivizes community-approved work as a rival to purely market-driven incentives
 2. **Impact-backed asset**: Each $CC is minted against verified work; external demand for that verified impact (via Hypercerts) creates real economic backing — [see Token Value below](#token-value)
 3. **Tradeable medium**: Enables contributors to convert effort into goods/services; buyers directly support contributors
-4. **Reputation signal**: Accumulated $CC signals past contribution; blockchain provenance shows whether tokens were earned or purchased
-5. **Access right**: Platform fees create utility demand
+4. **Reputation signal**: Accumulated $CC signals past contribution; blockchain provenance shows how the tokens were acquired
+5. **Access right**: Extended access to the platform requires monthly contribution in $CC, creating additional utility demand
 
 ### How Tokens Are Created
 
-$CC tokens are **exclusively minted when community-approved work is verifiably implemented**. Reward amounts are proposed by issue creators (with AI suggestions) and approved through deliberation. These proposals can be informed by structured data: if implementations use a resource-flow vocabulary like ValueFlows, the platform can analyze comparable past tasks — how much labor, what materials, what ecological impact — to suggest reward amounts grounded in actual resource costs rather than guesswork. Larger rewards require proportionally more voter support—this naturally limits what any individual can award themselves.
+Before we dive into how $CC becomes valuable ([see Token Value below](#token-value)), it might be helpful to understand how tokens are created in the first place.
+
+$CC tokens are primarily minted when **community-approved work is verifiably implemented** - and secondarily when someone buys $CC from the reserve. 
+
+Each community issue (i.e. some work that the community wants done) will have a 'reward amount' associated with it, initially proposed by issue creators (with AI suggestions) and approved through deliberation. These rewards will be paid out for any 'accepted unit of work', which could be monthly progress, individual recognized actions (planting a tree), etc..., and do not necessarily depend on successfully finishing a project (e.g. different research teams working on the same issue should all be paid regardless of whether their research succeeds). 
+
+Reward amounts on proposals can be informed by structured data: Kindact could use a standardized resource-flow vocabulary like ValueFlows to analyze comparable past tasks — how much labor, what materials, what ecological impact — to suggest reward amounts grounded in actual resource costs rather than guesswork. Of course there must also be limits to prevent allocating too large amounts and devaluing the token. Most issues will be soft-limited through collaborative deliberation of the community, but all issues will also be hard capped: The maxiumum reward amount depends on the number of voters. Larger rewards require proportionally more voter support - this naturally limits what any individual can award themselves, and unjust accumulation over time can be detected and corrected by the community.
+
+### Token Value
+
+$CC's value evolves through distinct phases. In the early stages, value is primarily social: $CC functions as recognition — a visible record of contribution. Platform access fees for extended functionality create a small but steady baseline demand. Internal circulation might emerge as community members trade $CC for goods and services among themselves. 
+
+Over time, as Kindact builds a track record of verified, auditable impact, a more powerful demand source develops: **the verified impact marketplace**. This marketplace relies on two complementary instruments:
+
+**$CC**, the *currency*: fungible, circulating, subject to demurrage. It's the internal economy's lifeblood: what implementers earn, what community members trade, what access fees are paid in.
+
+**[Hypercerts](https://hypercerts.org/)**, the *impact credentials*: each one tied to a specific piece of completed work, recording who did what, when, and with what verified results. They're non-fungible, retirable, and designed to be held as proof of impact.
+
+When a Kindact issue is completed and verified, both are generated: **$CC is minted and goes to the implementer** as their reward. **A Hypercert is generated and held by Kindact** as a platform asset.
+
+**Why both are needed:** $CC is designed to *circulate* — demurrage penalizes holding, FIFO forces spending, and fungibility means 1 $CC = 1 $CC regardless of origin. Impact claims need the opposite: they are typically *held*, *retired* (claimed once — a carbon offset can only count once), and tied to *specific* work.
+
+**How Hypercert sales back $CC's value:** External entities (carbon offset buyers, corporations needing ESG documentation, impact funds, progressive governments) can purchase Hypercerts from Kindact on an open market, with prices set by demand. The proceeds flow into a **fiat reserve** that backs $CC. Anyone can exchange $CC for fiat (or vice versa) through this reserve, and the exchange rate reflects the ratio of fiat backing to $CC in circulation. As more Hypercerts sell, the reserve deepens, and $CC becomes increasingly stable and reliable for everyday trade. 
+
+Hypercerts can also be purchased with $CC, which burns the $CC used — creating deflationary pressure that further supports the price.
+
+This creates a concrete virtuous cycle: more community-approved work → more Hypercerts → more sales to external buyers → deeper fiat reserve → more stable $CC → more confidence in the reward → more people willing to do good work.
+
+**This isn't speculative.** The infrastructure and market for verified impact credentials already exists and is growing rapidly. Optimism's [Retroactive Public Goods Funding](https://retrofunding.optimism.io/) (RetroPGF) program has distributed **over $100 million** to projects based on demonstrated impact rather than promises, with **$1.3 billion reserved** for future rounds. [Gitcoin](https://www.gitcoin.co/) has channeled **> $60 million** to 5,000+ projects using quadratic funding, where many small contributions signal community priorities. These programs prove that retroactive, impact-based funding works at scale — and they are actively seeking new domains beyond crypto infrastructure. Kindact's completed, community-verified work would be a natural fit for this kind of external funding, since it produces exactly what these programs reward: auditable, community-assessed proof of real-world impact.
+
+$CC's long-term value is therefore anchored to the **quality and credibility of Kindact's verification process**. The better the platform is at ensuring real work gets done, the more valuable the Hypercerts become, the more fiat flows into the reserve, and the more reliable $CC becomes as a medium of exchange. By using Hypercerts as the credential format, Kindact doesn't need to build market recognition from scratch — it plugs into an existing and expanding ecosystem of impact funders.
 
 ### Supply Management: Reactive Sinks
 
@@ -287,33 +317,7 @@ When work completion is challenged:
 
 ### Platform Funding
 
-Platform development, audits, and moderation are funded through **regular platform issues**, the same mechanism as any other community work. This ensures transparency and lets the community prioritize what gets built.
-
-### Token Value
-
-$CC's value evolves through distinct phases. In the early stages, value is primarily social: $CC functions as recognition — a visible record of contribution. Internal circulation emerges as community members trade $CC for goods and services among themselves. Access fees create a small but steady baseline demand.
-
-Over time, as Kindact builds a track record of verified, auditable impact, a more powerful demand source develops: **the verified impact marketplace**. This marketplace relies on two complementary instruments:
-
-**$CC** is a *currency* — fungible, circulating, subject to demurrage. It's the internal economy's lifeblood: what implementers earn, what community members trade, what access fees are paid in.
-
-**[Hypercerts](https://hypercerts.org/)** are *impact credentials* — each one tied to a specific piece of completed work, recording who did what, when, and with what verified results. They're non-fungible, retirable, and designed to be held as proof of impact.
-
-When a Kindact issue is completed and verified, both are generated: **$CC is minted and goes to the implementer** as their reward. **A Hypercert is generated and held by Kindact** as a community asset, with the implementer credited on it. The implementer's reward is the $CC; the Hypercert belongs to the community that deliberated, approved, and verified the work.
-
-**Why both are needed:** $CC is designed to *circulate* — demurrage penalizes holding, FIFO forces spending, and fungibility means 1 $CC = 1 $CC regardless of origin. Impact claims need the opposite: they must be *held*, *retired* (claimed once — a carbon offset can only count once), and tied to *specific* work. A corporation's ESG team doesn't want a currency on their balance sheet; they want a certificate they can point to in a report. Trying to make one instrument do both creates contradictions; having two with opposite properties creates a clean system.
-
-**How Hypercert sales back $CC's value:** External entities (carbon offset buyers, corporations needing ESG documentation, impact funds, progressive governments) can purchase Hypercerts from Kindact on an open market, with prices set by demand. The proceeds flow into a **fiat reserve** that backs $CC. Anyone can exchange $CC for fiat (or vice versa) through this reserve, and the exchange rate reflects the ratio of fiat backing to $CC in circulation. As more Hypercerts sell, the reserve deepens, and $CC becomes increasingly stable and reliable for everyday trade. The demurrage mechanism also acts as an automatic stabilizer: if the reserve ratio dips, demurrage can increase to burn more $CC and restore the balance.
-
-Hypercerts can also be purchased with $CC, which burns the $CC used — creating additional deflationary pressure that further supports the price.
-
-This creates a concrete virtuous cycle: more community-approved work → more Hypercerts → more sales to external buyers → deeper fiat reserve → more stable $CC → more confidence in the reward → more people willing to do good work.
-
-**This isn't speculative.** The infrastructure and market for verified impact credentials already exists and is growing rapidly. Optimism's [Retroactive Public Goods Funding](https://retrofunding.optimism.io/) (RetroPGF) program has distributed **over $100 million** to projects based on demonstrated impact rather than promises, with **$1.3 billion reserved** for future rounds. [Gitcoin](https://www.gitcoin.co/) has channeled **$67 million** to 5,000+ projects using quadratic funding, where many small contributions signal community priorities. These programs prove that retroactive, impact-based funding works at scale — and they are actively seeking new domains beyond crypto infrastructure. Kindact's completed, community-verified work would be a natural fit for this kind of external funding, since it produces exactly what these programs reward: auditable, community-assessed proof of real-world impact.
-
-$CC's long-term value is therefore anchored to the **quality and credibility of Kindact's verification process**. The better the platform is at ensuring real work gets done, the more valuable the Hypercerts become, the more fiat flows into the reserve, and the more reliable $CC becomes as a medium of exchange. By using Hypercerts as the credential format, Kindact doesn't need to build market recognition from scratch — it plugs into an existing and expanding ecosystem of impact funders.
-
-The system itself doesn't only reward outcomes though, it rewards effort and progress: contributors receive payments for reasonable work regardless of whether projects ultimately succeed.
+Platform development, audits, and moderation are funded through **regular platform issues**, the same mechanism as any other community work. This ensures transparency and lets the community prioritize what gets built - internally or externally.
 
 *For a deeper exploration of the economic mechanisms, see the separate [Economic Deep Dive](Kindact_Economics_Deep_Dive.md).*
 
