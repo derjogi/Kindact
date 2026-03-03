@@ -81,7 +81,24 @@ Traditional monetary theory suggests capping supply to prevent inflation. Howeve
 - **Hard caps could discourage good work**—if the monthly cap is reached, valuable work goes unrewarded
 - **Governance can be gamed regardless**—the real concern is fraud/capture, not supply per se
 
-This approach has strong theoretical backing. As economist Bernard Lietaer argued: *"We can produce more than enough food to feed everybody, and there is definitely enough work for everybody, but there is clearly not enough money to pay for it all. The scarcity is in our national currencies."* Conventional money is designed to be scarce—that's the central bank's job. A complementary currency tied to verified real-world production has no reason to impose artificial scarcity on top of that. The real challenge is verification and fraud prevention, not supply control.
+This approach has strong theoretical backing. As economist Bernard Lietaer argued: *"We can produce more than enough food to feed everybody, and there is definitely enough work for everybody, but there is clearly not enough money to pay for it all. The scarcity is in our national currencies."* Conventional money is designed to be scarce — that's the central bank's job. A complementary currency tied to verified real-world production has no reason to impose artificial scarcity on top of that. The real challenge is verification and fraud prevention, not supply control.
+
+### The Real Budget Constraint: Verification
+
+A "people vote themselves money" critique is worth taking seriously. Bryan Caplan's *The Myth of the Rational Voter* demonstrates that individual voters have negligible impact on aggregate outcomes, so **rational irrationality** applies — each voter has little incentive to be disciplined about system-wide supply.
+
+But Kindact is structurally different from government money printing. In a fiat system, creating money costs nothing — a legislature can vote to print without producing anything. In Kindact, **every $CC requires verified real labor**. "Too much minting" literally means "too much verified real work being rewarded." That's not a failure mode — it's the system working.
+
+The real budget constraint is the **verification process itself**. Over-minting can only occur if verification fails — if fake or inflated work gets approved. That's a fraud problem, not a budget problem, and it's addressed by the fraud prevention mechanisms below rather than by supply caps.
+
+This constraint is enforced through multiple layers:
+
+1. **Voter-scaled caps** prevent self-dealing — a lone actor can only award themselves minimal amounts
+2. **Soft economic pressure** — large $CC holders have incentive to monitor reward levels, since over-minting dilutes their holdings via inflation and demurrage equilibrium effects
+3. **Challenge mechanism** — anyone can pause rewards they consider excessive, triggering community review
+4. **Demurrage equilibrium** — even if minting spikes, supply converges to a finite steady state regardless (see *Supply-Demand Equilibrium* section below)
+
+The platform governs itself. If these mechanisms prove insufficient at scale, the community can introduce PVC auto-adjustment, minting ceilings, or other constraints through normal governance — no hard fork required.
 
 ### The Kindact Approach: Dynamic Taxation
 
@@ -96,15 +113,15 @@ Instead of limiting issuance, Kindact adjusts "sink" mechanisms based on circula
 
 ### Time-Based Demurrage: How It Works
 
-Demurrage—a small cost applied to money that sits idle—has deep historical roots. Ancient Egypt used grain-based money where storage fees functioned as demurrage; the result was centuries of sustained investment in irrigation, land improvement, and infrastructure that made Egypt the breadbasket of the ancient world. In medieval Europe (10th-13th centuries), local currencies were periodically recalled and reissued with a tax—another form of demurrage. This era produced the great cathedrals: small towns investing in structures that took generations to build and would generate economic activity for centuries. As Lietaer observed, both civilizations created unusual levels of prosperity for ordinary people. In both cases, the prosperity ended when these currencies were replaced by interest-bearing money.
+Demurrage — a small cost applied to money that sits idle — has deep historical roots. Ancient Egypt used grain-based money where storage fees functioned as demurrage; the result was centuries of sustained investment in irrigation, land improvement, and infrastructure that made Egypt the breadbasket of the ancient world. In medieval Europe (10th-13th centuries), local currencies were periodically recalled and reissued with a tax — another form of demurrage. This era produced the great cathedrals: small towns investing in structures that took generations to build and would generate economic activity for centuries. As Lietaer observed, both civilizations created unusual levels of prosperity for ordinary people. In both cases, the prosperity ended when these currencies were replaced by interest-bearing money.
 
-The mechanism works because **interest-bearing money makes us discount the future** (it's rational to cut down a forest and put the money in the bank—it grows faster than trees), while **demurrage money incentivizes investing in things that last** (durable assets, infrastructure, ecological restoration). This directly aligns with Kindact's mission of incentivizing long-term, sustainable value creation.
+The mechanism works because **interest-bearing money makes us discount the future** (it's rational to cut down a forest and put the money in the bank — it grows faster than trees), while **demurrage money incentivizes investing in things that last** (durable assets, infrastructure, ecological restoration). This directly aligns with Kindact's mission of incentivizing long-term, sustainable value creation.
 
 Each token has metadata tracking how long it has remained unmoved in a wallet.
 
 - Tokens unmoved for X period (e.g., 1-3 months) begin losing value continuously
-- **Older tokens move first (FIFO)**—users can't choose which tokens to spend
-- **1 $CC = 1 $CC at any moment**—no "old vs. new" confusion; value degrades smoothly
+- **Older tokens move first (FIFO)** — users can't choose which tokens to spend
+- **1 $CC = 1 $CC at any moment** — no "old vs. new" confusion; value degrades smoothly
 - Applied **per identity**, not per wallet (each verified identity has one wallet)
 
 ### Why Both Demurrage AND Transaction Fees?
@@ -116,6 +133,92 @@ Each token has metadata tracking how long it has remained unmoved in a wallet.
 ### Destination of Burned Value
 
 All demurrage, transaction fees, and access fees are **burned** (destroyed permanently). This may be revisited via platform governance to create liquidity backing at later stages.
+
+---
+
+## Supply-Demand Equilibrium: The Math
+
+Understanding the token economy requires a clear model of how supply evolves over time. The following formalizes what the reactive sinks described above actually produce.
+
+### Model Variables
+
+| Variable | Meaning |
+|----------|---------|
+| S(t) | Total $CC supply at month t |
+| M | Monthly minting (total rewards issued) |
+| d | Monthly demurrage rate (e.g., 0.01 = 1%) |
+| A | Monthly access fee burn |
+| F | Monthly transaction fee burn |
+| H | Monthly Hypercert-purchase burn |
+
+### Supply Dynamics
+
+Each month, existing supply decays by demurrage while new tokens are minted and fees are burned:
+
+> **S(t+1) = S(t) × (1 − d) + M − A − F − H**
+
+At **steady state** (where S(t+1) = S(t)), supply converges to:
+
+> **S\* = (M − A − F − H) / d**
+
+Starting from zero supply, the path to equilibrium follows:
+
+> **S(t) = S\* × (1 − (1−d)^t)**
+
+The key insight: **supply always converges**. Regardless of how much is minted, the combination of demurrage and burns guarantees a finite equilibrium. If supply overshoots (e.g., a burst of minting), demurrage eats the excess faster; if supply undershoots, less is burned. The system is self-correcting.
+
+### Three Demand Sources That Match Issuance with Burn
+
+1. **Access fees (utility demand, burned)** — Every user pays a small monthly fee in $CC. This creates baseline demand from day one. Burned on payment.
+
+2. **Hypercert purchases in $CC (impact demand, burned)** — External entities buy $CC to purchase verified impact credentials. Emerges Phase 2–3. Burned on purchase.
+
+3. **Contributor trade (circulation demand, not burned)** — Contributors exchange $CC for goods and services. This creates velocity and working-balance demand — people need to hold $CC to transact, which absorbs supply without burning it.
+
+### Worked Example: Phase 1
+
+**Assumptions:** 200 users, 50 issues resolved/month, average reward 100 $CC (calibration anchor: 1 $CC ≈ 1 minute of verified work, so 100 $CC ≈ ~100 minutes), d = 1%/month, A = 200 × 10 = 2,000/month, F = 50/month, H = 0.
+
+- **M** = 50 × 100 = 5,000/month
+- **Net minting** = M − A − F − H = 5,000 − 2,000 − 50 − 0 = 2,950/month
+- **S\*** = 2,950 / 0.01 = **295,000 $CC**
+
+| Month | Supply | % of S* |
+|-------|--------|---------|
+| 1 | 2,950 | 1.0% |
+| 6 | 17,200 | 5.8% |
+| 12 | 33,400 | 11.3% |
+| 24 | 63,500 | 21.5% |
+| 60 | 134,100 | 45.5% |
+| 120 | 210,300 | 71.3% |
+
+Note that **access fees alone absorb 40% of new issuance** (2,050 out of 5,000), providing significant deflationary pressure even with zero external demand.
+
+### Phase 2 Example
+
+**Assumptions:** 5,000 users, 500 issues/month, average reward 150 $CC.
+
+- **M** = 75,000/month
+- **A** = 50,000, **F** = 2,500, **H** = 1,000
+- **S\*** = (75,000 − 53,500) / 0.01 = **2,150,000 $CC**
+
+Access fees now absorb **67% of new issuance**. As the user base grows, access fee burn scales linearly while minting scales with issue volume — a natural governor on supply.
+
+### Phase 3 Example
+
+**Assumptions:** 50,000 users, 5,000 issues/month, average reward 200 $CC.
+
+- **M** = 1,000,000/month
+- **A** = 500,000, **F** = 25,000, **H** = 100,000
+- **S\*** = (1,000,000 − 625,000) / 0.01 = **37,500,000 $CC**
+
+### Key Properties
+
+1. **Supply always converges** — no matter the minting rate, demurrage guarantees a finite equilibrium
+2. **Self-correcting** — overshooting supply accelerates demurrage burn; undershooting slows it
+3. **External demand creates a virtuous cycle** — Hypercert purchases (H) shrink the equilibrium supply, increasing per-token value, attracting more contributors
+4. **Demurrage rate is the primary dial** — doubling d halves S\*; the community can tune this through normal governance
+5. **Stock-flow consistent** — every token is accounted for: minted, held (decaying), or burned. No leakage, no hidden reserves
 
 ---
 
@@ -177,6 +280,16 @@ Community decides via platform Issues. A meta-issue should specify:
 - Quorum: 2% of original issue voters OR 5 people, whichever is higher
 - Agreement ratio: 80% to confirm fraud
 - If threshold not reached → accused unblocked over time by default
+
+### Clawback and Negative Balance
+
+When fraud is confirmed, the verdict can include **clawback of fraudulently earned $CC** from the scammer's wallet.
+
+- **Clawbacks apply only to the scammer's own wallet** — tokens already traded to innocent third parties are not pursued. The system does not reverse legitimate transactions.
+- **Negative balances are possible.** If the scammer's wallet holds fewer tokens than the clawback amount, the balance goes negative. A user with a negative balance cannot propose issues, vote, implement work, or earn rewards until the debt is repaid through legitimate contributions.
+- **Deterrent effect**: Scammers know that gains can be reversed even after the fact. Unlike a "keep what you got away with" system, fraud has lasting consequences.
+
+The existing challenge mechanism — deposit required, exponential backoff on wrong accusations — prevents weaponization of clawbacks. Filing a fraudulent clawback claim costs the accuser and escalating false claims result in progressively longer cooldowns.
 
 ---
 
@@ -333,7 +446,7 @@ Several areas require ongoing refinement:
 2. **Voter scaling formula**: The 1.5× multiplier is illustrative; actual curve needs calibration
 3. **Time bounds for disputes**: Maximum resolution periods TBD
 4. **Exchange rate dynamics**: How will $CC interact with external currencies at scale?
-5. **Legal and regulatory considerations**: Securities laws, money transmission, cross-border issues
+5. **Legal and regulatory considerations**: Is $CC classified as a utility token, a security, or in-kind income? Money transmission regulations vary by jurisdiction. Tax treatment of earned vs. purchased tokens needs analysis. Cross-border implications for a transnational currency remain unexplored.
 6. **Impact marketplace integration**: Which certification standards (Verra, Gold Standard, ESG frameworks) should Kindact target first? How should Hypercerts be generated from completed Kindact work — automatically or opt-in? What level of verification rigor is needed for institutional credibility and compatibility with existing RetroPGF programs?
 7. **Reward bonding calibration**: How much $CC staked should translate to how much additional reward cap? What prevents gaming?
 
@@ -341,7 +454,7 @@ Several areas require ongoing refinement:
 
 ## Conclusion
 
-The Kindact economic system is designed around a core insight: **if tokens are only minted for verified real-world value creation, traditional inflation concerns largely dissolve**. The challenge shifts to verification and fraud prevention — which Kindact addresses through voter scaling, verifier rotation, fluid voting, and community-based dispute resolution.
+The Kindact economic system is designed around a core insight: **if tokens are only minted for verified real-world value creation, traditional inflation concerns largely dissolve**. The challenge shifts to verification and fraud prevention — which Kindact addresses through voter scaling, verifier rotation, fluid voting, clawback with negative balance, and community-based dispute resolution.
 
 The system is intentionally minimal at launch, with built-in mechanisms for the community to add complexity (staking, treasury, new utility sinks) as needed. This reflects Kindact's core philosophy: the platform governs itself.
 
