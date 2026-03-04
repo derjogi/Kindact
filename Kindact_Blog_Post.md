@@ -283,7 +283,7 @@ Over time, as Kindact builds a track record of verified, auditable impact, a mor
 
 When a Kindact issue is completed and verified, both are generated: **$CC is minted and goes to the implementer** as their reward. **A Hypercert is generated and held by Kindact** as a platform asset.
 
-**Why both are needed:** $CC is designed to *circulate* — demurrage penalizes holding, FIFO forces spending, and fungibility means 1 $CC = 1 $CC regardless of origin. Impact claims need the opposite: they are typically *held*, *retired* (claimed once — a carbon offset can only count once), and tied to *specific* work.
+**Why both are needed:** $CC is designed to *circulate* — demurrage makes holding costly, encouraging spending and investment, and fungibility means 1 $CC = 1 $CC regardless of origin. Impact claims need the opposite: they are typically *held*, *retired* (claimed once — a carbon offset can only count once), and tied to *specific* work.
 
 **How Hypercert sales back $CC's value:** External entities (carbon offset buyers, corporations needing ESG documentation, impact funds, progressive governments) can purchase Hypercerts from Kindact on an open market, with prices set by demand. The proceeds flow into a **fiat reserve** that backs $CC. Anyone can exchange $CC for fiat (or vice versa) through this reserve, and the exchange rate reflects the ratio of fiat backing to $CC in circulation. As more Hypercerts sell, the reserve deepens, and $CC becomes increasingly stable and reliable for everyday trade. 
 
@@ -299,13 +299,13 @@ $CC's long-term value is therefore anchored to the **quality and credibility of 
 
 Rather than hard issuance caps, Kindact uses **dynamic taxation** that adjusts based on circulation metrics:
 
-- **Time-based demurrage**: Tokens lose value based on how long they remain unmoved in a wallet. Older tokens move first (FIFO), preventing hoarding.
+- **Base demurrage**: All tokens lose value at a continuous uniform rate (e.g., 1% per month), regardless of activity. This guarantees a finite supply equilibrium and creates steady "use it or lose it" pressure — since goods and investments don't decay, spending preserves value. If needed at scale, an additional *stagnation demurrage* targeting idle tokens specifically can be activated by community vote.
 - **Transaction fees**: Minimal fees prevent gaming through circular trades between related parties.
 - **Access fees**: Most users pay small fees for active participation; all fees are burned.
 
 This functions like automated, transparent taxation, algorithmic and visible.
 
-These sinks guarantee that $CC supply cannot grow without bound. If the monthly minting rate is **M** and the monthly demurrage rate is **d**, total supply converges to an equilibrium of **S* = M / d** (with other sinks tightening it further). At 1% monthly demurrage, supply stabilizes at 100× the monthly minting rate — regardless of scale. If minting increases, the equilibrium rises but remains finite and self-correcting. For the full mathematical model with worked examples, see the [Economic Deep Dive](Kindact_Economics_Deep_Dive.md).
+These sinks guarantee that $CC supply cannot grow without bound. If the monthly minting rate is **M** and the monthly base demurrage rate is **d**, total supply converges to an equilibrium of **S* = M / d** (with other sinks tightening it further). At 1% monthly base demurrage, supply stabilizes at 100× the monthly minting rate — regardless of scale. If minting increases, the equilibrium rises but remains finite and self-correcting. For the full mathematical model with worked examples, see the [Economic Deep Dive](Kindact_Economics_Deep_Dive.md).
 
 ### Fraud Prevention
 

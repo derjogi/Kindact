@@ -106,29 +106,46 @@ Instead of limiting issuance, Kindact adjusts "sink" mechanisms based on circula
 
 | Mechanism | Tax Analogy | Adjustment Trigger |
 |-----------|-------------|-------------------|
-| Demurrage rate | Wealth tax | High mint/burn ratio → faster decay |
+| Base demurrage | Wealth tax | High mint/burn ratio → faster decay |
 | Transaction fees | VAT / sales tax | High velocity or manipulation signals |
 | Access fees | Service/licensing fees | High platform activity |
 | Verification threshold | Regulatory compliance | Large reward requests require more scrutiny |
 
-### Time-Based Demurrage: How It Works
+### Base Demurrage: How It Works
 
-Demurrage — a small cost applied to money that sits idle — has deep historical roots. Ancient Egypt used grain-based money where storage fees functioned as demurrage; the result was centuries of sustained investment in irrigation, land improvement, and infrastructure that made Egypt the breadbasket of the ancient world. In medieval Europe (10th-13th centuries), local currencies were periodically recalled and reissued with a tax — another form of demurrage. This era produced the great cathedrals: small towns investing in structures that took generations to build and would generate economic activity for centuries. As Lietaer observed, both civilizations created unusual levels of prosperity for ordinary people. In both cases, the prosperity ended when these currencies were replaced by interest-bearing money.
+Demurrage — a small, continuous cost applied to holding money — has deep historical roots. Ancient Egypt used grain-based money where storage fees functioned as demurrage; the result was centuries of sustained investment in irrigation, land improvement, and infrastructure that made Egypt the breadbasket of the ancient world. In medieval Europe (10th-13th centuries), local currencies were periodically recalled and reissued with a tax — another form of demurrage. This era produced the great cathedrals: small towns investing in structures that took generations to build and would generate economic activity for centuries. As Lietaer observed, both civilizations created unusual levels of prosperity for ordinary people. In both cases, the prosperity ended when these currencies were replaced by interest-bearing money.
 
 The mechanism works because **interest-bearing money makes us discount the future** (it's rational to cut down a forest and put the money in the bank — it grows faster than trees), while **demurrage money incentivizes investing in things that last** (durable assets, infrastructure, ecological restoration). This directly aligns with Kindact's mission of incentivizing long-term, sustainable value creation.
 
-Each token has metadata tracking how long it has remained unmoved in a wallet.
+Kindact applies **base demurrage** — a uniform decay rate on all $CC holdings, regardless of whether tokens are moving or sitting still.
 
-- Tokens unmoved for X period (e.g., 1-3 months) begin losing value continuously
-- **Older tokens move first (FIFO)** — users can't choose which tokens to spend
-- **1 $CC = 1 $CC at any moment** — no "old vs. new" confusion; value degrades smoothly
+- All tokens lose value at the same continuous rate (e.g., 1% per month)
 - Applied **per identity**, not per wallet (each verified identity has one wallet)
+- Cannot be gamed — there is no timer to reset and no way to avoid the decay
+- Creates the same "use it or lose it" incentive as inflation: goods and services don't decay, but $CC does, so spending or investing preserves value
+
+Base demurrage serves two functions simultaneously: it **guarantees finite supply equilibrium** (see *Supply-Demand Equilibrium* below) and **encourages circulation**, since holding $CC always costs you while converting it into real goods or productive investments does not.
+
+### Future Option: Stagnation Demurrage
+
+If base demurrage alone proves insufficient to discourage large dormant holdings at scale, the community can introduce **stagnation demurrage** — an additional decay applied specifically to tokens that remain unmoved for extended periods. This would target hoarding more precisely by making idle tokens decay faster than actively circulating ones, while keeping the base rate gentle for everyone.
+
+To keep this option available, $CC token metadata will track movement timestamps from the start, even though stagnation demurrage is not active at launch. This means the community can activate it through normal governance without requiring a technical migration.
+
+### Transaction Fees
+
+A small fee is applied to every $CC transaction. These fees serve two purposes:
+
+- **Anti-manipulation**: They make circular trading (moving tokens between related wallets to game metrics) costly rather than free
+- **Additional burn**: Transaction fees are destroyed, contributing to supply control alongside demurrage
+
+The fee rate is kept low enough that genuine economic activity is not discouraged — the goal is to make gaming expensive, not to tax normal trade.
 
 ### Why Both Demurrage AND Transaction Fees?
 
-- **Demurrage alone** could be gamed via circular trades (rich entities trading between subsidiaries to reset the timer)
-- **Small transaction fees** make circular gaming costly
-- Together: natural circulation pressure without penalizing genuine trade
+- **Demurrage alone** doesn't address manipulation through high-frequency circular trades between related parties
+- **Transaction fees alone** don't create pressure to spend or invest — they only tax movement, not holding
+- Together: steady circulation pressure (demurrage) plus anti-gaming protection (fees), without penalizing genuine trade
 
 ### Destination of Burned Value
 
@@ -146,7 +163,7 @@ Understanding the token economy requires a clear model of how supply evolves ove
 |----------|---------|
 | S(t) | Total $CC supply at month t |
 | M | Monthly minting (total rewards issued) |
-| d | Monthly demurrage rate (e.g., 0.01 = 1%) |
+| d | Monthly base demurrage rate (e.g., 0.01 = 1%), applied uniformly to all holdings |
 | A | Monthly access fee burn |
 | F | Monthly transaction fee burn |
 | H | Monthly Hypercert-purchase burn |
@@ -442,7 +459,7 @@ This is how every successful community currency started — the WIR, Sarafu, Ith
 
 Several areas require ongoing refinement:
 
-1. **Exact demurrage parameters**: What's the optimal decay rate? How long before decay begins?
+1. **Exact demurrage parameters**: What's the optimal base demurrage rate? If stagnation demurrage is introduced later, what idle period and additional rate are appropriate?
 2. **Voter scaling formula**: The 1.5× multiplier is illustrative; actual curve needs calibration
 3. **Time bounds for disputes**: Maximum resolution periods TBD
 4. **Exchange rate dynamics**: How will $CC interact with external currencies at scale?
