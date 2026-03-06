@@ -16,12 +16,10 @@ The economic system is designed to be **self-governing**; the community can vote
 
 $CC (Community Currency) serves multiple roles, in order of priority:
 
-| Priority | Role | Description |
-|----------|------|-------------|
-| 1st | **Reward unit** | Incentivizes community-approved work as a rival to purely market-driven incentives. Value flows to those who do good. |
-| 2nd | **Reputation signal** | Accumulated $CC signals past contribution. Blockchain provenance distinguishes earned from purchased tokens. |
-| 3rd | **Tradeable medium** | Enables contributors to convert effort into goods/services. Buyers directly support contributors. |
-| 4th | **Access right** | Platform fees create baseline utility demand. |
+1. **Reward unit** — Incentivizes community-approved work as a rival to purely market-driven incentives. Value flows to those who do good.
+2. **Reputation signal** — Accumulated $CC signals past contribution. Blockchain provenance distinguishes earned from purchased tokens.
+3. **Tradeable medium** — Enables contributors to convert effort into goods/services. Buyers directly support contributors.
+4. **Access right** — Platform fees create baseline utility demand.
 
 ### Why Tradeability Doesn't Undermine Reputation
 
@@ -104,12 +102,10 @@ The platform governs itself. If these mechanisms prove insufficient at scale, th
 
 Instead of limiting issuance, Kindact adjusts "sink" mechanisms based on circulation metrics. This is analogous to how central banks adjust interest rates, but algorithmic and transparent.
 
-| Mechanism | Tax Analogy | Adjustment Trigger |
-|-----------|-------------|-------------------|
-| Base demurrage | Wealth tax | High mint/burn ratio → faster decay |
-| Transaction fees | VAT / sales tax | High velocity or manipulation signals |
-| Access fees | Service/licensing fees | High platform activity |
-| Verification threshold | Regulatory compliance | Large reward requests require more scrutiny |
+- **Base demurrage** (≈ wealth tax) — Adjusted when high mint/burn ratio → faster decay
+- **Transaction fees** (≈ VAT / sales tax) — Adjusted when high velocity or manipulation signals
+- **Access fees** (≈ service/licensing fees) — Adjusted when high platform activity
+- **Verification threshold** (≈ regulatory compliance) — Large reward requests require more scrutiny
 
 ### Base Demurrage: How It Works
 
@@ -159,14 +155,12 @@ Understanding the token economy requires a clear model of how supply evolves ove
 
 ### Model Variables
 
-| Variable | Meaning |
-|----------|---------|
-| S(t) | Total $CC supply at month t |
-| M | Monthly minting (total rewards issued) |
-| d | Monthly base demurrage rate (e.g., 0.01 = 1%), applied uniformly to all holdings |
-| A | Monthly access fee burn |
-| F | Monthly transaction fee burn |
-| H | Monthly Hypercert-purchase burn |
+- **S(t)** — Total $CC supply at month t
+- **M** — Monthly minting (total rewards issued)
+- **d** — Monthly base demurrage rate (e.g., 0.01 = 1%), applied uniformly to all holdings
+- **A** — Monthly access fee burn
+- **F** — Monthly transaction fee burn
+- **H** — Monthly Hypercert-purchase burn
 
 ### Supply Dynamics
 
@@ -245,13 +239,11 @@ Many token systems require participants to stake collateral that gets slashed fo
 
 ### Why Staking Isn't Essential Early On
 
-| Attack Vector | Mitigation Without Staking |
-|---------------|---------------------------|
-| Sybil attacks | Verified human mechanisms make multiple identities very difficult |
-| Collusion rings | Same voter circle limited per month; small groups unlock small caps only |
-| Rubber-stamp verification | Verifiers must rotate; larger issues require more verifiers |
-| Early-stage exploitation | $CC has near-zero value early → attack effort exceeds reward |
-| Flash extraction | No liquidity early; early adopters are aligned believers |
+- **Sybil attacks** — Verified human mechanisms make multiple identities very difficult
+- **Collusion rings** — Same voter circle limited per month; small groups unlock small caps only
+- **Rubber-stamp verification** — Verifiers must rotate; larger issues require more verifiers
+- **Early-stage exploitation** — $CC has near-zero value early → attack effort exceeds reward
+- **Flash extraction** — No liquidity early; early adopters are aligned believers
 
 ### Core Safeguards
 
@@ -339,12 +331,10 @@ $CC's value evolves through distinct phases. Early on, value is primarily social
 
 ### Early-Stage Demand Sources (Social Value)
 
-| Source | Strength | Notes |
-|--------|----------|-------|
-| Reputation signal | Strong, self-reinforcing | Early scarcity establishes meaning; provenance transparency maintains signal |
-| Access fees | Steady | Configured so most users pay (not just power users); negligible but benefits outweigh costs |
-| Local circulation | Growing | Community members trade $CC for goods and services within their communities |
-| Reward bonding | Emerging | Users stake $CC on issues to increase reward caps, signaling community confidence |
+- **Reputation signal** (Strong, self-reinforcing) — Early scarcity establishes meaning; provenance transparency maintains signal
+- **Access fees** (Steady) — Configured so most users pay (not just power users); negligible but benefits outweigh costs
+- **Local circulation** (Growing) — Community members trade $CC for goods and services within their communities
+- **Reward bonding** (Emerging) — Users stake $CC on issues to increase reward caps, signaling community confidence
 
 ### Later-Stage Demand: The Verified Impact Marketplace
 
@@ -372,12 +362,10 @@ These programs currently focus on crypto-native public goods (developer tools, i
 
 #### Who Buys, and Why
 
-| Buyer | Motivation | How it works |
-|-------|-----------|--------------|
-| **Carbon/impact offset buyers** | Need verified, auditable proof of environmental outcomes | Purchase $CC from contributors or buy Hypercerts from verified reforestation, cleanup, etc. |
-| **Corporations (ESG/CSR)** | Need independently verified social impact documentation | Purchase $CC or Hypercerts from contributors; the on-chain audit trail provides stronger evidence than traditional reporting |
-| **Impact funds & RetroPGF programs** | Want to channel resources to verified public goods work | Purchase $CC on the open market or fund Kindact projects retroactively through existing RetroPGF mechanisms |
-| **Progressive governments** | Want participatory budgeting infrastructure | Allocate existing budgets through Kindact issues rather than traditional procurement |
+- **Carbon/impact offset buyers** — Need verified, auditable proof of environmental outcomes. Purchase $CC from contributors or buy Hypercerts from verified reforestation, cleanup, etc.
+- **Corporations (ESG/CSR)** — Need independently verified social impact documentation. Purchase $CC or Hypercerts from contributors; the on-chain audit trail provides stronger evidence than traditional reporting.
+- **Impact funds & RetroPGF programs** — Want to channel resources to verified public goods work. Purchase $CC on the open market or fund Kindact projects retroactively through existing RetroPGF mechanisms.
+- **Progressive governments** — Want participatory budgeting infrastructure. Allocate existing budgets through Kindact issues rather than traditional procurement.
 
 #### The Flow
 
