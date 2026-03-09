@@ -1,15 +1,15 @@
 # Kindact in 3 Minutes: A New Layer for Collective Action
 
-Most people can feel it: the systems we rely on to solve big problems are struggling to keep up.
+Most people can feel it: the systems we rely on to solve big problems are struggling to keep up on many fronts.
 
-Climate disruption, AI risk, social fragmentation, economic insecurity, and global coordination failures don’t fit neatly inside election cycles or national borders. Traditional politics still matters, but for many people it feels too slow, too distant, and too disconnected from everyday agency.
+Climate disruption, AI risk, social fragmentation, economic insecurity, and global coordination failures don’t fit neatly inside election cycles or national borders. Traditional politics still matters, but for many people it feels too slow, we don't have enough agency, or the incentives feel misaligned.
 
-Kindact is a response to that gap: An **open-source online platform that helps communities make decisions and coordinate action via reward tokens**.
+Kindact is a response to that situation: A parallel **open-source online platform that helps communities make good decisions and incentivise coordinated implementation of those decisions** without having to wait on big political changes.
 
 
 ## Not A Replacement For Government
 
-Kindact is not a revolution against existing institutions. It is a **parallel, voluntary governance layer**.
+Kindact is not a revolution against existing institutions. It is a **parallel, voluntary governance layer**, designed to **enhance our decision-making capabilities**, not to replace existing structures.
 
 That distinction matters. Kindact does not enforce laws or coerce behavior. It cannot force compliance. Instead, it coordinates people around shared goals and creates incentives for real implementation. Governments, NGOs, local groups, and citizens can all use it, but nobody is compelled to.
 
@@ -25,7 +25,9 @@ Kindact runs a full loop from ideas to outcomes:
 4. **Implement**: Contributors execute approved work and submit proof of progress.
 5. **Reward**: Verified contributors receive tokens for measurable, community-approved impact.
 
-Several design choices are central:
+We already have many online platforms that do some of these steps, but to my knowledge nothing that links the decision making capabilities with the implementation tracking and the economic rewards - which is crucial to make this worthwhile. Without the economic incentives decisions would not get implemented; without good deliberation we go into the wrong direction and have misaligned incentives, and we'll need implementation tracking and verification to prevent fraud. 
+
+Several other design choices are central:
 
 **Bias-aware deliberation.** Discussion can include anonymized contributions and less popularity-driven ranking, helping people evaluate ideas by quality rather than identity or status.
 
@@ -37,16 +39,18 @@ Several design choices are central:
 
 ## Why The Incentive Model Matters 
 
-Kindact introduces `$CC`, a token primarily minted when **approved work is actually done and verified**. The goal is to reward real contributions that markets often ignore or undervalue.
+Kindact introduces `$CC`, a token primarily minted when **approved work is actually done and verified**. This is the mechanism that turns community intent into execution: no verified implementation, no minting.
 
-Verification can combine implementation reports, peer review, third-party checks, structured resource-flow accounting (for example through ValueFlows), and fraud controls.
+Without this link, many community issues remain unpaid volunteer labor and never scale. With it, implementation becomes a viable path rather than an after-hours sacrifice.
+
+Verification can combine implementation reports, peer review, third-party checks, and fraud controls.
 
 To keep the economy grounded in impact, Kindact separates two roles:
 
-- **`$CC`** is the circulating community currency.
-- **Hypercerts** are non-fungible impact credentials linked to completed, verified outcomes.
+- **`$CC`** is the circulating community currency that can be traded and doubles as reputation token.
+- **Hypercerts** are non-fungible impact credentials linked to completed, verified outcomes that can be bought from the platform and provide the economic backing that gives $CC value.
 
-When external buyers fund verified impact by purchasing Hypercerts, that can strengthen reserve backing and improve `$CC` reliability over time. Combined with demurrage and fee-based token sinks, the system is designed to keep value circulating and reduce hoarding.
+The system is designed to keep value circulating and reduce hoarding via demurrage and access fees.
 
 The core thesis is practical: if society wants more public-good work, we need systems that make that work visible, verifiable, and economically viable.
 

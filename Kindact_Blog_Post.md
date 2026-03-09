@@ -8,9 +8,11 @@
 
 Democracies were designed for a world that no longer exists. The institutions we inherited (representative democracies, nation-states, international treaties) were created in an era when problems moved slowly and stayed local. Today, we face challenges that cross borders faster than any government can respond: climate catastrophe, artificial intelligence that could reshape civilization, pandemics that spread before we know they're happening, and a breakdown of shared reality that makes collective action nearly impossible.
 
-Many of us feel overwhelmed. We scroll through news that tells us everything is going wrong, and we wonder: *What can I possibly do?* Traditional politics feels distant, ineffective, or captured by forces we can't control. We vote every few years, sign occasional petitions, maybe attend a protest. But the big decisions seem to happen somewhere else, by someone else, without us.
+Many of us feel overwhelmed. We scroll through news that tells us everything is going wrong, and we wonder: *What can I possibly do?* Traditional politics feels distant, ineffective, or captured by forces we can't control. Incentives to make money seem misaligned with the 'good' that we want to achieve. We vote every few years, sign occasional petitions, maybe attend a protest. But the big decisions seem to happen somewhere else, by someone else, without us.
 
-Kindact is an attempt to answer a deceptively simple question: **What if there were a system where anyone could identify problems, discuss solutions with others, vote on what should be done, and get rewarded for actually implementing the ideas that the community approves?**
+**What if there were a system where anyone could identify problems, discuss solutions with others, vote on what should be done, and get rewarded for actually implementing these ideas that the community decided represents something good?**
+
+That is what Kindact is trying to achieve.
 
 This isn't about replacing governments. It's not about creating a utopia overnight. It's about building a **parallel layer**: a voluntary system that operates alongside existing institutions, complementing them where they work and filling the gaps where they fail.
 
@@ -55,6 +57,8 @@ Kindact facilitates a complete cycle of collective action:
 3. **Decide**: Decisions are made through voting, delegation, or consensus-based approaches
 4. **Implement**: Approved solutions are executed with proof of (even partial) implementation
 5. **Reward**: Contributors receive tokens that recognize their positive impact
+
+We already have many online platforms that do some of these steps, but to my knowledge nothing that links the decision making capabilities with the implementation tracking and the economic rewards - which is crucial to make this worthwhile. Without the economic incentives decisions would not get implemented; without good deliberation we go into the wrong direction and have misaligned incentives, and we'll need implementation tracking and verification to prevent fraud. 
 
 Throughout this process, **verified identity** ensures one-person-one-vote integrity, while **economic incentives** (tokens, demurrage, burns) keep value circulating toward ongoing contribution.
 
@@ -247,6 +251,8 @@ No system is perfect, but the combination of these approaches creates strong inc
 
 ## Step 5: Reward — Economic Incentives
 
+Coordination without incentives rarely scales. If implementation depends only on goodwill, many high-priority issues remain unfinished. By embedding economic incentives in the functioning of this system and linking rewards to verified work, Kindact tries to close the gap between agreement and execution.
+
 
 ### What $CC Is
 
@@ -392,7 +398,7 @@ Given this infrastructure, how might Kindact actually help solve the problems we
 
 ### Individual Level: Restoring Agency
 
-For those who feel powerless, Kindact offers **direct participation** in decisions that matter. You can find issues you care about, contribute to discussions, and see your ideas implemented. This isn't symbolic; it's real action with real visible or experiential consequences.
+For those who feel powerless, Kindact offers **direct participation** in decisions that matter. You can find issues you care about, contribute to discussions, see your ideas implemented, and receive rewards for your contributions. This isn't symbolic; it's real action with real visible or experiential consequences. And you won't have to struggle about justifying the time spent - it's not voluntary civic work, it's 'paid' and enables you to do less BS jobs and more meaningful work!
 
 The psychological impact matters: when we see our actions producing results, despair gives way to agency. Eco-anxiety decreases when we witness concrete improvements.
 
