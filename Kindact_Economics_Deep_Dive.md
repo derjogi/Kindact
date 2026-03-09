@@ -114,7 +114,7 @@ If the community decides it's needed at scale, additional mechanisms such as *st
 On top of demurrage, several mechanisms permanently remove `$CC` from circulation:
 
 - **Access fees:** Users pay small periodic fees for platform participation; all fees are burned.
-- **Transaction fees:** Minimal fees on transfers, specifically targeting circular-trade gaming (e.g., someone shuffling tokens between their own wallets). Calibrated low enough to avoid discouraging normal trade.
+- **Transaction fees:** Minimal fees on transfers, specifically targeting circular-trade gaming (e.g., someone shuffling tokens between their own wallets). Calibrated low enough to avoid discouraging normal trade. (This is an optional mechanism and only activated if the community thinks this is necessary)
 - **Hypercert purchases in `$CC`:** When someone buys a Hypercert with `$CC` instead of fiat, those tokens are burned.
 - **Redemptions:** When users exchange `$CC` back to fiat through the reserve, those tokens are removed from circulation.
 
@@ -122,7 +122,7 @@ Together, demurrage and burns function like **automated, transparent taxation** 
 
 ### The Math Behind It (For the Curious)
 
-The intuition is simple: supply next month equals what's left after decay, plus whatever was minted, minus whatever was burned. Here's what that looks like formally.
+The intuition is simple: the total supply of `$CC` in circulation next month equals what's left after decay and burns, plus whatever was minted. Here's what that looks like formally.
 
 Monthly variables:
 
@@ -151,14 +151,14 @@ And there's a hard guarantee: as long as demurrage never falls to zero and net i
 
 The common worry is straightforward: if people can vote on rewards, what stops them from over-issuing currency?
 
-Kindact's answer is structural. In systems where issuance is disconnected from production — like a government printing money to cover a deficit — discipline is mostly political, and it often fails. In Kindact, issuance is tied to verified output, so **the budget constraint is verification quality, not an arbitrary cap.** Weak verification directly becomes monetary risk. Strong verification means every new token represents real, community-approved work.
+Kindact's answer is structural. In systems where issuance is disconnected from production — like a government printing money to cover a deficit — discipline is mostly political, and it often fails. In Kindact, issuance is tied to verified output (before any rewards are given, each piece of work has to be approved), so **the budget constraint is verification quality, not an arbitrary cap.** Weak verification directly becomes monetary risk. Strong verification means every new token represents real, community-approved work.
 
 Four constraints reinforce each other:
 
 1. **Voter-scaled caps** limit self-dealing by small groups — you can't award yourself a fortune if only three people voted.
 2. **Challenge mechanisms** can pause and review contested rewards before they're fully disbursed.
 3. **Demurrage and burns** impose stock-level discipline automatically — if flows spike, the sinks absorb more.
-4. **Large holders** have a direct economic incentive to monitor dilution, since over-issuance devalues their own holdings.
+4. **Holders** have a direct economic incentive to monitor dilution, since over-issuance devalues their own holdings.
 
 If needed at scale, governance can layer on tighter controls (sink-linked mint limits, automatic reward adjustments) without redesigning the core architecture.
 
@@ -166,7 +166,7 @@ If needed at scale, governance can layer on tighter controls (sink-linked mint l
 
 One natural question: how is the platform itself funded? The answer is deliberately boring: **through regular platform issues, just like everything else.** Users create and vote on issues for platform work — "implement new voting module," "conduct security audit," "moderate disputes" — and contributors prove completion and earn `$CC` the same way they would for planting trees or running a community workshop.
 
-This means all platform spending is visible as voted issues, subject to the same voter-scaled caps and challenge mechanisms as any other work. There's no hidden treasury, no founder fee split, no special economic rules for the team. The platform governs itself using itself. If `$CC` eventually gains enough purchasing power to justify operational reserves or liquidity backing, the community can vote to introduce fee splits — but that's a future decision, not a launch assumption.
+This means all platform spending is visible as voted issues, subject to the same voter-scaled caps and challenge mechanisms as any other work. There's no hidden treasury, no founder fee split, no special economic rules for the team. The platform governs itself using itself.
 
 ---
 
@@ -178,17 +178,13 @@ The anti-fraud stack includes:
 
 - **Voter-scaled caps:** Small groups can only unlock small rewards.
 - **Asymmetric voting:** Objections reduce reward caps more than approvals increase them — the system is structurally skeptical.
-- **Verifier rotation:** The same verifier can't approve the same issue repeatedly.
+- **Verifier rotation:** The same verifier can't approve the same issue repeatedly on larger issues.
 - **Rate-limited accusations:** Failed accusations trigger exponential cooldown periods, preventing harassment while keeping the challenge mechanism credible.
 - **Retroactive penalties:** Confirmed fraud leads to platform restrictions.
 
 ### When Fraud Is Confirmed
 
-If the community confirms fraud through its dispute process (default threshold: at least 2% of original voters or 5 people, with 80% agreement):
-
-1. **Clawback** applies to the scammer's wallet.
-2. Innocent third-party transfers are **not** retroactively reversed — if you received `$CC` in good faith, it's yours.
-3. If the wallet doesn't have enough, the balance goes **negative.** Negative accounts can't propose, vote, implement, or earn until the debt is repaid.
+If the community confirms fraud through its dispute process (default threshold: at least 2% of original voters or 5 people, with 80% agreement), the perpetrators rewards can be reclaimed (and even go negative), or they might incur platform limitations, such as reduced possibilities and limited or (in especially hard cases) revoked access.
 
 This creates durable deterrence even when fraud proceeds have already been spent. The message is clear: fraud doesn't pay, even if you move fast.
 
@@ -196,7 +192,7 @@ This creates durable deterrence even when fraud proceeds have already been spent
 
 ## Reserve Dynamics: How `$CC` Gets Monetary Backing
 
-Supply control is only half the picture. The other half is **reserve strength** — because the fiat reserve is what ultimately allows people to convert `$CC` into dollars, euros, or any other currency. The deeper the reserve relative to circulating supply, the more confidence people have that `$CC` is worth holding.
+Supply control is only half the picture. The other half is **reserve strength** — because the fiat reserve is what ultimately allows people to convert `$CC` into dollars, euros, or any other currency. The deeper the reserve relative to circulating supply, the more confidence people have that `$CC` is worth having.
 
 The reserve grows through two channels:
 
@@ -207,37 +203,40 @@ And it shrinks through one:
 
 3. **Redemptions:** When someone exchanges `$CC` back to fiat.
 
-The key strategic insight: **Hypercert sales grow the reserve without increasing `$CC` supply.** That means every Hypercert sold for fiat improves the backing ratio — the amount of fiat behind each circulating token. This is why building a credible track record of verified impact is so important: it's not just good for the world, it's the engine that makes `$CC` progressively more valuable.
+Hypercert sales grow the reserve without increasing `$CC` supply. That means **every Hypercert sold for fiat improves the backing ratio** — the amount of fiat behind each circulating token. This is why building a credible track record of verified impact is so important: it's not just good for the world, it's the engine that makes `$CC` progressively more valuable.
 
 ### Reserve Pricing: How Conversion Works
 
-`$CC` operates as a **partially collateralized fractional reserve currency.** Because most `$CC` is work-minted (adding to supply without adding to the reserve), the reserve will typically hold less than $1 per circulating token. That's by design — the system doesn't need full collateral, because demurrage continuously destroys tokens that are never redeemed, and flow controls prevent the reserve from being drained faster than it replenishes.
+`$CC` operates as a **partially collateralized fractional reserve currency.** Because most `$CC` is work-minted (adding to supply without adding to the reserve), the reserve will typically hold less than $1 per circulating token. That's ok though — the system doesn't need full collateral, because flow controls prevent the reserve from being drained faster than it replenishes (see below).
 
-Conversion follows **three phases:**
+Exchange with the reserve is designed to protect the reserve in early phases (no exchange is possible until the first 100,000 tokens are minted); after that the ratio steadily increases with incoming fiat payments, until the reserve reaches a reasonable lower limit of 1m USD (or equivalent) at which the exchange switches to a stablecoin behavior with a 1:1 ratio.
 
-**Phase 1 — Bootstrap ($S_t$ < 100,000 CC):** No cash-outs permitted. `$CC` circulates internally only (access fees, local arrangements). This prevents early speculation from draining the system before it reaches functional scale.
+The **three phases** in detail:
 
-**Phase 2 — Growth ($R_t < R_{target}$):** Cash-outs are enabled, but the exchange rate follows a smooth curve that starts at the raw backing ratio and gradually approaches \$1 as the reserve deepens. Early holders get an honest rate, while the trajectory toward \$1 is visible and predictable.
+**Phase 1 — Bootstrap ($S_t$ < 100,000 CC):** No cash-outs permitted. `$CC` circulates internally only (access fees, local arrangements). This prevents early speculation from draining the system before it reaches functional scale. (Otherwise the first few tokens could immediately be sold for fiat and the system would be drained in a matter of days)
+
+**Phase 2 — Growth ($R_t < R_{target}$):** Cash-outs are enabled, but the exchange rate follows a smooth curve that starts at the raw backing ratio and gradually approaches \$1 as the reserve deepens (which will likely take a long time). Early holders get an honest (but low) rate, while the trajectory toward \$1 is visible and predictable.
+Optimally the reserve will be pre-seeded with an initial small amount.
 
 **Phase 3 — Maturity ($R_t \geq R_{target}$):** The exchange rate reaches \$1. $R_{target}$ is governance-adjustable (initially \$1,000,000). If the reserve later drops back below $R_{target}$, the rate returns to the Phase 2 curve — this is not a one-way door.
 
-**Buying `$CC`** (fiat → `$CC`) uses the same exchange rate plus a small premium (e.g., 3%). This premium flows into the reserve, slightly improving the backing ratio with every purchase.
+**Buying `$CC`** (fiat → `$CC`) uses the same exchange rate plus a small premium (e.g., 3%). This premium flows into the reserve, slightly improving the backing ratio with every purchase. (Optionally a **sell premium** might also be added to further support the reserve)
 
 #### Flow Controls: Preventing Bank Runs
 
 Since the exchange rate can exceed the raw backing ratio ($R_t / S_t$), the system is structurally fractional reserve. Three mechanisms keep it solvent:
 
-- **Daily redemption cap:** Total cash-outs are capped at 1% of the current reserve balance per 24 hours. Even in a panic, the drain is slow and predictable — giving the system time for Hypercert sales, new reserve purchases, or simply for demurrage to reduce the outstanding liability.
+- **Daily redemption cap:** Total cash-outs are capped at 1% of the current reserve balance per 24 hours. Even in a panic, the drain is slow and predictable — giving the system time to adjust (Hypercert sales, reserve purchases, special community issues to address the bank run), for demurrage to reduce the outstanding liability, or simply for the panic to wear off.
 - **Reserve floor:** If $b_t = R_t / S_t$ drops below a critical threshold (e.g., 5%), redemptions are paused entirely and move to a time queue. Tokens in the queue remain subject to demurrage, which naturally reduces the backlog. Redemptions resume when the ratio recovers above the threshold.
-- **Demurrage as structural insurance:** Unlike traditional fractional reserves, `$CC` balances decay continuously. Tokens that sit idle are destroyed without ever touching the reserve. This means the system's real liability is always shrinking — the reserve doesn't need to cover every token, only the ones people actually redeem before demurrage eats them.
+- **Demurrage as structural insurance:** Unlike traditional fractional reserves, `$CC` balances decay continuously. Tokens are destroyed without ever touching the reserve. This means the system's real liability is always shrinking — the reserve doesn't need to cover every token, only the ones people actually redeem before demurrage eats them.
 
-### The Math (For the Curious)
+### The Math
 
-The **backing ratio** at any point is:
+The **backing ratio** $b_t$ at any point is:
 
 > $$b_t = \frac{R_t}{S_t}$$
 
-The **exchange rate** uses a confidence curve that blends the backing ratio toward \$1 as the reserve grows:
+The **exchange rate** $E_t$ uses a confidence curve that blends the backing ratio toward \$1 as the reserve grows:
 
 > $$E_t = b_t + (1 - b_t) \cdot \left(\frac{R_t}{R_{target}}\right)^2$$
 
@@ -253,37 +252,33 @@ In plain language: the rate starts at whatever the reserve can actually cover pe
 
 Note that $E_t$ can exceed $b_t$ — the system promises more per token than the reserve strictly holds. This is what makes it fractional reserve. It works because demurrage, burns, and the daily redemption cap ensure that redemption *flow* never exceeds what the reserve can sustain, even if total *stock* liability exceeds the reserve balance.
 
-Reserve evolution follows a simple cash-flow equation:
+Reserve evolution $R_{t+1}$ follows a simple cash-flow equation:
 
 > $$R_{t+1} = R_t + E_{buy} \cdot M_r + V_{h\$} - E_t \cdot X$$
 
-Where $E_{buy} = E_t \cdot 1.03$ (exchange rate + 3% premium), $M_r$ is reserve minting volume, $V_{h\$}$ is fiat Hypercert sales, and $X$ is redemption volume (subject to the daily cap).
+Note that this equation is denominated in **fiat**, not tokens. $M_r$ (buying `$CC` for fiat) and $X$ (selling `$CC`) are token counts, multiplied here by their respective exchange rates to convert to dollar values. $V_{h\$}$ (proceeds from Hypercert sales) is already in fiat. $E_{buy} = E_t \cdot 1.03$ (exchange rate + 3% premium).
 
 Three dynamics shape how the backing ratio evolves:
 
-1. **Reserve minting** raises both $R$ and $S$ — backing ratio stays roughly stable (the buy premium improves it slightly).
-2. **Fiat Hypercert sales** raise $R$ without increasing $S$ — backing ratio *improves*.
-3. **Redemptions** reduce both $R$ and $S$ — net effect depends on the exchange rate and flow mix.
+1. **Reserve minting** ($M_r$) raises both $R$ and $S$ — backing ratio stays roughly stable (the buy premium improves it slightly).
+2. **Fiat Hypercert sales** ($V_{h\$}$) raise $R$ without increasing $S$ — backing ratio *improves*.
+3. **Redemptions** ($X$) reduce both $R$ and $S$ — net effect depends on the exchange rate and flow mix.
 
 This is why Hypercert demand is strategically crucial: it's the mechanism that deepens backing per circulating token, not just increases gross volume.
 
 ---
 
-## Growth Stages: How the Economy Evolves
+## Growth Stages: How the Economy might evolve
 
 The same mechanisms behave differently at different scales. Understanding the expected trajectory helps set realistic expectations at each stage.
 
 ### Phase 1: Social and Utility Bootstrapping
 
-In the early days, `$CC` has effectively **zero monetary value** — and that's fine. Value is primarily social: `$CC` functions as recognition, a visible record of contribution. Access fees create a small but steady baseline demand. Internal circulation might emerge as community members begin trading `$CC` for goods and services among themselves.
+In the early days, `$CC` has effectively **zero monetary value** — and that's fine. Value is primarily social: `$CC` functions as recognition, a visible record of contribution. Most early members are likely ideologically driven and would care more about the effect than monetary returns. Internal circulation might emerge as community members begin trading `$CC` for goods and services among themselves. Access fees create a small but steady baseline demand.
 
-*What does this look like concretely?* Imagine 200 users, completing about 50 issues per month at an average reward of 100 `$CC`. With access fees of 10 `$CC` per user per month:
+*What does this look like concretely?* Imagine 200 users (across multiple communities), completing about 50 issues per month at an average reward of 100 `$CC`. Assuming ~40% of users pay access fees (10 `$CC`/month for pro features), that's ~5,000 `$CC` minted and ~850 burned each month (800 access fees + 50 transaction fees).
 
-- Monthly minting: ~5,000 `$CC`
-- Monthly access-fee burn: ~2,000 `$CC`
-- Equilibrium supply: ~295,000 `$CC`
-
-Even at this small scale, access fees alone absorb 40% of gross monthly minting. The system is already self-regulating.
+As supply grows, demurrage destroys more tokens in absolute terms each month. The theoretical ceiling (if these parameters held forever) is ~415,000, at that point demurrage would destroy as much as is created; but the system would take nearly 20 years to reach 90% of it — and Phase 1 won't last that long.
 
 ### Phase 2: Local Economic Use
 
@@ -292,10 +287,7 @@ Internal trade grows. Early impact demand appears as the first Hypercerts attrac
 *At 5,000 users, 500 issues/month, average reward 150 `$CC`:*
 
 - Monthly minting: ~77,000 `$CC` (including some reserve purchases)
-- Monthly burns: ~53,500 `$CC`
-- Equilibrium supply: ~2,350,000 `$CC`
-
-Burns are absorbing nearly 70% of gross inflow. The economy is growing but staying bounded.
+- Monthly burns: ~23,500 `$CC` (20,000 access fees + 2,500 transaction fees + 1,000 Hypercert-in-`$CC` purchases)
 
 ### Phase 3+: Credibility and External Capital
 
@@ -303,11 +295,22 @@ With a track record of verified impact, Hypercert demand strengthens. The fiat r
 
 *At 50,000 users, 5,000 issues/month, average reward 200 `$CC`, with an active reserve market:*
 
-- Monthly minting: ~1,050,000 `$CC`
-- Monthly burns: ~705,000 `$CC`
-- Equilibrium supply: ~34,500,000 `$CC`
+- Monthly minting: ~1,050,000 `$CC` (1,000,000 work-minted + ~50,000 reserve purchases)
+- Monthly burns: ~405,000 `$CC` (200,000 access fees + 100,000 Hypercert-in-`$CC` purchases + 80,000 redemptions + 25,000 transaction fees)
 
-At this scale, the system handles serious economic activity while maintaining the same structural guarantees: finite supply, continuous pressure toward circulation, and progressively stronger fiat backing.
+After 1 year at this scale, supply reaches ~7,300,000, with a theoretical ceiling of ~64,500,000.
+
+### What These Trajectories Show
+
+The point of these examples isn't the specific numbers — those depend on assumptions that will inevitably be wrong. The point is the **shape** of the growth curve and what it means in practice:
+
+1. **Supply growth is self-braking.** Demurrage destroys a fixed *percentage* of the stock each month, which means the absolute amount destroyed grows as supply grows. This creates a natural brake that steadily decelerates growth.
+
+2. **Early contributors aren't rapidly diluted.** Because growth decelerates, the people who earn `$CC` early don't see their share of the supply eroded as quickly as raw minting numbers might suggest.
+
+3. **The community has time to observe and adjust.** Supply moves slowly relative to its ceiling, so there's always time to tune the dials — raise demurrage, adjust fees, introduce new sinks — before any parameter mismatch becomes a problem.
+
+4. **The system is predictable.** Given the parameters, you can project where supply will be in a year and then verify it against reality. If actual supply diverges from the projection, something changed — and you can investigate what.
 
 The model doesn't assume instant monetary credibility. It assumes **credibility compounds with verified output** — slowly at first, then with increasing momentum as the track record grows.
 
