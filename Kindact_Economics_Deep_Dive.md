@@ -272,45 +272,35 @@ This is why Hypercert demand is strategically crucial: it's the mechanism that d
 
 The same mechanisms behave differently at different scales. Understanding the expected trajectory helps set realistic expectations at each stage.
 
-### Phase 1: Social and Utility Bootstrapping
+### Phase 1: Social Value (~0–1,000 users)
 
-In the early days, `$CC` has effectively **zero monetary value** — and that's fine. Value is primarily social: `$CC` functions as recognition, a visible record of contribution. Most early members are likely ideologically driven and would care more about the effect than monetary returns. Internal circulation might emerge as community members begin trading `$CC` for goods and services among themselves. Access fees create a small but steady baseline demand.
+`$CC` has effectively **zero monetary value** — and that's fine. Participants at this stage are idealists, community organizers, and people who believe in the vision. `$CC` functions as **recognition**: a visible record of "I contributed." This is how every successful community currency started — WIR, Sarafu, Ithaca Hours all began with social value, not monetary value.
 
-*What does this look like concretely?* Imagine 200 users (across multiple communities), completing about 50 issues per month at an average reward of 100 `$CC`. Assuming ~40% of users pay access fees (10 `$CC`/month for pro features), that's ~5,000 `$CC` minted and ~850 burned each month (800 access fees + 50 transaction fees).
+What can you do with `$CC` at this stage? Pay access fees, trade favors with other community members, maybe exchange small amounts for goods at a sympathetic local business. No external buyers exist yet because there's no track record to buy into. That's expected — the economy is being seeded, not harvested.
 
-As supply grows, demurrage destroys more tokens in absolute terms each month. The theoretical ceiling (if these parameters held forever) is ~415,000, at that point demurrage would destroy as much as is created; but the system would take nearly 20 years to reach 90% of it — and Phase 1 won't last that long.
+*Scale context: ~200 users across multiple communities, ~50 issues completed per month, ~5,000 `$CC` minted monthly.*
 
-### Phase 2: Local Economic Use
+### Phase 2: Local Economic Utility (~1,000–10,000 users)
 
-Internal trade grows. Early impact demand appears as the first Hypercerts attract buyer interest, creating a shallow but real market price for `$CC`.
+Something shifts: `$CC` starts having **small but real local value.** Some local businesses in active Kindact communities begin accepting it — a café near the community garden, a hardware store that supplies project materials. It's still driven partly by goodwill, but there's enough circulation that acceptance starts to make economic sense rather than being purely a favor.
 
-*At 5,000 users, 500 issues/month, average reward 150 `$CC`:*
+First aligned organizations — small NGOs, cooperatives, community trusts — begin using Kindact for coordination. The first Hypercerts attract buyer interest, creating a shallow but real market price for `$CC`. Contributors can now convert some of their earnings into goods and services, even if the exchange rate is modest.
 
-- Monthly minting: ~77,000 `$CC` (including some reserve purchases)
-- Monthly burns: ~23,500 `$CC` (20,000 access fees + 2,500 transaction fees + 1,000 Hypercert-in-`$CC` purchases)
+*Scale context: ~5,000 users, ~500 issues/month, ~77,000 `$CC` minted monthly (including some reserve purchases), ~23,500 burned (access fees, transaction fees, first Hypercert-in-`$CC` purchases).*
 
-### Phase 3+: Credibility and External Capital
+### Phase 3: Credibility Threshold (~10,000–100,000 users)
 
-With a track record of verified impact, Hypercert demand strengthens. The fiat reserve deepens. `$CC` becomes reliably convertible, attracting more participants and more ambitious projects.
+This is where the flywheel begins to turn. Kindact now has **years of auditable, verified project completions on-chain** — a track record that external buyers can evaluate. The verified impact marketplace activates: Hypercerts from completed Kindact work connect to the broader impact funding ecosystem. First corporate and institutional buyers emerge for specific verticals — carbon, biodiversity, community development. Integration with impact certification standards (Verra, Gold Standard) becomes possible.
 
-*At 50,000 users, 5,000 issues/month, average reward 200 `$CC`, with an active reserve market:*
+`$CC` has a real (if volatile) exchange rate. The fiat reserve deepens with each Hypercert sale, making `$CC` progressively more convertible. For contributors, this means Kindact work becomes a viable income supplement — not a full salary, but meaningful compensation for community-benefiting labor that previously went uncompensated.
 
-- Monthly minting: ~1,050,000 `$CC` (1,000,000 work-minted + ~50,000 reserve purchases)
-- Monthly burns: ~405,000 `$CC` (200,000 access fees + 100,000 Hypercert-in-`$CC` purchases + 80,000 redemptions + 25,000 transaction fees)
+*Scale context: ~50,000 users, ~5,000 issues/month, ~1,050,000 `$CC` minted monthly, ~405,000 burned (access fees, Hypercert purchases, redemptions, transaction fees).*
 
-After 1 year at this scale, supply reaches ~7,300,000, with a theoretical ceiling of ~64,500,000.
+### Phase 4: Established Marketplace (~100,000+ users)
 
-### What These Trajectories Show
+The impact marketplace is mature and recognized. `$CC` has stable value supported by diverse demand: access fees, local circulation, institutional impact buying, government integration. Progressive governments begin routing participatory budgets through Kindact rather than traditional procurement.
 
-The point of these examples isn't the specific numbers — those depend on assumptions that will inevitably be wrong. The point is the **shape** of the growth curve and what it means in practice:
-
-1. **Supply growth is self-braking.** Demurrage destroys a fixed *percentage* of the stock each month, which means the absolute amount destroyed grows as supply grows. This creates a natural brake that steadily decelerates growth.
-
-2. **Early contributors aren't rapidly diluted.** Because growth decelerates, the people who earn `$CC` early don't see their share of the supply eroded as quickly as raw minting numbers might suggest.
-
-3. **The community has time to observe and adjust.** Supply moves slowly relative to its ceiling, so there's always time to tune the dials — raise demurrage, adjust fees, introduce new sinks — before any parameter mismatch becomes a problem.
-
-4. **The system is predictable.** Given the parameters, you can project where supply will be in a year and then verify it against reality. If actual supply diverges from the projection, something changed — and you can investigate what.
+The network effect is now self-reinforcing: **more verified impact → more institutional demand → deeper reserves → more stable `$CC` → more contributors → more verified impact.** The currency has evolved from a social token into a functioning economic medium — not by decree, but because the track record of credible, verified work made it worth holding.
 
 The model doesn't assume instant monetary credibility. It assumes **credibility compounds with verified output** — slowly at first, then with increasing momentum as the track record grows.
 
@@ -325,51 +315,6 @@ No economic model this ambitious is complete on the first draft. Several areas n
 3. **Hypercert valuation:** How do you price impact across very different domains — carbon removal vs. biodiversity vs. care work vs. civic outcomes?
 4. **Legal classification:** How do different jurisdictions treat `$CC`? Utility token? Security? In-kind income? Money transmission?
 5. **Issuance ceilings:** Should the community eventually add explicit sink-linked caps on top of the existing structural limits?
-
----
-
-## Appendix A: 12-Month Reserve Trajectory Example
-
-This example illustrates a plausible early-phase path under fixed monthly flows. It's intentionally simple — constant parameters, no shocks, no behavioral feedback loops. The goal is clarity, not forecasting precision.
-
-**Assumptions:**
-
-1. Initial state: $S_0 = 300{,}000$, $R_0 = 30{,}000$
-2. Demurrage: $d = 1\%$ per month
-3. Monthly flows: $M_w = 5{,}000$, $M_r = 2{,}000$, $A = 2{,}000$, $F = 50$, $H = 300$, $X = 1{,}000$
-4. Exchange rate: confidence curve with $R_{target} = 1{,}000{,}000$; buy premium 3%
-5. Hypercert fiat sales: $V_{h\$} = 500$ per month
-
-**Implied recursions (simplified with constant flows):**
-
-> $$S_{t+1} = 0.99 \, S_t + 3{,}650$$
->
-> $$R_{t+1} \approx R_t + 625$$
-
-| Month | Supply $S_t$ | Reserve $R_t$ | Backing $b_t$ | Exchange rate $E_t$ |
-|---|---:|---:|---:|---:|
-| 0 | 300,000 | 30,000 | 0.1000 | 0.1008 |
-| 1 | 300,650 | 30,625 | 0.1019 | 0.1027 |
-| 2 | 301,293 | 31,250 | 0.1037 | 0.1046 |
-| 3 | 301,931 | 31,875 | 0.1056 | 0.1065 |
-| 4 | 302,561 | 32,500 | 0.1074 | 0.1084 |
-| 5 | 303,186 | 33,125 | 0.1093 | 0.1103 |
-| 6 | 303,804 | 33,750 | 0.1111 | 0.1121 |
-| 7 | 304,416 | 34,375 | 0.1129 | 0.1140 |
-| 8 | 305,022 | 35,000 | 0.1147 | 0.1158 |
-| 9 | 305,621 | 35,625 | 0.1166 | 0.1177 |
-| 10 | 306,215 | 36,250 | 0.1184 | 0.1196 |
-| 11 | 306,803 | 36,875 | 0.1202 | 0.1214 |
-| 12 | 307,385 | 37,500 | 0.1220 | 0.1232 |
-
-**What this shows:**
-
-1. Supply grows slowly toward its finite equilibrium — demurrage keeps it in check even with steady minting.
-2. The reserve grows each month from reserve purchases and Hypercert fiat inflows.
-3. The backing ratio *rises* because reserve growth outpaces supply growth in this scenario — exactly the dynamic that builds confidence over time.
-4. The exchange rate $E_t$ tracks just slightly above the backing ratio at this early stage — the confidence curve barely adds anything when $R_t$ is far from $R_{target}$. As the reserve grows toward \$1M, the gap between $b_t$ and $E_t$ would widen significantly (see the table in the Reserve Pricing section).
-
-Real trajectories will be noisier, but the example makes the mechanics easy to audit.
 
 ---
 
