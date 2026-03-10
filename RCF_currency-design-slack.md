@@ -836,3 +836,127 @@ Using compost as the commodity is a good example. I've asked asked ChatGPT to do
 
 Please anyone, feel free to post the interesting quotes from this doc for those who want to know the point of the  ideas before reading the doc. If you want I could turn this into a pdf? 
 Returning to the point of this discussion,  we can't just make up an agreed value for a token - there are always markets and arbitrage - and so we have to configure the system in a way that offers a stable value and a value that is meaningful to us and one that we can use for fiscal and monetary policy - i.e. policy that impacts community factors like employment, capacity utilization, regeneration, standards of value, inflation, income distribution,  etc. 
+
+ChuckHarrison — 07/03/2026, 08:44
+👇  I don't trust this AI. I think what really happens is that the merchant receives coinage equal in "face value" to the bullion weight he provides, but those coins he receives, in aggregate, only contain 92% of the bullion mass. 
+Image
+In this case "face value" corresponds  to the "reference value" or "agreement value" of Berkshares, and redemption is like melting down of coinage for its precious metal content. But the minting process of pre-2022 Berkshares (95 cents buys you a dollar face value of Berkshares in your hand) is a bit like reverse seignorage at the cost of the merchant population that redeems. 
+ChuckHarrison — 07/03/2026, 08:54
+Adam Smith writes in Wealth of Nations, 
+Wherever money is received by tale, therefore, and not by weight, a seigniorage is the most effectual preventive of the melting down of the coin.
+I am not familiar with the terminology, but "received by tale" here must mean "at face value". I wonder what social mechanisms (e.g. legal tender laws) might have stabilized the practice of accepting underweight coinage at face value. How does it compare to the social mechanisms stabilizing the Berkshares merchants to accept "by tale"?
+In the same vein, why do merchants accept credit card payments at face value? (I understand there once were regulations in the US to require this, but they are many years gone.)
+Leanne — 07/03/2026, 12:16
+It means that the silver producer gives them 1.08 units of silver and they get a token backed by 1 unit. 1 unit might back the silver, and  rest of the silver 0.08 is extra kept by the crown and used to print more tokens. This is the same as what you said in the question - an 8% discount.
+Leanne — 07/03/2026, 12:56
+NO : "In this case "face value" corresponds  to the "reference value" or "agreement value" of Berkshares" @ChuckHarrison 
+
+In this case the mint/bank will redeem tokens at facevalue 1 unit of silver. So yes face value is reference value - it is more than an "agreement" it is defended by the mint (and there is a policy of redemption). While to acquire these tokens you must sell 8% more silver to the mint. 
+
+This is not the Berkshare "agreement" of $1:1B.  In Berkshare seiniorage is give to the tourists - the buyers of tokens, paid by the merchants, and bank gets nothing.
+
+In the pre-2022 Berkshare: the bank will not redeem tokens 1:1, rather only 0.95 this is the face value.  (1 Berkshare is the face value + policy of redemption).  In your interpretation your "face value"  is used  incorrectly, but I know  you want to say facevalue of $1USD. This your  "agreement" value. 
+
+The redemption value sets the floor, 1 berkshare is on par with 0.95 USD.
+
+Since the "agreement" was not working, maybe the 'reference' value for shoppers, but for merchants  it was the floor that merchants use when they thought of selling their goods for tokens. They did not fool themselves into thinking they are getting $1 worth of value when they accept a Berkshare (except for the amount of personal groceries). I know this for fact as I asked many of them and they all said the same thing. Plus it makes perfect sense and is the definition of how markets work.
+
+The extent it was $1 was due to the grocery store. 
+If the Berkshare  Money Demand equaled Money Supply,  then maybe your "agreement of 1:1 would be 'true' - the social contract of a self reinforced loop of trust would have worked - just like US citizens tipping 20%. This is not complusory, but most sellers demand 20% and most customers supply 20%. This is an agreed price of doing business - it is an "agreement". I guess it comes from a recognition that the staff are underpaid. It is not however guaranteed. So we can't say it is on par with a charging 20% higher prices. If shopkeepers demanded 30% would there be a supply of 30% tip? I find these types of 'agreements' unsatisfactory, and open to exploitation - some people pay none, some people pay more, guilt goes around, and workers never know if they will be paid a fair wage. 
+
+In the Berkshare it was more extreme. Money supply was always greater than money demand (becuase consumers are paid the seignorage) and the exchange rate was pushed down to the floor in most cases (but not below this which is important - it was defended at its face value - that which was promised by the mint). 
+
+I apologise if I'm just repeating myself, and I misunderstood your intent.
+Leanne — 07/03/2026, 13:03
+One argument for credit or paper money, would be the same here for coins that have a commodity value less than their 'face value' is the chartalist notion that you could use these tokens to pay taxes.
+There is nothing stabilizing the merchants to accept by "tale". There is only defense at the 0.95 cent level by banks, and the coop which would defend the 'tale' to $1 to the extent that groceries were redeemed at par.  But becuase the stores that accepted Berkshares had more than their grocery bill, they often did not accept by "tale" or at par to $1. Instead they limited items to sale items, or they limited max to 20% or 50% of purchase (not everyone but most). They accepted a transaction cost of doing business - just as they accept visa credit cards.
+Leanne — 07/03/2026, 13:11
+@ChuckHarrison in general I agree - the AI is not perfect, and you should not trust it. But it does offer a skeleton upon which to simplify our discussion.
+ChuckHarrison — Yesterday at 02:58
+I have been learning that there were a lot of different things going on with coinage in the metallism era. Many of the specifics are new to me.
+It is possible there are things to learn from behavior in those times.
+I'm not sure that mints routinely redeemed legal coinage for face value in silver. Anyone with a furnace could "self redeem" the actual silver content. Since government policy often included explicit seigniorage and also debasement, a mint offering full value redemption domestically would be working against the policy.
+ChuckHarrison — Yesterday at 03:13
+I would speculate that accepting "coin of the realm" at face value was largely due to laws ordering this (legal currency laws) and taxes, not to this hypothetical redemption at the mint.
+I understand that the widespread practice of governments minting underweight specie coinage was not superbly stable, but it certainly operated for centuries.
+
+It seems fair to draw a parallel between seigniorage & debased coinage and the "redeem at 95%" version of Berkshares.
+ChuckHarrison — Yesterday at 03:29
+You seem to be sticking to your opinion that a situation where a merchant accepts notes for 20% or 50% of the sale is the same as a situation where the merchant accepts them at a discount (e.g 100 B buys the same product as 95 USD).
+That opinion (as I have restated it here) is patently false: different amounts of currency are transferred under the two scenarios for the same product.
+
+I don't see why the terminology "the merchant accepts the currency at the reference rate for a limited fraction of the invoice" rankles you so much. It seems like a more accurate statement of the transaction than "the merchant accepts the currency at a discounted rate relative to the reference." Those are two different ways to deprecate the value of the currency. What's the point of saying they are the same? 
+Leanne — Yesterday at 09:45
+I am trying to draw a very clear theoretical line between two very different ways to design and explain a local currency. Distinguishing a supply side orientation (yours) with a demand side orientation (mine).  I don't want to entirely invalidate your approach (apologies if it sounds like that) - but I can't help but be passionately against it as a design approach. Let's call these 2 approaches (1) and (2) respectively.
+
+1A. Money Value as Agreement / Convention 
+I do not know the Ithaca Hours model well. But for argument sake I will agree with you that it was an "agreement based currency" initially issued as a token denominated in hours, and circulating at a rate of $10 per hour. I believe it relied on:
+goodwill, local identity, moral commitment and social coordination. With community members agreeing to accept it at that rate. Many  economists (not me) will similarly argue that the basis of the value of a USD is similar - based on trust. 
+
+Some economists (like me) will also argue that crypto currency values are explained in a similar manner of self reinforcement, along a  "beauty contest" set of dynamics.
+IMHO Self-referential belief systems cannot sustain a currency, stabilize its value. They can produce inherently unstable monetary architecture. IMO the Ithaca hours was doomed from the start if all it had was belief. It may have worked initially because of excitement and community identity. But once that initial enthusiasm faded, nothing in the economic structure forced people to keep needing Hours - there was no demand component. This was the same mistake with SEEDS. Supply and payment for hours worked, grants for hours worked, or compensation based on hours worked might explain supply but it has no appreciation of demand. Such tokens build up on people's pockets, they are hard to re-spend, there becomes a circulation bottleneck. Adding demurrage won't help - because after the excitement, NO BODY wants this currency.
+
+Given the SEEDS history in this group - I can't help but admonish this theory to inform design. 
+
+Robust currencies are not built on supply alone;  Hyman Minsky said it best - "anyone can create money; the problem lies in getting it accepted".
+The Berkshare is a stable currency, has a stable value, and there is no reason for it to  dissappear, and  no reason that an excited community can't still use it whenever the fashion arises. But IMO this voluntary desire to use the currency has NOTHING to do with its reference value, and has EVERYTHING to do with its institutional demand (banks stand ready to buy back for dollars). This demand will exist DESPITE its supply, pre or post 2022. 
+Leanne — Yesterday at 09:58
+This view of convention 1A is not unusual - indeed it is the basis of Classical Monetary Theorists like Carl Menger, founder of the Austrian School of Economics, argued that money emerges because people converge on a commonly accepted medium of exchange. The origin of money says that market participants gradually converged on the most saleable commodity. Over time everyone accepts it because they expect others will i.e.
+
+expectation → acceptance → reinforcement of expectation
+
+Modern macroeconomists sometimes model this as self-fulfilling monetary equilibria, or social consensus. 
+Leanne — Yesterday at 10:07
+These perspectives don’t necessarily deny institutions—but they stress shared belief and social recognition. This is what you are stressing when you talk about $1:1B  pre 2022. 
+
+So rather than deny social recognition - which is what I have done so far. I shall grant you, your argument - I will agree with you that prior to 2022 there was a social recognition represented on the Banks website and the Schumacher institutes website that we should all treat 1B as equivalent to 1$.
+
+But the fact that this belief was able to exist beyond fad and fashion, is due solely to the institutional demand for the currency. And I would argue that we can see the breakdown of this 'story' which rested on a self fulfilling unstable social coordination outcome. Rather what even allowed this fad to continue to the extent it did was the structural demand for the currency that placed a floor of 0.95 $  and that this was the attractor in the system. It was not due to a voluntary agreement on the fringes. 
+Leanne — Yesterday at 10:31
+It might be that you are coming from a demand persepctive - speculative demand or transactionary demand for money. And I too have supported such a perspective -  saying that the supply of money should not grow more than this demand for money - in order to support a self fulfilling monetary equilibrium. 
+
+I believe this to be a necessary dynamic. But it is not enough - and in this discussion with the Berkshares - I believe it is a good place to show why this is an inferior argument - as clearly it is the institutional defence of the currency that this whole social coordination is rest upon. 
+Leanne — Yesterday at 12:18
+But I think you are coming more from a supply side. i.e.
+
+1B. Money value due to intrinsic virtue of an activity or its cost of production .
+
+Humans naturally think 
+effort → value
+labor → worth
+So they intuitively assume money created through effort must be valuable. This thinking underpins the  proof-of-plant, proof-of-kindness, proof-of-bioregional-regeneration, and proof-of-work theories that exist among lay people to explain some intrinsic value of a token when its supply is tied to this cost of production story.  This might be also your underlying rationale for the Ithaca hours currency  valuation (I don't know). Even Alex said something like this in his anchor for a commodity currency value: 'Each time a new commodity eg: 1 kg of rice, is produced or made available in the community, the community can mint "Rice kg" tokens as a backing token for the CC (Voucher)).  This narrative is false or incomplete at best.
+
+If I burn $10 of electricity to generate a useless token, the token does not become worth $10.
+Demand comes first; production adjusts afterward
+Leanne — Yesterday at 12:26
+Institutional Demand and Constraints
+
+IMO the way to design a currency is in enforcing or supporting acceptance. Structurally designed currencies do not rely on voluntary goodwill. It relies on: redemption mechanisms, monopoly control of key resources, tax or payment obligations, arbitrage constraints, institutional demand. 
+Hence, when speaking of the Berkshare currency, I see the social convention of 1$ for 1B as a subsidiary notion, subject to coordination failure. Hence best to ignore it. 
+Leanne — Yesterday at 12:34
+The value of money emerges from institutional and market structures that create obligations, redemption possibilities, and constraints on behavior. For example:
+State currencies derive value largely from tax obligations and legal tender structures.
+Commodity-redeemable currencies derive value from convertibility into scarce goods.
+Some complementary currencies gain stability through institutional purchasing commitments or employment guarantees.
+
+Without these structural mechanisms, tying the issuance of money to a virtuous activity—whether by computation, tree planting, or compost production—does not by itself create demand or economic value for the currency. 
+ChuckHarrison — 05:12
+@Leanne Thanks, this is very helpful on understanding your perspective and primary concerns. I certainly agree with your skepticism about a currency which is "backed by community resources" but is not directly redeemable. I am open to hearing an explanation of what "backed by" could mean without redeemability, but I haven't heard a satisfactory story yet.
+I think it is fair to say "I see the social convention of 1$ for 1B as a subsidiary notion," (though I obviously don't think that is sufficient reason to ignore it entirely). But my perspective is that most of this discussion is subsidiary to establishing meaningful value flows. If I understand your observations about Berkshares, it is predominantly a "flow-though" type of situation, where individuals inject fiat, BS are issued, used to pay for merchandise, and the merchant redeems them for fiat again. Only a small fraction of the flow is within the community. This pattern of flow depends essentially on the bank redemption. 
+ChuckHarrison — 05:34
+I like the vision of Will Ruddick's "string game" and argue for an effort to create and support circular flows within the community. Building circularity primarily requires "gap-filling": finding services provided by those outside the currency community and either (a) bringing them into the community, or (b) finding a community member who is able to provide the service. I think some goods are harder to gap-fill than most services (e.g. you can't gap-fill for tunafish in an inland community) , and that is what "foreign trade" is about. My perspective is that we are aiming to design a community economy more than just design a currency.
+ChuckHarrison — 05:41
+In my understanding, a non-redeemable currency like Ithaca Hours was approximating this goal. If the currency is flowing around the community, and not pooling unsustainably in pockets, then we have "flow around" rather than "flow through". I think @Leanne 's point is that while such a flow pattern can exist, it needs stabilizing mechanisms to avoid collapse. I would also say it specifically needs a mechanism for the money supply to grow and shrink (monetary policy) in order to adapt to changes in economic activity. Stabilization is critically important, but it is subsidiary to the greater goal of establishing locally recirculating value flows.
+ChuckHarrison — 05:49
+Perhaps the Berkshares "flow through", fiat-backed model is intending to be an initial phase on a roadmap towards a local-currency economy in which "flow around" builds up and eventually dominates over "flow through". We can imagine the same intention with a commodity-backed currency like the compost token. But ulimately the goal is that the tokens support broad-based community economic activity, rather than that they primarily support transfer of compost. And that implies value flow pathways by which the tokens pass through many community hands who are not interested in the compost at all.
+This raises the question of "what incentives can we create for people to join in the community-currency economy?". The $1:1B reference value played such a role pre-2022: it gives a 5% preference to circulating within the community over redeeming. This is worth paying attention to as a currency mechanism, and evaluating under what conditions it is helpful. 
+Incidentally, I think we have many reasons to think that individuals and merchants will tolerate a few percent overhead as a "cost of doing business", although specific context of course matters. Merchants pay credit card fees and give out loyalty discounts. In earlier centuries they tolerated seignorage and even pretty severe debasement of coinage. This level of tolerance should be considered when we embark on currency system design with embedded incentives.
+Leanne — 07:12
+When I spoke of stabilization I was speaking of a stable value for the currency, not one that is volatile else that would lead to runs or hoarding - the opposite of circulation. I want "flow around" as much as anyone - This is the  aim with both Berkshares and Ithaca hours - to promote local circulation. Money supply expansion is like  "pushing on string"  It does not in and of itself lead to circulation. You need to pull the string or increase demand for the currency to make it circulate. So I do believe that in order to have "flow around" you need to have "flow through".
+Investopedia
+Understanding 'Pushing on a String' in Monetary Policy
+Learn how 'pushing on a string' illustrates the limits of monetary policy in economic downturns when increased cash supply fails to spur spending or stimulate recovery.
+Image
+Redeemability, and commodity backed tokens can pull on that string, and create circulation. That is what monetary policy is all about - it is the buffer that stabilizes the ship and keeps it afloat and keeps it moving. Economic systems that consist of individual agents have way too many positive feedbacks that destabilize and stop the system from its optimal operation. The compost is just a catalyst for other board-based community or bioregional economic activity. It is not the primary goal - it is just a mechanism or a tool of monetary policy. (I made up the compost tool - I'm not saying this is the best tool just one that is used as an example).
+Leanne — 07:33
+The same with most monetary policy tools - taxes, reserves, government bonds, money markets, interest rates, exchange rates - these are simply intermediary targets to reach the great goal of GDP growth targets, full employment, inflation targets, low inequality etc. Just because bank reserves might have been a tool in monetary policy does not mean that we need all people in relation to bank reserves or even have a bank acocunt, in order to be impacted. You just need a tiny number relative to the greater population to be involved in the monetary policy. Same with taxes, or other fiscal policy measures, people can be 2nd, 3rd, 4th .. 10th order removed. There are 'multipliers' and 'accelerators' that allow targeted interventions to ripple through the economic network. The entire network might benefit from the injection of cash and the anchoring of value that comes about due to one individual dealing in compost, and can impact a person  10 degrees removed - as it is a complex system - and so the butterfly wings in the Amazon can (in theory) impact the fringes of the planet.
