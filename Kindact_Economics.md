@@ -47,19 +47,25 @@ Beyond that, some early circulation may come from **deliberate local arrangement
 
 Kindact provides the technological infrastructure, but the on-the-ground work of building these early networks is up to each community. Fortunately, **a range of bootstrapping strategies have already been tested successfully by community currencies worldwide** — from nonprofit-anchored merchant networks (Chiemgauer), to mutual credit among local businesses (WIR), to discount incentives for local currency purchases (Banco Palmas), to leveraging existing community organizations as circulation hubs (Sarafu in Kenya). Early adopter communities can draw on these proven approaches and adapt them to their local context.
 
-Over time, as Channel 3 (impact demand) begins generating fiat backing, this picture changes. `$CC` starts to have a discoverable exchange rate, and acceptance becomes less of a favor and more of a reasonable economic decision. Eventually, everyday circulation creates "working balances" — people hold `$CC` not because they're speculating, but because they need it for daily transactions. But that's a later-stage outcome, not a bootstrapping mechanism.
+Over time, as Channel 3 (impact demand) begins generating fiat backing, this picture changes. `$CC` starts to have a discoverable exchange rate to fiat, and acceptance becomes less of a favor and more of a reasonable economic decision based on the fiat floor. Eventually, everyday circulation creates "working balances" — people hold `$CC` not because they're speculating, but because they need it for daily transactions. But that's a later-stage outcome, not a bootstrapping mechanism.
 
 ### Channel 3: Impact Demand — The Hypercert Flywheel
 
-This is the most powerful channel, and where `$CC` starts to develop real monetary backing. Here's how it works:
+This is the most powerful channel, and where `$CC` starts to develop real monetary fiat backing. Here's how it works:
 
-Every time Kindact verifies completed work, a Hypercert is generated — a detailed, auditable credential recording who did what, when, and with what verified results. These Hypercerts are held by the platform as assets. Now, there's a growing market of external buyers who want exactly this kind of verified proof of impact: **corporations** needing ESG documentation, **carbon offset buyers** looking for credible credits, **impact funds** seeking auditable outcomes, and **progressive governments** wanting to direct funding toward proven results.
+Every time Kindact verifies completed work, a Hypercert is generated — a detailed, auditable credential recording who did what, when, and with what verified results — and `$CC` is issued. These Hypercerts are held by the platform as assets. 
 
-When these external buyers purchase Hypercerts from Kindact, the proceeds flow into a **fiat reserve** that backs `$CC`. Anyone can exchange `$CC` for fiat (or vice versa) through this reserve, and the exchange rate reflects the ratio of fiat in the reserve to `$CC` in circulation. As more Hypercerts sell, the reserve deepens, and `$CC` becomes increasingly stable and reliable. (More on the exchange rate and preventing bank runs later).
+Now, there's a growing market of external buyers who want exactly this kind of verified proof of impact: **corporations** needing ESG documentation, **carbon offset buyers** looking for credible credits, **impact funds** seeking auditable outcomes, and **progressive governments** wanting to direct funding toward proven results.
+
+When these external buyers purchase Hypercerts from Kindact, the proceeds flow into a **fiat reserve** that backs `$CC`. Anyone can exchange `$CC` for fiat (or vice versa) through this reserve, and the exchange rate reflects the ratio of fiat in the reserve to `$CC` in circulation (not necessarily 1:1 though, for the exact rate see the chapter on [Reserve Pricing](https://docs.google.com/document/d/1jzrd82rlj0QP-YijoKttI25eAMqHSJ-CPRFLgQpT3HI/edit?tab=t.w12b1x9h4m6v)). As more Hypercerts sell, the reserve deepens, and `$CC` becomes increasingly stable and reliable. (More on the exchange rate and preventing bank runs later).
 
 Hypercerts can also be purchased *with* `$CC`, which burns the `$CC` used — creating deflationary pressure that further supports the price.
 
 This creates a virtuous cycle:
+
+[Image]
+
+The community does some work that is verified and generates a Hypercert. This Hypercert proofs that e.g. 100 trees were planted, locking in ~100 tonnes of carbon over the next 50 years. A company that needs to offset its carbon use buys that Hypercert for USD $1000, which goes into the reserve. Holders of $CC see that, and know “If I (in the future) want to exchange my $CC into USD, I can do that (because there is money in the safe)”, increasing confidence in $CC that it’s actually worth something. At the same time, businesses start to accept $CC as means of (at least partial) payment, increasing the perceived utility of $CC (“I can actually use it to get stuff”), further increasing the value. Other people also see that (effectively because the exchange price of $CC:$USD rises from before 0.01:1 to now 0.02:1, OR because they see it used in circulation and as accepted payment method), and some of them will think: Hey, I’m doing something good if I do this task, AND I get $CC as a reward, which is worth something - let’s do it. This continues the cycle: more Hypercerts get produced, sold, pushing the $CC price up, encouraging more people to work and accept $CC as the reward etc… 
 
 **More community-approved work → more Hypercerts → more sales to external buyers → deeper fiat reserve → more stable `$CC` → more confidence in the reward → more people willing to do the work.**
 
@@ -71,7 +77,7 @@ The infrastructure and market for verified impact credentials already exists and
 
 A reasonable question: if backing matters, why not require full fiat collateral for every token at mint time?
 
-The honest direct answer is of course: because we don't have that kind of cash. But there is another part to it: 100% backing would turn `$CC` into a stablecoin requiring large startup capital — defeating the purpose of a currency that's meant to *emerge from contribution*. Every successful community currency (WIR, Sarafu, Ithaca Hours) started the same way: social value first, monetary value later. In the early stages, `$CC` functions primarily as recognition — a visible record of contribution. The backing is the verified work itself. As the platform builds a track record and Hypercert sales begin, fiat reserves grow and `$CC` gains progressively stronger monetary backing.
+The honest direct answer is of course: because we don't have that kind of cash. But there is another part to it: 100% backing would turn `$CC` into a stablecoin requiring large startup capital — defeating the purpose of a currency that's meant to *emerge from contribution*. Every successful community currency (WIR, Sarafu, Ithaca Hours) started the same way, with social value first. In the early stages, `$CC` functions primarily as recognition — a visible record of contribution. The backing is the verified work itself. As the platform builds a track record and Hypercert sales begin, fiat reserves grow and `$CC` gains progressively stronger monetary backing.
 
 The model is staged: **social and utility value first, deeper monetary backing later.**
 
