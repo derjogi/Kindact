@@ -247,6 +247,12 @@ How does the platform verify that work was actually done? This is an ongoing cha
 
 No system is perfect, but the combination of these approaches creates strong incentives for honest reporting while making fraud difficult and detectable.
 
+### Rewarding and Scaling Verification
+
+Verification is itself valuable work — without it, the entire reward system loses credibility. So **verifiers should be rewarded too**. Rather than hardcoding a default payout, the preferred approach is to let communities deliberate on verification rewards through the same issue-based process as everything else. A community might decide that verifying a reforestation project warrants more than verifying a neighborhood cleanup, or that verification effort should scale with the complexity of the task being checked. This keeps the system flexible and context-sensitive, rather than imposing a one-size-fits-all rate.
+
+Some verification can also be **automated**. For small, frequently repeated tasks — picking up litter on a particular street, watering community garden beds, completing a recurring maintenance check — the verification step can follow a standardized template (geotagged photo, timestamp, location match) that an algorithm evaluates without human review. Crucially, **verifying a verification task** should itself be a candidate for automation: we don't want to end up in an endless loop of verifiers verifying verifications. Checking whether a verifier followed the correct protocol, cross-referencing their report against available data, and flagging inconsistencies should all be handled algorithmically. Human reviewers then only need to step in for edge cases or disputes, allowing the system to scale without requiring an ever-growing army of volunteer auditors.
+
 ---
 
 ## Step 5: Reward — Economic Incentives
