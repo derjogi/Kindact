@@ -3,7 +3,7 @@
 *How a community currency gets real value — and keeps it*
 
 > **TL;DR:**
-> Kindact uses a **two-asset economic model**: `$CC` as the circulating coordination currency, and Hypercerts as non-fungible impact credentials. `$CC` is minted when verified work is completed or when someone buys it from the reserve. Its value comes from three sources: platform access fees (you need `$CC` to use the platform), Hypercert demand (external buyers purchasing proof of impact), and everyday circulation (people trading goods and services). Supply is kept in check by demurrage (a small, continuous decay on all balances) and multiple burn mechanisms, which together guarantee a finite supply equilibrium. As Kindact builds a track record of credible, verified impact, Hypercert sales deepen the fiat reserves backing `$CC`, making it progressively more stable and convertible. The core risk isn't inflation — it's verification quality. If the work is real, the economics work. If verification fails, no formula can save it.
+> Kindact uses a **two-asset economic model**: `$CC` as the circulating coordination currency, and Hypercerts as non-fungible impact credentials. `$CC` is minted when verified work is completed or when someone buys it from the reserve. Its value comes from three sources: platform access fees (you need `$CC` to use the platform), realized Hypercert sales (fiat paid by external buyers for verified impact credentials flows directly into the reserve backing `$CC`), and everyday circulation (people trading goods and services). Supply is kept in check by demurrage (a small, continuous decay on all balances) and multiple burn mechanisms, which together guarantee a finite supply equilibrium. As Kindact builds a track record of credible, verified impact, Hypercert sales deepen the fiat reserves backing `$CC`, making it progressively more stable and convertible. The core risk isn't inflation — it's verification quality. If the work is real, the economics work. If verification fails, no formula can save it.
 
 ---
 
@@ -23,7 +23,7 @@ Before diving into value, it helps to understand that Kindact's economy delibera
 
 1. **`$CC` (fungible currency):** the medium used for rewards, exchange, and access fees. It's designed to *circulate* — to flow from implementers to merchants to other contributors and back again. At the same time, this doubles as **reputation signal** - every `$CC` in your account means you've contributed to the community, either by direct work, or by supporting others' work. 
 
-2. **Hypercerts (non-fungible impact credentials):** auditable records tied to specific verified work. These are designed to be held, evaluated, and sometimes retired — a carbon offset, for example, can only count once. Hypercerts will be the main source for a reserve fund that’s backing $CC.
+2. **Hypercerts (non-fungible impact credentials):** auditable records tied to specific verified work. These are designed to be held, evaluated, and sometimes retired — a carbon offset, for example, can only count once. When sold to external buyers for fiat, Hypercerts become the main source of revenue for the reserve fund that’s backing $CC.
 
 When a Kindact issue is completed and verified, both are generated simultaneously: **`$CC` is minted and goes to the implementer** as their reward, and **a Hypercert is created and held by Kindact** as a platform asset. This distinction matters because the two assets play very different roles in making the economy work — and their interaction is what creates the value flywheel described below.
 
@@ -271,6 +271,16 @@ Three dynamics shape how the backing ratio evolves:
 3. **Redemptions** ($X$) reduce both $R$ and $S$ — net effect depends on the exchange rate and flow mix.
 
 This is why Hypercert demand is strategically crucial: it's the mechanism that deepens backing per circulating token, not just increases gross volume.
+
+### Open Market Price vs. Reserve Rate
+
+If `$CC` trades on an open market (a DEX, a small exchange, or even informal peer-to-peer), the market price will likely diverge from the reserve exchange rate — and that's expected and healthy.
+
+The **reserve rate** reflects only realized fiat: actual Hypercert sales, actual reserve purchases. It's conservative by design. The **open market price** reflects the market's broader assessment, including factors the reserve formula doesn't capture: the size and quality of Kindact's unsold Hypercert portfolio, the platform's growth trajectory, community vitality, and the expectation that future Hypercert sales will deepen the reserve further.
+
+In practice, this means the open market price will likely **exceed** the reserve rate for most of Kindact's life — because the market prices in future potential, while the reserve only reflects what's already been realized. The unsold Hypercert portfolio functions like a balance sheet asset that outside observers can assess on their own terms: a speculator might look at 50 verified reforestation Hypercerts and estimate what fraction will eventually sell and at what price, then express that assessment by buying `$CC` at the current market rate. Kindact doesn't need to formally appraise its Hypercerts for this to work — transparency about the portfolio (what work each Hypercert represents, which ones have sold, at what prices) gives the market the information it needs.
+
+The reserve rate serves as a **floor**: even if the open market price drops, holders know they can redeem through the reserve at the posted rate (subject to flow controls). This prevents complete collapse and distinguishes `$CC` from pure speculation. The open market, meanwhile, provides **price discovery** that naturally incorporates information the reserve mechanism can't.
 
 ---
 

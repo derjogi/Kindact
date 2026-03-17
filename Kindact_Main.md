@@ -208,7 +208,7 @@ The test has two components. First, a few simple questions about the issue summa
 
 ### What About Organized Opposition?
 
-What stops an organized group from mobilizing to push through their agenda or block proposals they dislike? Several structural safeguards apply: the **metrics requirement** means issues can only proceed to voting if projected outcomes are net-positive across social and planetary boundaries — a coalition can't vote through harmful proposals. **Competence verification** filters out drive-by voting. **Anonymized deliberation** makes faction coordination harder during discussion.
+What stops an organized group from mobilizing to push through their agenda or block proposals they dislike? Several structural safeguards apply: the **metrics requirement** means issues can only proceed to voting if projected outcomes are net-positive across social and planetary boundaries — a coalition can't get harmful proposals approved, even if they’re in the majority. **Competence verification** filters out drive-by voting. **Anonymized deliberation** makes faction coordination harder during discussion.
 
 But fundamentally: if a large group genuinely believes something is beneficial and it passes metrics, them organizing to vote for it isn't a bug — it's democracy working. Kindact doesn't claim to eliminate disagreement; it structures it better, with better information, less bias, and a hard floor of "no net harm."
 
@@ -264,7 +264,7 @@ Coordination without incentives rarely scales. If implementation depends only on
 
 $CC serves multiple roles (in rough order of priority):
 1. **Reward unit**: Incentivizes community-approved work as a rival to purely market-driven incentives
-2. **Impact-backed asset**: Each $CC is minted against verified work; external demand for that verified impact (via Hypercerts) creates real economic backing — [see Token Value below](#token-value)
+2. **Impact-backed asset**: Each $CC is minted against verified work; when external buyers purchase the resulting Hypercerts for fiat, the proceeds flow into a reserve that gives `$CC` real monetary backing — [see Token Value below](#token-value)
 3. **Tradeable medium**: Enables contributors to convert effort into goods/services; buyers directly support contributors
 4. **Reputation signal**: Accumulated $CC signals past contribution; blockchain provenance shows how the tokens were acquired
 5. **Access right**: Extended access to the platform requires monthly contribution in $CC, creating additional utility demand
@@ -304,6 +304,8 @@ Hypercerts can also be purchased with $CC, which burns the $CC used — creating
 This creates a concrete virtuous cycle: more community-approved work → more Hypercerts → more sales to external buyers → deeper fiat reserve → more stable $CC → more confidence in the reward → more people willing to do good work.
 
 **This isn't speculative.** The infrastructure and market for verified impact credentials already exists and is growing rapidly. Optimism's [Retroactive Public Goods Funding](https://retrofunding.optimism.io/) (RetroPGF) program has distributed **over $100 million** to projects based on demonstrated impact rather than promises, with **$1.3 billion reserved** for future rounds. [Gitcoin](https://www.gitcoin.co/) has channeled **> $60 million** to 5,000+ projects using quadratic funding, where many small contributions signal community priorities. These programs prove that retroactive, impact-based funding works at scale — and they are actively seeking new domains beyond crypto infrastructure. Kindact's completed, community-verified work would be a natural fit for this kind of external funding, since it produces exactly what these programs reward: auditable, community-assessed proof of real-world impact.
+
+**Reserve vs. open market:** The fiat reserve provides a floor — a minimum redemption value backed by realized Hypercert sales. But if $CC trades on an open market (which is likely), the market price will also reflect factors the reserve doesn't capture: the size and quality of Kindact's unsold Hypercert portfolio, the platform's growth trajectory, and the expectation of future sales. In practice, the open market price will likely exceed the reserve rate, because the market prices in future potential while the reserve only reflects what's already been realized. This is healthy — the reserve prevents collapse, while the open market provides price discovery.
 
 $CC's long-term value is therefore anchored to the **quality and credibility of Kindact's verification process**. The better the platform is at ensuring real work gets done, the more valuable the Hypercerts become, the more fiat flows into the reserve, and the more reliable $CC becomes as a medium of exchange. By using Hypercerts as the credential format, Kindact doesn't need to build market recognition from scratch — it plugs into an existing and expanding ecosystem of impact funders.
 
