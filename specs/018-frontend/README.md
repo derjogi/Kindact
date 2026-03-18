@@ -18,6 +18,9 @@ depends_on:
   - 009-work-reports-evidence
   - 010-verification-disputes
   - 011-cc-ledger
+related:
+  - 020-ui-desktop
+  - 021-ui-mobile
 ---
 
 # Frontend Web Application
