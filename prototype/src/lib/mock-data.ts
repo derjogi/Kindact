@@ -28,6 +28,12 @@ Install two additional catch basins at the low points (intersections of 4th and 
       { label: "Cost", value: "~$15,000", confidence: "medium" },
       { label: "Time", value: "3 months", confidence: "high" },
     ],
+    boundaries: [
+      { label: "Freshwater", icon: "💧", direction: "improve", delta: "+8%", confidence: "medium" },
+      { label: "Health", icon: "❤️", direction: "improve", delta: "+3%", confidence: "medium" },
+      { label: "Resource use", icon: "⛏️", direction: "regress", delta: "-2%", confidence: "low" },
+      { label: "Social equity", icon: "⚖️", direction: "neutral", delta: "0%", confidence: "low" },
+    ],
     aiSummary: `**Key points raised:**
 - Broad agreement that drainage is inadequate and needs fixing
 - Debate over whether bioswale (natural) or purely engineered solution is better
@@ -158,6 +164,13 @@ A community-owned solar cooperative that installs panels on public roofs, sells 
       { label: "Cost", value: "~$120,000", confidence: "high" },
       { label: "Time", value: "8 months", confidence: "medium" },
     ],
+    boundaries: [
+      { label: "Energy", icon: "⚡", direction: "improve", delta: "+12%", confidence: "high" },
+      { label: "Climate", icon: "🌡️", direction: "improve", delta: "+6%", confidence: "high" },
+      { label: "Resource use", icon: "⛏️", direction: "regress", delta: "-4%", confidence: "medium" },
+      { label: "Social equity", icon: "⚖️", direction: "improve", delta: "+3%", confidence: "medium" },
+      { label: "Economy", icon: "💰", direction: "improve", delta: "+5%", confidence: "medium" },
+    ],
     aiSummary: `**Key points raised:**
 - Strong support for the concept; debate mostly around financial model
 - Concern about maintenance responsibility and long-term ownership
@@ -235,6 +248,12 @@ Expand the pilot to all food service businesses with a city-supported container 
       { label: "Cost", value: "~$45,000", confidence: "low" },
       { label: "Time", value: "6 months", confidence: "medium" },
     ],
+    boundaries: [
+      { label: "Land use", icon: "🌍", direction: "improve", delta: "+5%", confidence: "medium" },
+      { label: "Pollution", icon: "🏭", direction: "improve", delta: "+9%", confidence: "high" },
+      { label: "Economy", icon: "💰", direction: "regress", delta: "-3%", confidence: "low" },
+      { label: "Health", icon: "❤️", direction: "improve", delta: "+2%", confidence: "low" },
+    ],
     aiSummary: `**Key points:** Pilot data is promising but scaling challenges remain. Business owners concerned about cost burden. Environmental benefits are clear.
 
 **Open questions:** Who funds the washing facility? Voluntary or mandatory participation?`,
@@ -275,6 +294,11 @@ A Kindact-managed fund that accepts proposals for open-source AI safety research
       { label: "Cost", value: "~$50,000/year", confidence: "medium" },
       { label: "Time", value: "Ongoing", confidence: "high" },
     ],
+    boundaries: [
+      { label: "Social equity", icon: "⚖️", direction: "improve", delta: "+4%", confidence: "medium" },
+      { label: "Knowledge", icon: "📚", direction: "improve", delta: "+7%", confidence: "high" },
+      { label: "Economy", icon: "💰", direction: "neutral", delta: "0%", confidence: "low" },
+    ],
     aiSummary: `**Consensus:** Strong support for open-source AI safety. Fund structure approved. First research proposals being accepted.`,
     comments: [],
     arguments: [],
@@ -302,6 +326,12 @@ Clear the lot, install raised beds, water access, a tool shed, and a small gathe
       { label: "Cost", value: "~$8,000", confidence: "high" },
       { label: "Time", value: "2 months", confidence: "high" },
     ],
+    boundaries: [
+      { label: "Food", icon: "🌾", direction: "improve", delta: "+6%", confidence: "high" },
+      { label: "Community", icon: "🤝", direction: "improve", delta: "+10%", confidence: "high" },
+      { label: "Biodiversity", icon: "🦋", direction: "improve", delta: "+3%", confidence: "medium" },
+      { label: "Land use", icon: "🌍", direction: "regress", delta: "-1%", confidence: "high" },
+    ],
     aiSummary: `**Status:** Approved and under construction. 20 of 30 beds installed. Water connection complete. Tool shed in progress.`,
     comments: [],
     arguments: [],
@@ -328,6 +358,12 @@ Add 8km of protected bike lanes to connect existing segments into a continuous n
     metrics: [
       { label: "Cost", value: "~$200,000", confidence: "low" },
       { label: "Time", value: "12 months", confidence: "low" },
+    ],
+    boundaries: [
+      { label: "Health", icon: "❤️", direction: "improve", delta: "+7%", confidence: "medium" },
+      { label: "Climate", icon: "🌡️", direction: "improve", delta: "+4%", confidence: "medium" },
+      { label: "Air quality", icon: "🌬️", direction: "improve", delta: "+5%", confidence: "medium" },
+      { label: "Economy", icon: "💰", direction: "regress", delta: "-6%", confidence: "low" },
     ],
     aiSummary: `**Key debate:** Route prioritization — should we connect the most-used segments first or the most dangerous ones? Cost estimates need refinement.`,
     comments: [
@@ -363,6 +399,11 @@ Many residents lack reliable internet access at home. Public spaces currently ha
       { label: "Cost", value: "~$25,000", confidence: "high" },
       { label: "Time", value: "2 months", confidence: "high" },
     ],
+    boundaries: [
+      { label: "Social equity", icon: "⚖️", direction: "improve", delta: "+8%", confidence: "high" },
+      { label: "Knowledge", icon: "📚", direction: "improve", delta: "+6%", confidence: "high" },
+      { label: "Energy", icon: "⚡", direction: "regress", delta: "-2%", confidence: "medium" },
+    ],
     aiSummary: `**Consensus:** Broad support. Main concern is ongoing maintenance costs and privacy of usage data.`,
     comments: [],
     arguments: [],
@@ -385,6 +426,12 @@ Youth unemployment in the region is 18%. Many young adults lack professional net
     metrics: [
       { label: "Cost", value: "~$3,000", confidence: "high" },
       { label: "Time", value: "6 months (first cohort)", confidence: "high" },
+    ],
+    boundaries: [
+      { label: "Social equity", icon: "⚖️", direction: "improve", delta: "+11%", confidence: "high" },
+      { label: "Education", icon: "🎓", direction: "improve", delta: "+8%", confidence: "high" },
+      { label: "Economy", icon: "💰", direction: "improve", delta: "+4%", confidence: "medium" },
+      { label: "Community", icon: "🤝", direction: "improve", delta: "+6%", confidence: "high" },
     ],
     aiSummary: `**Completed:** First cohort of 15 mentor-mentee pairs. 80% of mentees reported improved confidence and career clarity. Second cohort launching.`,
     comments: [],

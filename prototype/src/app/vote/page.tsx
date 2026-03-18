@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import ReactMarkdown from "react-markdown";
 import Layout from "@/components/Layout";
 import VoteBar from "@/components/VoteBar";
 import { issues } from "@/lib/mock-data";
@@ -48,8 +49,8 @@ export default function QuickVotePage() {
           <h2 className="text-lg font-medium text-stone-900">{issue.title}</h2>
           <p className="text-sm text-stone-600">{issue.summary}</p>
 
-          <div className="text-sm text-stone-700 whitespace-pre-line leading-relaxed">
-            {issue.aiSummary}
+          <div className="text-sm text-stone-700 leading-relaxed prose prose-sm prose-stone max-w-none">
+            <ReactMarkdown>{issue.aiSummary}</ReactMarkdown>
           </div>
 
           <div className="flex flex-wrap gap-3 text-sm text-stone-500">

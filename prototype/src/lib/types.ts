@@ -14,6 +14,16 @@ export interface Metric {
   confidence: "low" | "medium" | "high";
 }
 
+export type BoundaryDirection = "improve" | "regress" | "neutral";
+
+export interface PlanetaryBoundary {
+  label: string;
+  icon: string;
+  direction: BoundaryDirection;
+  delta: string; // e.g. "+2%", "-5%"
+  confidence: "low" | "medium" | "high";
+}
+
 export interface Comment {
   id: string;
   alias: string;
@@ -46,6 +56,7 @@ export interface Issue {
   participants: number;
   createdAt: string;
   metrics: Metric[];
+  boundaries: PlanetaryBoundary[];
   aiSummary: string;
   comments: Comment[];
   arguments: ArgumentNode[];

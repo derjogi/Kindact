@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 /* Hide scrollbar for horizontal-scroll tabs on mobile */
 .scrollbar-hide::-webkit-scrollbar {
