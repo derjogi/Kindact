@@ -17,7 +17,8 @@
 		Coins,
 		Tag,
 		Users,
-		ArrowRight
+		ArrowRight,
+		FileCheck
 	} from 'lucide-svelte';
 
 	interface Step {
@@ -68,7 +69,8 @@
 			name: 'Reward',
 			icon: Award,
 			narrative: [
-				'After the first month\'s verified cleanup, tokens are minted for all contributors. These aren\'t speculative assets — they\'re a record of contribution that can be used within the Kindact ecosystem. Maria earned 45 $CC for organizing, while volunteers earned tokens proportional to their participation.',
+				'After the first month\'s verified cleanup, two things happen simultaneously: $CC tokens are minted for all contributors, and a Hypercert—a verifiable impact credential—is generated for the completed work. Maria earned 45 $CC for organizing, while volunteers earned tokens proportional to their participation.',
+				'The Hypercert records exactly what was accomplished: 47 bags of waste collected, 31 volunteers, one neighborhood park restored. External buyers—impact funds, corporations needing ESG documentation, progressive governments—can purchase this Hypercert, and the proceeds flow into a reserve that backs $CC with real monetary value. More verified work means more Hypercerts, a deeper reserve, and a more stable currency for everyone.',
 				'The cycle doesn\'t end here. The composting station proposal moves into its own implementation track, and new issues are already being raised by energized community members who saw the cleanup succeed.'
 			],
 			mockTitle: 'Rewards Distributed'
@@ -630,6 +632,33 @@
 									>
 										485 $CC
 									</span>
+								</div>
+
+								<!-- Hypercert -->
+								<div
+									class="p-4 rounded-lg border"
+									style="border-color: var(--color-accent); background-color: color-mix(in srgb, var(--color-accent) 8%, var(--color-bg))"
+								>
+									<div class="flex items-start gap-3">
+										<FileCheck
+											size={20}
+											style="color: var(--color-accent); flex-shrink: 0; margin-top: 2px"
+										/>
+										<div>
+											<p
+												class="text-sm font-semibold"
+												style="color: var(--color-text)"
+											>
+												Hypercert Generated
+											</p>
+											<p class="text-xs mt-1" style="color: var(--color-text-muted)">
+												Impact credential: 47 bags collected · 31 volunteers · Riverside Park cleanup
+											</p>
+											<p class="text-xs mt-1" style="color: var(--color-text-muted)">
+												Available for purchase by impact funds, ESG buyers, and governments — proceeds back the $CC reserve.
+											</p>
+										</div>
+									</div>
 								</div>
 
 								<!-- Reputation Badge -->

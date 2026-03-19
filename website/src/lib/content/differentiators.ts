@@ -22,7 +22,7 @@ export const differentiators: Differentiator[] = [
 	},
 	{
 		title: 'Rewards for Real Work',
-		description: 'Tokens are only minted when community-approved work is verifiably implemented. This creates a market for good deeds, not just talk.',
+		description: 'Tokens are primarily minted when community-approved work is verifiably implemented. Verified impact also generates Hypercerts that can attract external funding, creating a market for good deeds.',
 		icon: 'award'
 	}
 ];

@@ -37,7 +37,7 @@ export const steps: Step[] = [
 		name: 'Implement',
 		title: 'Execution & Verification',
 		summary: 'Approved solutions are executed with proof of implementation.',
-		details: 'Implementers file regular reports documenting what was done, how long it took, and what impact was achieved. Verification happens through photo/video evidence, third-party auditors, cryptographic proofs, and peer confirmation.',
+		details: 'Implementers file regular reports documenting what was done, how long it took, and what impact was achieved—even partial progress counts (e.g. monthly updates for bigger projects). Verification happens through photo/video evidence, third-party auditors, cryptographic proofs, peer confirmation, and structured resource-flow data.',
 		icon: 'hammer'
 	},
 	{
@@ -45,7 +45,7 @@ export const steps: Step[] = [
 		name: 'Reward',
 		title: 'Economic Incentives',
 		summary: 'Contributors receive tokens that recognize their positive impact.',
-		details: 'Tokens ($CC) are exclusively minted when community-approved work is verifiably implemented. This creates a direct link between doing good and receiving economic value. Dynamic taxation (demurrage, fees) keeps value circulating toward ongoing contribution rather than hoarding.',
+		details: 'Tokens ($CC) are primarily minted when community-approved work is verifiably implemented. Simultaneously, a Hypercert—a verifiable impact credential—is generated for each completed piece of work. External buyers (impact funds, corporations, governments) can purchase these Hypercerts, and the proceeds flow into a reserve that backs $CC with real monetary value. This creates a virtuous cycle: more verified work → more Hypercerts → deeper reserve → more stable $CC.',
 		icon: 'coins'
 	}
 ];

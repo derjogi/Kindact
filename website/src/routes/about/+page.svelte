@@ -63,7 +63,7 @@
 		<div class="space-y-4">
 			<ExpandableSection title="Isn't this just another crypto project?" summary="No. The token is a tool, not the point.">
 				<p class="text-sm" style="color: var(--color-text-muted)">
-					$CC exists to create incentives for real-world action, not to generate speculative returns. Tokens are only minted when community-approved work is verifiably completed. There's no pre-mine, no founder allocation, and the economic design includes mechanisms (demurrage, fees) that actively discourage hoarding. The blockchain is infrastructure, like how Wikipedia uses servers—essential but not the point.
+					$CC exists to create incentives for real-world action, not to generate speculative returns. Tokens are primarily minted when community-approved work is verifiably implemented—even partial progress counts. There's no pre-mine, no founder allocation, and the economic design includes mechanisms (demurrage, fees) that actively discourage hoarding. The blockchain is infrastructure, like how Wikipedia uses servers—essential but not the point.
 				</p>
 			</ExpandableSection>
 

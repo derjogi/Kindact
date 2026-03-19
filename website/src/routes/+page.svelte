@@ -61,7 +61,7 @@
 			A New Paradigm for Governance and Collective Action
 		</p>
 		<p class="text-lg max-w-2xl mx-auto mb-12" style="color: var(--color-text-muted)">
-			What if there were a system where anyone could identify problems, discuss solutions, vote on
+			What if there were a system where anyone could identify problems, discuss solutions with others, vote on
 			what should be done, and get rewarded for actually implementing the ideas that the community
 			approves?
 		</p>
@@ -145,7 +145,7 @@
 					</h3>
 					<ul class="space-y-2 text-sm" style="color: var(--color-text-muted)">
 						<li>• Not a replacement for governments</li>
-						<li>• Not an enforcement layer—it can only reward, not punish</li>
+						<li>• Not an enforcement layer—it can only reward, not force compliance</li>
 						<li>• Not a utopian solution, but a practical framework</li>
 						<li>• Not locked to any single technology or platform</li>
 					</ul>

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { ExpandableSection, SectionHeading } from '$lib';
-	import { Coins, TrendingDown, Shield, Scale, Users, HelpCircle } from 'lucide-svelte';
+	import { Coins, TrendingDown, TrendingUp, Shield, Scale, Users, HelpCircle } from 'lucide-svelte';
 </script>
 
 <svelte:head>
@@ -51,18 +51,23 @@
 					</tr>
 					<tr style="border-bottom: 1px solid var(--color-border)">
 						<td class="py-3 pr-4 font-medium" style="color: var(--color-primary)">2nd</td>
-						<td class="py-3 pr-4 font-semibold" style="color: var(--color-text)">Reputation signal</td>
-						<td class="py-3" style="color: var(--color-text-muted)">Accumulated $CC signals past contribution. Blockchain provenance distinguishes earned from purchased.</td>
+						<td class="py-3 pr-4 font-semibold" style="color: var(--color-text)">Impact-backed asset</td>
+						<td class="py-3" style="color: var(--color-text-muted)">Each $CC is minted against verified work; when external buyers purchase the resulting Hypercerts for fiat, the proceeds flow into a reserve that gives $CC real monetary backing.</td>
 					</tr>
 					<tr style="border-bottom: 1px solid var(--color-border)">
 						<td class="py-3 pr-4 font-medium" style="color: var(--color-primary)">3rd</td>
 						<td class="py-3 pr-4 font-semibold" style="color: var(--color-text)">Tradeable medium</td>
 						<td class="py-3" style="color: var(--color-text-muted)">Enables contributors to convert effort into goods/services. Buyers directly support contributors.</td>
 					</tr>
-					<tr>
+					<tr style="border-bottom: 1px solid var(--color-border)">
 						<td class="py-3 pr-4 font-medium" style="color: var(--color-primary)">4th</td>
+						<td class="py-3 pr-4 font-semibold" style="color: var(--color-text)">Reputation signal</td>
+						<td class="py-3" style="color: var(--color-text-muted)">Accumulated $CC signals past contribution. Blockchain provenance distinguishes earned from purchased.</td>
+					</tr>
+					<tr>
+						<td class="py-3 pr-4 font-medium" style="color: var(--color-primary)">5th</td>
 						<td class="py-3 pr-4 font-semibold" style="color: var(--color-text)">Access right</td>
-						<td class="py-3" style="color: var(--color-text-muted)">Platform fees create baseline utility demand.</td>
+						<td class="py-3" style="color: var(--color-text-muted)">Basic participation is free; extended features like vote delegation, AI summaries, and detailed statistics require $CC, creating baseline utility demand.</td>
 					</tr>
 				</tbody>
 			</table>
@@ -89,7 +94,7 @@
 		</div>
 
 		<p class="mb-6" style="color: var(--color-text-muted)">
-			$CC tokens are <strong style="color: var(--color-text)">exclusively minted when community-approved work is verifiably implemented</strong>. There is no pre-mine, no founder allocation, and no debt-based creation.
+			$CC tokens are <strong style="color: var(--color-text)">primarily minted when community-approved work is verifiably implemented</strong>—even partially (e.g. monthly progress for bigger projects). $CC can also be purchased from the reserve (backed by Hypercert sales). There is no pre-mine, no founder allocation, and no debt-based creation.
 		</p>
 
 		<div class="p-6 rounded-xl mb-6" style="background-color: var(--color-bg-alt)">
@@ -160,7 +165,7 @@
 					<tr style="border-bottom: 1px solid var(--color-border)">
 						<td class="py-3 pr-4 font-medium" style="color: var(--color-text)">Access fees</td>
 						<td class="py-3 pr-4">Service/licensing fees</td>
-						<td class="py-3">High platform activity</td>
+						<td class="py-3">Basic participation is free; extended features require small $CC fees that are burned</td>
 					</tr>
 					<tr>
 						<td class="py-3 pr-4 font-medium" style="color: var(--color-text)">Verification threshold</td>
@@ -171,9 +176,9 @@
 			</table>
 		</div>
 
-		<ExpandableSection title="Time-Based Demurrage: How It Works" summary="Tokens that sit unmoved lose value over time, encouraging circulation.">
+		<ExpandableSection title="Base Demurrage: How It Works" summary="All tokens lose value at a continuous uniform rate, encouraging circulation.">
 			<ul class="space-y-2 text-sm" style="color: var(--color-text-muted)">
-				<li>• Tokens unmoved for X period (e.g., 1-3 months) begin losing value continuously</li>
+				<li>• All tokens lose value at a continuous uniform rate (e.g., 1% per month), regardless of activity. This guarantees a finite supply equilibrium and creates steady "use it or lose it" pressure—since goods and investments don't decay, spending preserves value.</li>
 				<li>• <strong style="color: var(--color-text)">Older tokens move first (FIFO)</strong>—users can't choose which tokens to spend</li>
 				<li>• <strong style="color: var(--color-text)">1 $CC = 1 $CC at any moment</strong>—no "old vs. new" confusion; value degrades smoothly</li>
 				<li>• Applied <strong style="color: var(--color-text)">per identity</strong>, not per wallet</li>
@@ -182,6 +187,58 @@
 				<strong style="color: var(--color-text)">Why both demurrage AND transaction fees?</strong> Demurrage alone could be gamed via circular trades. Small transaction fees make circular gaming costly. Together: natural circulation pressure without penalizing genuine trade.
 			</p>
 		</ExpandableSection>
+	</section>
+
+	<!-- Token Value: Hypercerts -->
+	<section class="mb-16">
+		<div class="flex items-center gap-4 mb-6">
+			<div class="w-12 h-12 rounded-lg flex items-center justify-center" style="background-color: var(--color-primary); color: white">
+				<TrendingUp size={24} />
+			</div>
+			<SectionHeading title="Token Value: Hypercerts" />
+		</div>
+
+		<p class="mb-6" style="color: var(--color-text-muted)">
+			$CC's value evolves through distinct phases. In the early stages, value is primarily <strong style="color: var(--color-text)">social</strong>: $CC functions as recognition—a visible record of contribution. Platform access fees for extended functionality create a small but steady baseline demand. Beyond that, early circulation depends on deliberate local arrangements: communities encouraging participating businesses to accept $CC.
+		</p>
+
+		<div class="p-6 rounded-xl mb-6" style="background-color: var(--color-bg-alt)">
+			<h4 class="font-semibold mb-4" style="color: var(--color-text)">Two Complementary Instruments</h4>
+			<ul class="space-y-3 text-sm" style="color: var(--color-text-muted)">
+				<li><strong style="color: var(--color-text)">$CC (the currency):</strong> Fungible, circulating, subject to demurrage. The internal economy's lifeblood—what implementers earn, what community members trade, what access fees are paid in.</li>
+				<li><strong style="color: var(--color-text)">Hypercerts (the impact credentials):</strong> Each one tied to a specific piece of completed work, recording who did what, when, and with what verified results. Non-fungible, retirable, and designed to be held as proof of impact.</li>
+			</ul>
+		</div>
+
+		<div class="space-y-4">
+			<ExpandableSection title="How It Works" summary="When a Kindact issue is completed, both $CC and a Hypercert are generated.">
+				<ol class="space-y-2 text-sm" style="color: var(--color-text-muted)">
+					<li>1. <strong style="color: var(--color-text)">$CC is minted and goes to the implementer</strong> as their reward</li>
+					<li>2. <strong style="color: var(--color-text)">A Hypercert is generated and held by Kindact</strong> as a platform asset</li>
+					<li>3. External entities (carbon offset buyers, corporations needing ESG documentation, impact funds, progressive governments) can <strong style="color: var(--color-text)">purchase Hypercerts</strong> from Kindact on an open market</li>
+					<li>4. Proceeds flow into a <strong style="color: var(--color-text)">fiat reserve</strong> that backs $CC—anyone can exchange $CC for fiat (or vice versa) through this reserve</li>
+				</ol>
+			</ExpandableSection>
+
+			<ExpandableSection title="The Virtuous Cycle" summary="More work creates deeper backing for $CC.">
+				<p class="text-sm mb-4" style="color: var(--color-text-muted)">
+					More community-approved work → more Hypercerts → more sales to external buyers → deeper fiat reserve → more stable $CC → more confidence in the reward → more people willing to do good work.
+				</p>
+				<p class="text-sm" style="color: var(--color-text-muted)">
+					The fiat reserve provides a <strong style="color: var(--color-text)">floor</strong>—a minimum redemption value backed by realized Hypercert sales. If $CC trades on an open market, the market price will also reflect the size and quality of Kindact's unsold Hypercert portfolio, growth trajectory, and expectation of future sales.
+				</p>
+			</ExpandableSection>
+
+			<ExpandableSection title="Existing Proof This Works" summary="The infrastructure and market for verified impact credentials already exists.">
+				<ul class="space-y-3 text-sm" style="color: var(--color-text-muted)">
+					<li><strong style="color: var(--color-text)">Optimism RetroPGF:</strong> Distributed <strong style="color: var(--color-text)">over $100 million</strong> to projects based on demonstrated impact rather than promises, with $1.3 billion reserved for future rounds.</li>
+					<li><strong style="color: var(--color-text)">Gitcoin:</strong> Channeled <strong style="color: var(--color-text)">over $60 million</strong> to 5,000+ projects using quadratic funding. These programs prove that retroactive, impact-based funding works at scale.</li>
+				</ul>
+				<p class="mt-4 text-sm" style="color: var(--color-text-muted)">
+					These programs are actively seeking new domains beyond crypto infrastructure. Kindact's completed, community-verified work produces exactly what they reward: auditable, community-assessed proof of real-world impact.
+				</p>
+			</ExpandableSection>
+		</div>
 	</section>
 
 	<!-- Fraud Prevention -->
@@ -211,7 +268,7 @@
 			{/each}
 		</div>
 
-		<ExpandableSection title="Core Safeguards" summary="Six mechanisms that prevent abuse without requiring upfront staking.">
+		<ExpandableSection title="Core Safeguards" summary="Seven mechanisms that prevent abuse without requiring upfront staking.">
 			<ol class="space-y-2 text-sm" style="color: var(--color-text-muted)">
 				<li><strong style="color: var(--color-text)">1. Voter-scaled caps:</strong> Lone actors can only award minimal amounts</li>
 				<li><strong style="color: var(--color-text)">2. Asymmetric voting:</strong> Negative votes reduce caps more than positive votes increase them</li>
@@ -219,6 +276,7 @@
 				<li><strong style="color: var(--color-text)">4. Verifier rotation:</strong> Same verifier can't approve the same issue repeatedly</li>
 				<li><strong style="color: var(--color-text)">5. Rate-limiting new users:</strong> Can't propose high amounts until they have history</li>
 				<li><strong style="color: var(--color-text)">6. Retroactive bans:</strong> Fraud detection → banned from proposing amounts or full platform ban</li>
+				<li><strong style="color: var(--color-text)">7. Clawback with negative balance:</strong> Confirmed fraud triggers clawback from the scammer's wallet; if insufficient, the balance goes negative</li>
 			</ol>
 		</ExpandableSection>
 	</section>
@@ -251,7 +309,7 @@
 
 			<ExpandableSection title="Default Thresholds" summary="Verdict requirements when community hasn't specified rules.">
 				<ul class="space-y-2 text-sm" style="color: var(--color-text-muted)">
-					<li>• <strong style="color: var(--color-text)">Quorum:</strong> 2% of original issue voters OR 5 people, whichever is higher</li>
+					<li>• <strong style="color: var(--color-text)">Quorum:</strong> 2% of original voters OR 3 people, whichever is higher</li>
 					<li>• <strong style="color: var(--color-text)">Agreement ratio:</strong> 80% to confirm fraud</li>
 					<li>• If threshold not reached → accused unblocked over time by default</li>
 				</ul>
@@ -304,7 +362,7 @@
 		</p>
 
 		<ul class="space-y-3 text-sm" style="color: var(--color-text-muted)">
-			<li>• <strong style="color: var(--color-text)">Exact demurrage parameters:</strong> What's the optimal decay rate? How long before decay begins?</li>
+			<li>• <strong style="color: var(--color-text)">Exact demurrage parameters:</strong> What's the optimal decay rate?</li>
 			<li>• <strong style="color: var(--color-text)">Voter scaling formula:</strong> The 1.5× multiplier is illustrative; actual curve needs calibration</li>
 			<li>• <strong style="color: var(--color-text)">Time bounds for disputes:</strong> Maximum resolution periods TBD</li>
 			<li>• <strong style="color: var(--color-text)">Exchange rate dynamics:</strong> How will $CC interact with external currencies at scale?</li>
