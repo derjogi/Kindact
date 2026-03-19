@@ -8,9 +8,11 @@
 
 Democracies were designed for a world that no longer exists. The institutions we inherited (representative democracies, nation-states, international treaties) were created in an era when problems moved slowly and stayed local. Today, we face challenges that cross borders faster than any government can respond: climate catastrophe, artificial intelligence that could reshape civilization, pandemics that spread before we know they're happening, and a breakdown of shared reality that makes collective action nearly impossible.
 
-Many of us feel overwhelmed. We scroll through news that tells us everything is going wrong, and we wonder: *What can I possibly do?* Traditional politics feels distant, ineffective, or captured by forces we can't control. We vote every few years, sign occasional petitions, maybe attend a protest. But the big decisions seem to happen somewhere else, by someone else, without us.
+Many of us feel overwhelmed. We scroll through news that tells us everything is going wrong, and we wonder: *What can I possibly do?* Traditional politics feels distant, ineffective, or captured by forces we can't control. Incentives to make money seem misaligned with the 'good' that we want to achieve. We vote every few years, sign occasional petitions, maybe attend a protest. But the big decisions seem to happen somewhere else, by someone else, without us.
 
-Kindact is an attempt to answer a deceptively simple question: **What if there were a system where anyone could identify problems, discuss solutions with others, vote on what should be done, and get rewarded for actually implementing the ideas that the community approves?**
+**What if there were a system where anyone could identify problems, discuss solutions with others, vote on what should be done, and get rewarded for actually implementing these ideas that the community decided represents something good?**
+
+That is what Kindact is trying to achieve.
 
 This isn't about replacing governments. It's not about creating a utopia overnight. It's about building a **parallel layer**: a voluntary system that operates alongside existing institutions, complementing them where they work and filling the gaps where they fail.
 
@@ -55,6 +57,8 @@ Kindact facilitates a complete cycle of collective action:
 3. **Decide**: Decisions are made through voting, delegation, or consensus-based approaches
 4. **Implement**: Approved solutions are executed with proof of (even partial) implementation
 5. **Reward**: Contributors receive tokens that recognize their positive impact
+
+We already have many online platforms that do some of these steps, but to my knowledge nothing that links the decision making capabilities with the implementation tracking and the economic rewards - which is crucial to make this worthwhile. Without the economic incentives decisions would not get implemented; without good deliberation we go into the wrong direction and have misaligned incentives, and we'll need implementation tracking and verification to prevent fraud. 
 
 Throughout this process, **verified identity** ensures one-person-one-vote integrity, while **economic incentives** (tokens, demurrage, burns) keep value circulating toward ongoing contribution.
 
@@ -202,6 +206,12 @@ The test has two components. First, a few simple questions about the issue summa
 
 *Note: I know having an 'eligibility test' might be controversial, especially for those growing up in democracies where one of the highest values is "everyone gets a vote", or where some groups have been unjustly excluded from voting in the past. I believe this test can safely be designed to be ‘fairly inclusive’ (nobody who really wants to participate is really excluded), and that excluding those who haven't engaged with the issue can be very beneficial, but as with almost all mechanisms on this platform, the community can vote to modify or abolish it, and I'd be happy to discuss this further in the comments.*
 
+### What About Organized Opposition?
+
+What stops an organized group from mobilizing to push through their agenda or block proposals they dislike? Several structural safeguards apply: the **metrics requirement** means issues can only proceed to voting if projected outcomes are net-positive across social and planetary boundaries — a coalition can't get harmful proposals approved, even if they’re in the majority. **Competence verification** filters out drive-by voting. **Anonymized deliberation** makes faction coordination harder during discussion.
+
+But fundamentally: if a large group genuinely believes something is beneficial and it passes metrics, them organizing to vote for it isn't a bug — it's democracy working. Kindact doesn't claim to eliminate disagreement; it structures it better, with better information, less bias, and a hard floor of "no net harm."
+
 ---
 
 ## Step 4: Implement — Execution and Verification
@@ -237,45 +247,92 @@ How does the platform verify that work was actually done? This is an ongoing cha
 
 No system is perfect, but the combination of these approaches creates strong incentives for honest reporting while making fraud difficult and detectable.
 
+### Rewarding and Scaling Verification
+
+Verification is itself valuable work — without it, the entire reward system loses credibility. So **verifiers should be rewarded too**. Rather than hardcoding a default payout, the preferred approach is to let communities deliberate on verification rewards through the same issue-based process as everything else. A community might decide that verifying a reforestation project warrants more than verifying a neighborhood cleanup, or that verification effort should scale with the complexity of the task being checked. This keeps the system flexible and context-sensitive, rather than imposing a one-size-fits-all rate.
+
+Some verification can also be **automated**. For small, frequently repeated tasks — picking up litter on a particular street, watering community garden beds, completing a recurring maintenance check — the verification step can follow a standardized template (geotagged photo, timestamp, location match) that an algorithm evaluates without human review. Crucially, **verifying a verification task** should itself be a candidate for automation: we don't want to end up in an endless loop of verifiers verifying verifications. Checking whether a verifier followed the correct protocol, cross-referencing their report against available data, and flagging inconsistencies should all be handled algorithmically. Human reviewers then only need to step in for edge cases or disputes, allowing the system to scale without requiring an ever-growing army of volunteer auditors.
+
 ---
 
 ## Step 5: Reward — Economic Incentives
 
+Coordination without incentives rarely scales. If implementation depends only on goodwill, many high-priority issues remain unfinished. By embedding economic incentives in the functioning of this system and linking rewards to verified work, Kindact tries to close the gap between agreement and execution.
+
 
 ### What $CC Is
 
-$CC serves multiple roles in order of priority:
-1. **Reward unit (primary)**: Incentivizes community-approved work as a rival to purely market-driven incentives
-2. **Impact-backed asset**: Each $CC is minted against verified work; external demand for that verified impact (via Hypercerts) creates real economic backing — [see Token Value below](#token-value)
+$CC serves multiple roles (in rough order of priority):
+1. **Reward unit**: Incentivizes community-approved work as a rival to purely market-driven incentives
+2. **Impact-backed asset**: Each $CC is minted against verified work; when external buyers purchase the resulting Hypercerts for fiat, the proceeds flow into a reserve that gives `$CC` real monetary backing — [see Token Value below](#token-value)
 3. **Tradeable medium**: Enables contributors to convert effort into goods/services; buyers directly support contributors
-4. **Reputation signal**: Accumulated $CC signals past contribution; blockchain provenance shows whether tokens were earned or purchased
-5. **Access right**: Platform fees create utility demand
+4. **Reputation signal**: Accumulated $CC signals past contribution; blockchain provenance shows how the tokens were acquired
+5. **Access right**: Extended access to the platform requires monthly contribution in $CC, creating additional utility demand
 
 ### How Tokens Are Created
 
-$CC tokens are **exclusively minted when community-approved work is verifiably implemented**. Reward amounts are proposed by issue creators (with AI suggestions) and approved through deliberation. These proposals can be informed by structured data: if implementations use a resource-flow vocabulary like ValueFlows, the platform can analyze comparable past tasks — how much labor, what materials, what ecological impact — to suggest reward amounts grounded in actual resource costs rather than guesswork. Larger rewards require proportionally more voter support—this naturally limits what any individual can award themselves.
+Before we dive into how $CC becomes valuable ([see Token Value below](#token-value)), it might be helpful to understand how tokens are created in the first place.
+
+$CC tokens are primarily minted when **community-approved work is verifiably implemented** - and secondarily when someone buys $CC from the reserve. 
+
+Each community issue (i.e. some work that the community wants done) will have a 'reward amount' associated with it, initially proposed by issue creators (with AI suggestions) and approved through deliberation. These rewards will be paid out for any 'accepted unit of work', which could be monthly progress, individual recognized actions (planting a tree), etc..., and do not necessarily depend on successfully finishing a project (e.g. different research teams working on the same issue should all be paid regardless of whether their research succeeds). 
+
+Reward amounts on proposals can be informed by structured data: Kindact could use a standardized resource-flow vocabulary like ValueFlows to analyze comparable past tasks — how much labor, what materials, what ecological impact — to suggest reward amounts grounded in actual resource costs rather than guesswork. Of course there must also be limits to prevent allocating too large amounts and devaluing the token. Most issues will be soft-limited through collaborative deliberation of the community, but all issues will also be hard capped: The maxiumum reward amount depends on the number of voters. Larger rewards require proportionally more voter support - this naturally limits what any individual can award themselves, and unjust accumulation over time can be detected and corrected by the community.
+
+**Why this isn't "printing money":** Unlike government currency (where printing costs nothing), every $CC requires verified real labor. The real budget constraint isn't a spending cap — it's the verification process itself. "Too much minting" would mean "too much verified real work is being rewarded," and if the work is genuine, it creates Hypercerts that might eventually deepen the reserve backing $CC's value. Over-minting only becomes a problem if verification fails, which is a fraud problem addressed by the safeguards below — not a monetary policy problem.
+
+### Token Value
+
+$CC's value will likely evolve through distinct phases. In the early stages, value is primarily social: $CC functions as recognition — a visible record of contribution. Platform access fees for extended functionality create a small but steady baseline demand — basic participation is free, but features like vote delegation, AI summaries, and detailed statistics require `$CC`. Beyond that, early circulation depends on **deliberate local arrangements**: communities actively encouraging participating businesses to accept `$CC`, likely at a discount and driven by solidarity more than economic logic. This is normal — every successful community currency (WIR, Chiemgauer, Sarafu, BerkShares) bootstrapped through institutional anchoring, not organic market acceptance, and a range of proven strategies exist that early adopter communities can adapt to their context.
+
+This means $CC has effectively zero monetary value in its early stages, and that's expected. Requiring fiat backing at mint time would make $CC a stablecoin requiring startup capital, defeating the purpose of a currency that emerges from contribution. The backing is the verified work itself. For a detailed treatment of the bootstrapping dynamics and how value develops over time, see the [Economic Deep Dive](Kindact_Economics_Deep_Dive.md).
+
+Over time, as Kindact builds a track record of verified, auditable impact, a more powerful demand source develops: **the verified impact marketplace**. This marketplace relies on two complementary instruments:
+
+**$CC**, the *currency*: fungible, circulating, subject to demurrage. It's the internal economy's lifeblood: what implementers earn, what community members trade, what access fees are paid in.
+
+**[Hypercerts](https://hypercerts.org/)**, the *impact credentials*: each one tied to a specific piece of completed work, recording who did what, when, and with what verified results. They're non-fungible, retirable, and designed to be held as proof of impact.
+
+When a Kindact issue is completed and verified, both are generated: **$CC is minted and goes to the implementer** as their reward. **A Hypercert is generated and held by Kindact** as a platform asset.
+
+**Why both are needed:** $CC is designed to *circulate* — demurrage makes holding costly, encouraging spending and investment, and fungibility means 1 $CC = 1 $CC regardless of origin. Impact claims need the opposite: they are typically *held*, *retired* (claimed once — a carbon offset can only count once), and tied to *specific* work.
+
+**How Hypercert sales back $CC's value:** External entities (carbon offset buyers, corporations needing ESG documentation, impact funds, progressive governments) can purchase Hypercerts from Kindact on an open market, with prices set by demand. The proceeds flow into a **fiat reserve** that backs $CC. Anyone can exchange $CC for fiat (or vice versa) through this reserve, and the exchange rate reflects the ratio of fiat backing to $CC in circulation. As more Hypercerts sell, the reserve deepens, and $CC becomes increasingly stable and reliable for everyday trade. 
+
+Hypercerts can also be purchased with $CC, which burns the $CC used — creating deflationary pressure that further supports the price.
+
+This creates a concrete virtuous cycle: more community-approved work → more Hypercerts → more sales to external buyers → deeper fiat reserve → more stable $CC → more confidence in the reward → more people willing to do good work.
+
+**This isn't speculative.** The infrastructure and market for verified impact credentials already exists and is growing rapidly. Optimism's [Retroactive Public Goods Funding](https://retrofunding.optimism.io/) (RetroPGF) program has distributed **over $100 million** to projects based on demonstrated impact rather than promises, with **$1.3 billion reserved** for future rounds. [Gitcoin](https://www.gitcoin.co/) has channeled **> $60 million** to 5,000+ projects using quadratic funding, where many small contributions signal community priorities. These programs prove that retroactive, impact-based funding works at scale — and they are actively seeking new domains beyond crypto infrastructure. Kindact's completed, community-verified work would be a natural fit for this kind of external funding, since it produces exactly what these programs reward: auditable, community-assessed proof of real-world impact.
+
+**Reserve vs. open market:** The fiat reserve provides a floor — a minimum redemption value backed by realized Hypercert sales. But if $CC trades on an open market (which is likely), the market price will also reflect factors the reserve doesn't capture: the size and quality of Kindact's unsold Hypercert portfolio, the platform's growth trajectory, and the expectation of future sales. In practice, the open market price will likely exceed the reserve rate, because the market prices in future potential while the reserve only reflects what's already been realized. This is healthy — the reserve prevents collapse, while the open market provides price discovery.
+
+$CC's long-term value is therefore anchored to the **quality and credibility of Kindact's verification process**. The better the platform is at ensuring real work gets done, the more valuable the Hypercerts become, the more fiat flows into the reserve, and the more reliable $CC becomes as a medium of exchange. By using Hypercerts as the credential format, Kindact doesn't need to build market recognition from scratch — it plugs into an existing and expanding ecosystem of impact funders.
 
 ### Supply Management: Reactive Sinks
 
 Rather than hard issuance caps, Kindact uses **dynamic taxation** that adjusts based on circulation metrics:
 
-- **Time-based demurrage**: Tokens lose value based on how long they remain unmoved in a wallet. Older tokens move first (FIFO), preventing hoarding.
+- **Base demurrage**: All tokens lose value at a continuous uniform rate (e.g., 1% per month), regardless of activity. This guarantees a finite supply equilibrium and creates steady "use it or lose it" pressure — since goods and investments don't decay, spending preserves value. If needed at scale, an additional *stagnation demurrage* targeting idle tokens specifically can be activated by community vote.
 - **Transaction fees**: Minimal fees prevent gaming through circular trades between related parties.
 - **Access fees**: Most users pay small fees for active participation; all fees are burned.
 
-This functions like automated, transparent taxation, similar to how central banks adjust interest rates, but algorithmic and visible.
+This functions like automated, transparent taxation, algorithmic and visible.
+
+These sinks guarantee that $CC supply cannot grow without bound. If the monthly minting rate is **M** and the monthly base demurrage rate is **d**, total supply converges to an equilibrium of **S* = M / d** (with other sinks tightening it further). At 1% monthly base demurrage, supply stabilizes at 100× the monthly minting rate — regardless of scale. If minting increases, the equilibrium rises but remains finite and self-correcting. For the full mathematical model with worked examples, see the [Economic Deep Dive](Kindact_Economics_Deep_Dive.md).
 
 ### Fraud Prevention
 
-Without requiring upfront staking, the system deters abuse through:
+The system deters abuse through:
 - **Voter-scaled reward caps**: Small groups can only unlock small rewards
 - **Asymmetric voting**: Objections reduce caps more than approvals increase them
-- **Fluid voting**: Rewards can be adjusted or paused (but not retroactively 'undone') mid-implementation if abuse is detected
+- **Fluid voting**: Rewards can be adjusted or paused mid-implementation if abuse is detected
+- **Clawback with negative balance**: Confirmed fraud triggers clawback from the scammer's wallet; if insufficient, the balance goes negative
 - **Verifier rotation**: Same verifier can't approve the same issue repeatedly
 - **Rate-limited accusations**: Wrong accusations trigger exponential cooldown periods
 - **Retroactive bans**: Confirmed fraud leads to platform restrictions
 
-The economics of tradeable tokens introduce additional risks: vote-buying, collusion among large holders, and concentration of influence. The fraud prevention mechanisms described above are a starting point, but these dynamics will require ongoing attention as the system scales.
+The economics of tradeable tokens might introduce additional risks not directly addressed here. The fraud prevention mechanisms described above are a starting point, but these dynamics will require ongoing attention as the system scales. A range of other mechanisms might be added, such as protections through staking, dynamic caps, fraud-detection rewards and more.
 
 ### Dispute Resolution
 
@@ -287,33 +344,7 @@ When work completion is challenged:
 
 ### Platform Funding
 
-Platform development, audits, and moderation are funded through **regular platform issues**, the same mechanism as any other community work. This ensures transparency and lets the community prioritize what gets built.
-
-### Token Value
-
-$CC's value evolves through distinct phases. In the early stages, value is primarily social: $CC functions as recognition — a visible record of contribution. Internal circulation emerges as community members trade $CC for goods and services among themselves. Access fees create a small but steady baseline demand.
-
-Over time, as Kindact builds a track record of verified, auditable impact, a more powerful demand source develops: **the verified impact marketplace**. This marketplace relies on two complementary instruments:
-
-**$CC** is a *currency* — fungible, circulating, subject to demurrage. It's the internal economy's lifeblood: what implementers earn, what community members trade, what access fees are paid in.
-
-**[Hypercerts](https://hypercerts.org/)** are *impact credentials* — each one tied to a specific piece of completed work, recording who did what, when, and with what verified results. They're non-fungible, retirable, and designed to be held as proof of impact.
-
-When a Kindact issue is completed and verified, both are generated: **$CC is minted and goes to the implementer** as their reward. **A Hypercert is generated and held by Kindact** as a community asset, with the implementer credited on it. The implementer's reward is the $CC; the Hypercert belongs to the community that deliberated, approved, and verified the work.
-
-**Why both are needed:** $CC is designed to *circulate* — demurrage penalizes holding, FIFO forces spending, and fungibility means 1 $CC = 1 $CC regardless of origin. Impact claims need the opposite: they must be *held*, *retired* (claimed once — a carbon offset can only count once), and tied to *specific* work. A corporation's ESG team doesn't want a currency on their balance sheet; they want a certificate they can point to in a report. Trying to make one instrument do both creates contradictions; having two with opposite properties creates a clean system.
-
-**How Hypercert sales back $CC's value:** External entities (carbon offset buyers, corporations needing ESG documentation, impact funds, progressive governments) can purchase Hypercerts from Kindact on an open market, with prices set by demand. The proceeds flow into a **fiat reserve** that backs $CC. Anyone can exchange $CC for fiat (or vice versa) through this reserve, and the exchange rate reflects the ratio of fiat backing to $CC in circulation. As more Hypercerts sell, the reserve deepens, and $CC becomes increasingly stable and reliable for everyday trade. The demurrage mechanism also acts as an automatic stabilizer: if the reserve ratio dips, demurrage can increase to burn more $CC and restore the balance.
-
-Hypercerts can also be purchased with $CC, which burns the $CC used — creating additional deflationary pressure that further supports the price.
-
-This creates a concrete virtuous cycle: more community-approved work → more Hypercerts → more sales to external buyers → deeper fiat reserve → more stable $CC → more confidence in the reward → more people willing to do good work.
-
-**This isn't speculative.** The infrastructure and market for verified impact credentials already exists and is growing rapidly. Optimism's [Retroactive Public Goods Funding](https://retrofunding.optimism.io/) (RetroPGF) program has distributed **over $100 million** to projects based on demonstrated impact rather than promises, with **$1.3 billion reserved** for future rounds. [Gitcoin](https://www.gitcoin.co/) has channeled **$67 million** to 5,000+ projects using quadratic funding, where many small contributions signal community priorities. These programs prove that retroactive, impact-based funding works at scale — and they are actively seeking new domains beyond crypto infrastructure. Kindact's completed, community-verified work would be a natural fit for this kind of external funding, since it produces exactly what these programs reward: auditable, community-assessed proof of real-world impact.
-
-$CC's long-term value is therefore anchored to the **quality and credibility of Kindact's verification process**. The better the platform is at ensuring real work gets done, the more valuable the Hypercerts become, the more fiat flows into the reserve, and the more reliable $CC becomes as a medium of exchange. By using Hypercerts as the credential format, Kindact doesn't need to build market recognition from scratch — it plugs into an existing and expanding ecosystem of impact funders.
-
-The system itself doesn't only reward outcomes though, it rewards effort and progress: contributors receive payments for reasonable work regardless of whether projects ultimately succeed.
+Platform development, audits, and moderation are funded through **regular platform issues**, the same mechanism as any other community work. This ensures transparency and lets the community prioritize what gets built - internally or externally.
 
 *For a deeper exploration of the economic mechanisms, see the separate [Economic Deep Dive](Kindact_Economics_Deep_Dive.md).*
 
@@ -351,7 +382,7 @@ Kindact will use existing solutions like **zero-knowledge proofs (ZKPs)** and ot
 
 ---
 
-## Real-World Economic Examples
+## Real-World Economic Examples of Supply
 
 To illustrate how the incentive system creates value, consider three scenarios at different scales:
 
@@ -375,7 +406,7 @@ Given this infrastructure, how might Kindact actually help solve the problems we
 
 ### Individual Level: Restoring Agency
 
-For those who feel powerless, Kindact offers **direct participation** in decisions that matter. You can find issues you care about, contribute to discussions, and see your ideas implemented. This isn't symbolic; it's real action with real visible or experiential consequences.
+For those who feel powerless, Kindact offers **direct participation** in decisions that matter. You can find issues you care about, contribute to discussions, see your ideas implemented, and receive rewards for your contributions. This isn't symbolic; it's real action with real visible or experiential consequences. And you won't have to struggle about justifying the time spent - it's not voluntary civic work, it's 'paid' and enables you to do less BS jobs and more meaningful work!
 
 The psychological impact matters: when we see our actions producing results, despair gives way to agency. Eco-anxiety decreases when we witness concrete improvements.
 
@@ -415,13 +446,23 @@ Any reward system attracts attempts to game it. How do we verify that work was a
 
 Scott Alexander's essay "[Meditations on Moloch](https://slatestarcodex.com/2014/07/30/meditations-on-moloch/)" describes the traps our collective systems fall into: situations where everyone would be better off cooperating, but individual incentives lead to destructive competition. Climate change is the classic example: everyone benefits from reducing emissions, but no individual country wants to bear the cost alone.
 
-Kindact creates incentives to break these traps, but powerful interests benefit from the status quo. How does the system handle resistance from those who profit from dysfunction?
+At maturity (Phase 3+), Kindact breaks these traps through several mechanisms:
+
+**Internalizing externalities.** In current systems, positive externalities — cleaning a river, insulating a home, conducting safety research — go uncompensated. The person who bears the cost creates value everyone benefits from but receives nothing in return. Kindact's minting process changes this: you produce a public benefit, the community verifies it, and $CC is minted directly to you. You're not sacrificing for the planet; you're producing a valuable asset. Private incentive aligns with public good.
+
+**First-mover protection.** The classic "after you" problem — nobody wants to be the sucker who acts alone — is broken because the first mover's reward doesn't depend on others following. They act, produce verified impact, earn $CC. The first mover is compensated regardless of whether their neighbor joins in.
+
+**Reducing action paralysis.** Massive problems like climate change feel impossible to act on individually. Kindact breaks them into thousands of small, verifiable, rewarded tasks. You don't need to "solve the climate" — you do one task, get rewarded. This reduces the cognitive overwhelm that causes inaction.
+
+**Potential future modules.** Kindact's modular design could support mechanics like Assurance Contracts ("I will if you will") — people pledge to act only if enough others also commit, like Kickstarter for collective action. This eliminates the risk of acting alone through synchronized commitment.
+
+These and similar mechanisms don't eliminate the resistance from powerful interests who benefit from the status quo. But they change the calculus: when doing the right thing becomes economically rewarding rather than costly, coordination traps become solvable.
 
 ### Bootstrapping and the Cold-Start Problem
 
 How does a system like this go from zero users to meaningful influence? The classic cold-start problem applies: a platform isn't valuable until it has users, and it won't get users until it's valuable.
 
-What gives us hope: there are already *many* communities and organizations that need better coordination infrastructure: housing cooperatives, climate action groups, civic tech networks, progressive institutions experimenting with participatory governance. All these would immediately benefit even from a basic version of Kindact. Furthermore, the ecosystem of aligned projects (Metagov, Hypha, Localscale, and others) provides a foundation and existing network that oculd be built on rather than starting from scratch.
+What gives us hope: there are already *many* communities and organizations that need better coordination infrastructure: housing cooperatives, climate action groups, civic tech networks, progressive institutions experimenting with participatory governance. All these would immediately benefit even from a basic version of Kindact. Furthermore, the ecosystem of aligned projects (Metagov, Hypha, Localscale, and others) provides a foundation and existing network that could be built on rather than starting from scratch.
 
 Other projects have crossed this threshold before. Cryptocurrencies, open-source software, and social platforms all faced the same challenge. Many might have failed, but some succeeded, and Kindact arguably offers more genuine utility than most. It's not speculation on token prices; it's coordination infrastructure for solving real problems. 
 
@@ -487,6 +528,6 @@ The goal is interoperability: creating a unified experience that draws on the be
 
 ## Join the Conversation
 
-If any part of this resonates—or concerns you—I'd welcome your thoughts. What's missing? What's unclear? What would make you want to participate?
+If any part of this resonates — or concerns you — I'd welcome your thoughts. What's missing? What's unclear? What would make you want to participate?
 
 Contribute to the discussion below, or join Metagov's slack or the RCF (Regen Currency Federation)'s discord to chat with me.
