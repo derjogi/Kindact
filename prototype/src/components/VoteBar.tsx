@@ -1,41 +1,55 @@
 "use client";
 
 import { useState } from "react";
-import { useStore } from "@/lib/store";
-import { Issue } from "@/lib/types";
+import { postVote } from "@/lib/api";
 import EligibilityModal from "./EligibilityModal";
 
-export default function VoteBar({ issue }: { issue: Issue }) {
-  const { votes, castVote } = useStore();
-  const userVote = votes[issue.id];
+export default function VoteBar({
+  issueId,
+  status,
+  approveCount,
+  rejectCount,
+  onVoted,
+}: {
+  issueId: string;
+  status: string;
+  approveCount: number;
+  rejectCount: number;
+  onVoted?: () => void;
+}) {
+  const [userVote, setUserVote] = useState<"approve" | "reject" | null>(null);
   const [showQuiz, setShowQuiz] = useState(false);
-  const [eligible, setEligible] = useState(!!userVote);
+  const [eligible, setEligible] = useState(false);
   const [pendingVote, setPendingVote] = useState<"approve" | "reject" | null>(
     null
   );
 
-  const approve = issue.votesTally.approve + (userVote === "approve" ? 1 : 0);
-  const reject = issue.votesTally.reject + (userVote === "reject" ? 1 : 0);
+  const approve = approveCount + (userVote === "approve" ? 1 : 0);
+  const reject = rejectCount + (userVote === "reject" ? 1 : 0);
   const total = approve + reject;
   const pct = total > 0 ? Math.round((approve / total) * 100) : 0;
 
-  if (issue.status !== "vote-ready") return null;
+  if (status !== "vote_ready" && status !== "vote-ready") return null;
 
-  const handleVote = (vote: "approve" | "reject") => {
+  const handleVote = async (vote: "approve" | "reject") => {
     if (eligible || userVote) {
-      castVote(issue.id, vote);
+      await postVote(issueId, vote);
+      setUserVote(vote);
+      onVoted?.();
     } else {
       setPendingVote(vote);
       setShowQuiz(true);
     }
   };
 
-  const handlePass = () => {
+  const handlePass = async () => {
     setEligible(true);
     setShowQuiz(false);
     if (pendingVote) {
-      castVote(issue.id, pendingVote);
+      await postVote(issueId, pendingVote);
+      setUserVote(pendingVote);
       setPendingVote(null);
+      onVoted?.();
     }
   };
 
@@ -71,7 +85,7 @@ export default function VoteBar({ issue }: { issue: Issue }) {
 
       {showQuiz && (
         <EligibilityModal
-          issueId={issue.id}
+          issueId={issueId}
           onPass={handlePass}
           onClose={() => {
             setShowQuiz(false);

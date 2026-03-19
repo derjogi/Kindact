@@ -13,7 +13,6 @@ depends_on:
 related:
   - 018-frontend
 ---
-
 # UI Prototype (Mock-Data Frontend)
 
 > **Phase**: MVP · **Priority**: High · **Subsystem**: UX / Prototype

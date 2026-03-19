@@ -1,40 +1,53 @@
 "use client";
 
 import { useState } from "react";
-import { Comment } from "@/lib/types";
-import { useStore } from "@/lib/store";
+import { postComment } from "@/lib/api";
+
+interface DbComment {
+  id: string;
+  issueId: string;
+  authorId: string;
+  text: string;
+  parentId: string | null;
+  upvotes: number;
+  downvotes: number;
+  stance?: string | null;
+  createdAt: string;
+  alias: string;
+}
 
 function CommentItem({
   comment,
   replies,
   issueId,
   depth = 0,
+  onCommentAdded,
 }: {
-  comment: Comment;
-  replies: Comment[];
+  comment: DbComment;
+  replies: DbComment[];
   issueId: string;
   depth?: number;
+  onCommentAdded?: () => void;
 }) {
   const [showReply, setShowReply] = useState(false);
   const [replyText, setReplyText] = useState("");
-  const addComment = useStore((s) => s.addComment);
 
   const childReplies = replies.filter((r) => r.parentId === comment.id);
 
-  const handleReply = () => {
+  const handleReply = async () => {
     if (!replyText.trim()) return;
-    addComment(issueId, replyText, comment.id);
+    await postComment(issueId, replyText, comment.id);
     setReplyText("");
     setShowReply(false);
+    onCommentAdded?.();
   };
 
   return (
     <div className={depth > 0 ? "ml-6 border-l-2 border-stone-100 pl-4" : ""}>
       <div className="group py-3">
         <div className="flex items-center gap-2 text-sm">
-          <span>{comment.emoji}</span>
           <span className="font-medium text-stone-700">
-            Anonymous {comment.alias}
+            {comment.alias}
           </span>
           <span className="text-stone-400">· {comment.createdAt}</span>
           {comment.stance && (
@@ -99,6 +112,7 @@ function CommentItem({
             replies={replies}
             issueId={issueId}
             depth={depth + 1}
+            onCommentAdded={onCommentAdded}
           />
         ))}
     </div>
@@ -108,21 +122,21 @@ function CommentItem({
 export default function CommentThread({
   comments,
   issueId,
+  onCommentAdded,
 }: {
-  comments: Comment[];
+  comments: DbComment[];
   issueId: string;
+  onCommentAdded?: () => void;
 }) {
   const [newComment, setNewComment] = useState("");
-  const addComment = useStore((s) => s.addComment);
-  const userComments = useStore((s) => s.userComments);
 
-  const allComments = [...comments, ...userComments];
-  const topLevel = allComments.filter((c) => c.parentId === null);
+  const topLevel = comments.filter((c) => c.parentId === null);
 
-  const handleAdd = () => {
+  const handleAdd = async () => {
     if (!newComment.trim()) return;
-    addComment(issueId, newComment, null);
+    await postComment(issueId, newComment);
     setNewComment("");
+    onCommentAdded?.();
   };
 
   return (
@@ -149,8 +163,9 @@ export default function CommentThread({
           <CommentItem
             key={comment.id}
             comment={comment}
-            replies={allComments}
+            replies={comments}
             issueId={issueId}
+            onCommentAdded={onCommentAdded}
           />
         ))}
       </div>

@@ -143,6 +143,7 @@ export async function getIssue(issueId: string) {
       comments: true,
       arguments: true,
       metrics: true,
+      boundaries: true,
       decisionState: true,
       aiSummary: true,
     },

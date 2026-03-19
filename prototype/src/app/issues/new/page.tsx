@@ -1,24 +1,43 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import Layout from "@/components/Layout";
-import { issues } from "@/lib/mock-data";
+import { fetchIssues, createIssue } from "@/lib/api";
 
-export default function CreateIssue() {
+export default function CreateIssuePage() {
+  const router = useRouter();
   const [title, setTitle] = useState("");
   const [summary, setSummary] = useState("");
   const [description, setDescription] = useState("");
-  const [scope, setScope] = useState("local");
+  const [scope, setScope] = useState<"local" | "national" | "global">("local");
   const [tagInput, setTagInput] = useState("");
   const [tags, setTags] = useState<string[]>([]);
-  const [submitted, setSubmitted] = useState(false);
+  const [rewardIntent, setRewardIntent] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // Simulate duplicate detection
-  const similar = title.length > 3
-    ? issues.filter((i) =>
-        i.title.toLowerCase().includes(title.toLowerCase().slice(0, 8))
-      )
-    : [];
+  const [similar, setSimilar] = useState<Record<string, unknown>[]>([]);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+
+    if (title.length <= 3) {
+      setSimilar([]);
+      return;
+    }
+
+    debounceRef.current = setTimeout(() => {
+      fetchIssues({ search: title })
+        .then((items) => setSimilar(items as Record<string, unknown>[]))
+        .catch(() => setSimilar([]));
+    }, 400);
+
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [title]);
 
   const addTag = () => {
     if (tagInput.trim() && !tags.includes(tagInput.trim())) {
@@ -27,19 +46,24 @@ export default function CreateIssue() {
     }
   };
 
-  if (submitted) {
-    return (
-      <Layout>
-        <div className="text-center py-16 space-y-4">
-          <div className="text-4xl">✅</div>
-          <h2 className="text-lg font-medium text-stone-800">Issue created!</h2>
-          <p className="text-sm text-stone-500">
-            (This is a prototype — the issue is not actually saved.)
-          </p>
-        </div>
-      </Layout>
-    );
-  }
+  const handleSubmit = async () => {
+    setSubmitting(true);
+    setError(null);
+    try {
+      const newIssue = await createIssue({
+        title,
+        summary,
+        description,
+        scope,
+        tags,
+        rewardIntent,
+      });
+      router.push(`/issues/${(newIssue as Record<string, unknown>).id}`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to create issue");
+      setSubmitting(false);
+    }
+  };
 
   return (
     <Layout>
@@ -70,8 +94,8 @@ export default function CreateIssue() {
                 ⚠️ Similar issues found:
               </p>
               {similar.map((s) => (
-                <p key={s.id} className="text-amber-700">
-                  "{s.title}" —{" "}
+                <p key={s.id as string} className="text-amber-700">
+                  &ldquo;{s.title as string}&rdquo; —{" "}
                   <a href={`/issues/${s.id}`} className="underline">
                     View issue
                   </a>
@@ -119,7 +143,7 @@ export default function CreateIssue() {
               </label>
               <select
                 value={scope}
-                onChange={(e) => setScope(e.target.value)}
+                onChange={(e) => setScope(e.target.value as "local" | "national" | "global")}
                 className="px-3 py-2 text-sm border border-stone-200 rounded-lg bg-white focus:outline-none"
               >
                 <option value="local">Local</option>
@@ -175,21 +199,21 @@ export default function CreateIssue() {
               Reward intent{" "}
               <span className="font-normal text-stone-400">(optional)</span>
             </label>
-            <div className="flex gap-2 items-center text-sm">
-              <input
-                type="text"
-                placeholder="Amount"
-                className="w-24 px-3 py-2 border border-stone-200 rounded-lg focus:outline-none focus:border-stone-400"
-              />
-              <span className="text-stone-500">$CC per</span>
-              <select className="px-3 py-2 border border-stone-200 rounded-lg bg-white focus:outline-none">
-                <option>milestone</option>
-                <option>month</option>
-                <option>action</option>
-              </select>
-            </div>
+            <input
+              type="text"
+              value={rewardIntent}
+              onChange={(e) => setRewardIntent(e.target.value)}
+              placeholder="e.g. 500 $CC per milestone"
+              className="w-full px-3 py-2 text-sm border border-stone-200 rounded-lg focus:outline-none focus:border-stone-400"
+            />
           </div>
         </div>
+
+        {error && (
+          <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+            {error}
+          </div>
+        )}
 
         {/* Actions */}
         <div className="flex justify-end gap-3 pt-2">
@@ -200,10 +224,11 @@ export default function CreateIssue() {
             Cancel
           </a>
           <button
-            onClick={() => setSubmitted(true)}
-            className="px-5 py-2 text-sm bg-stone-800 text-white rounded-lg hover:bg-stone-700"
+            onClick={handleSubmit}
+            disabled={submitting}
+            className="px-5 py-2 text-sm bg-stone-800 text-white rounded-lg hover:bg-stone-700 disabled:opacity-50"
           >
-            Submit Issue
+            {submitting ? "Submitting…" : "Submit Issue"}
           </button>
         </div>
       </div>

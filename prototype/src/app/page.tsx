@@ -1,23 +1,41 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Layout from "@/components/Layout";
 import IssueCard from "@/components/IssueCard";
-import { issues } from "@/lib/mock-data";
-import { IssueStatus, Scope } from "@/lib/types";
+import { fetchIssues } from "@/lib/api";
 
 export default function IssueFeed() {
   const [search, setSearch] = useState("");
-  const [scopeFilter, setScopeFilter] = useState<Scope | "all">("all");
-  const [statusFilter, setStatusFilter] = useState<IssueStatus | "all">("all");
+  const [scopeFilter, setScopeFilter] = useState<string>("all");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [issues, setIssues] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const filtered = issues.filter((issue) => {
-    if (search && !issue.title.toLowerCase().includes(search.toLowerCase()))
-      return false;
-    if (scopeFilter !== "all" && issue.scope !== scopeFilter) return false;
-    if (statusFilter !== "all" && issue.status !== statusFilter) return false;
-    return true;
-  });
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+
+    const filters: { status?: string; scope?: string; search?: string } = {};
+    if (statusFilter !== "all") filters.status = statusFilter;
+    if (scopeFilter !== "all") filters.scope = scopeFilter;
+    if (search) filters.search = search;
+
+    fetchIssues(filters)
+      .then((items) => {
+        if (!cancelled) setIssues(items as any[]);
+      })
+      .catch(() => {
+        if (!cancelled) setIssues([]);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [search, scopeFilter, statusFilter]);
 
   return (
     <Layout>
@@ -40,7 +58,7 @@ export default function IssueFeed() {
         <div className="flex gap-2 text-sm overflow-x-auto scrollbar-hide">
           <select
             value={scopeFilter}
-            onChange={(e) => setScopeFilter(e.target.value as Scope | "all")}
+            onChange={(e) => setScopeFilter(e.target.value)}
             className="px-3 py-1.5 border border-stone-200 rounded-lg bg-white text-stone-600 focus:outline-none"
           >
             <option value="all">All scopes</option>
@@ -50,14 +68,12 @@ export default function IssueFeed() {
           </select>
           <select
             value={statusFilter}
-            onChange={(e) =>
-              setStatusFilter(e.target.value as IssueStatus | "all")
-            }
+            onChange={(e) => setStatusFilter(e.target.value)}
             className="px-3 py-1.5 border border-stone-200 rounded-lg bg-white text-stone-600 focus:outline-none"
           >
             <option value="all">All statuses</option>
             <option value="deliberating">Deliberating</option>
-            <option value="vote-ready">Voting</option>
+            <option value="vote_ready">Voting</option>
             <option value="adopted">Adopted</option>
             <option value="implementing">Implementing</option>
             <option value="completed">Completed</option>
@@ -66,13 +82,14 @@ export default function IssueFeed() {
 
         {/* Issue list */}
         <div className="space-y-2">
-          {filtered.map((issue) => (
-            <IssueCard key={issue.id} issue={issue} />
-          ))}
-          {filtered.length === 0 && (
+          {loading ? (
+            <p className="text-center text-stone-400 py-12">Loading issues…</p>
+          ) : issues.length === 0 ? (
             <p className="text-center text-stone-400 py-12">
               No issues match your filters.
             </p>
+          ) : (
+            issues.map((issue) => <IssueCard key={issue.id} issue={issue} />)
           )}
         </div>
       </div>

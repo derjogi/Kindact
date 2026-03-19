@@ -29,5 +29,8 @@
     "prisma": "^6.19.2",
     "tailwindcss": "^4.2.1",
     "typescript": "^5.9.3"
+  },
+  "prisma": {
+    "seed": "bunx tsx prisma/seed.ts"
   }
 }

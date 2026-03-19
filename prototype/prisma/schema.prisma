@@ -162,6 +162,7 @@ model Issue {
   arguments     ArgumentNode[]
   proposalDoc   ProposalDocument?
   metrics       MetricAssessment[]
+  boundaries    BoundaryAssessment[]
   stakeClaims   StakeClaim[]
   eligibilityQuiz EligibilityQuiz?
   voteRecords   VoteRecord[]
@@ -309,6 +310,23 @@ model MetricAssessment {
   issue Issue @relation(fields: [issueId], references: [id])
 
   @@map("metric_assessments")
+  @@index([issueId])
+}
+
+model BoundaryAssessment {
+  id         String   @id @default(uuid())
+  issueId    String   @map("issue_id")
+  label      String   // e.g. "Freshwater", "Climate", "Health"
+  icon       String   // emoji icon
+  direction  String   // "improve", "regress", "neutral"
+  delta      String   // e.g. "+8%", "-2%"
+  confidence String   // "low", "medium", "high"
+  authorId   String   @map("author_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  issue Issue @relation(fields: [issueId], references: [id])
+
+  @@map("boundary_assessments")
   @@index([issueId])
 }
 

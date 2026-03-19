@@ -1,10 +1,21 @@
 import Link from "next/link";
-import { Issue } from "@/lib/types";
+
+interface IssueCardProps {
+  issue: {
+    id: string;
+    title: string;
+    summary: string;
+    status: string;
+    scope: string;
+    tags: string[];
+    participants: number;
+  };
+}
 
 const statusColors: Record<string, string> = {
   draft: "bg-stone-400",
   deliberating: "bg-emerald-500",
-  "vote-ready": "bg-blue-500",
+  vote_ready: "bg-blue-500",
   adopted: "bg-violet-500",
   implementing: "bg-amber-500",
   completed: "bg-stone-600",
@@ -13,16 +24,13 @@ const statusColors: Record<string, string> = {
 const statusLabels: Record<string, string> = {
   draft: "Draft",
   deliberating: "Deliberating",
-  "vote-ready": "Voting",
+  vote_ready: "Voting",
   adopted: "Adopted",
   implementing: "Implementing",
   completed: "Completed",
 };
 
-export default function IssueCard({ issue }: { issue: Issue }) {
-  const total = issue.votesTally.approve + issue.votesTally.reject;
-  const pct = total > 0 ? Math.round((issue.votesTally.approve / total) * 100) : null;
-
+export default function IssueCard({ issue }: IssueCardProps) {
   return (
     <Link
       href={`/issues/${issue.id}`}
@@ -32,7 +40,7 @@ export default function IssueCard({ issue }: { issue: Issue }) {
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
             <span
-              className={`w-2 h-2 rounded-full shrink-0 ${statusColors[issue.status]}`}
+              className={`w-2 h-2 rounded-full shrink-0 ${statusColors[issue.status] ?? "bg-stone-400"}`}
             />
             <h3 className="font-medium text-stone-900 truncate">{issue.title}</h3>
           </div>
@@ -42,13 +50,7 @@ export default function IssueCard({ issue }: { issue: Issue }) {
             <span>·</span>
             <span>{issue.participants} participants</span>
             <span>·</span>
-            <span>{statusLabels[issue.status]}</span>
-            {pct !== null && (
-              <>
-                <span>·</span>
-                <span>{pct}% approval</span>
-              </>
-            )}
+            <span>{statusLabels[issue.status] ?? issue.status}</span>
           </div>
         </div>
         <div className="flex flex-wrap gap-1 shrink-0">
