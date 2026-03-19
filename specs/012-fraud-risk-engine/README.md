@@ -1,5 +1,6 @@
 ---
 status: planned
+implementation_note: 'Schema created (RiskSignal, Restriction, Appeal). Service and API routes not yet created.'
 created: '2026-03-17'
 tags:
   - fraud-prevention

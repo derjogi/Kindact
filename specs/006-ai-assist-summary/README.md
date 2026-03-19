@@ -1,5 +1,6 @@
 ---
 status: planned
+implementation_note: 'Schema created (AISummary model). AI pipeline integration not yet implemented.'
 created: '2026-03-17'
 tags:
   - ai

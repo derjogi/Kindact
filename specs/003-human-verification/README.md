@@ -1,5 +1,6 @@
 ---
 status: planned
+implementation_note: 'Schema created (IdentityProviderLink model). Gitcoin Passport integration not yet implemented - stub needed.'
 created: '2026-03-17'
 tags:
   - identity

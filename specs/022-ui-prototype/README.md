@@ -85,4 +85,4 @@ prototype/            (Next.js app)
 
 ## Notes
 
-**Resumption guide**: Run `cd prototype && npm run dev` to start dev server (http://localhost:3000). Check this spec's Plan section for what's done (✅) vs remaining. Build verified clean with `npm run build`.
+**Resumption guide**: Run `cd prototype && bun dev` to start dev server (http://localhost:3000). Check this spec's Plan section for what's done (✅) vs remaining. Build verified clean with `bun run build`.
