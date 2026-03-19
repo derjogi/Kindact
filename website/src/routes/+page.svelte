@@ -156,19 +156,9 @@
 </section>
 
 <!-- How It Works Section -->
-<section id="how-it-works" class="py-24 px-6" style="background-color: var(--color-bg-alt)">
+<section id="how-it-works" class="px-6" style="background-color: var(--color-bg-alt)">
 	<div class="max-w-4xl mx-auto">
-		<ScrollReveal>
-			<SectionHeading
-				title="How It Works"
-				subtitle="A complete cycle of collective action: from identifying problems to rewarding solutions."
-				centered
-			/>
-		</ScrollReveal>
-
-		<div class="mt-12">
-			<CycleDiagram />
-		</div>
+		<CycleDiagram />
 	</div>
 </section>
 

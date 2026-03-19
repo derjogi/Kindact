@@ -2,6 +2,7 @@
 	import { steps } from '$lib/content/steps';
 	import { Lightbulb, MessageSquare, Vote, Hammer, Coins } from 'lucide-svelte';
 	import { onMount } from 'svelte';
+	import SectionHeading from './SectionHeading.svelte';
 
 	const icons = [Lightbulb, MessageSquare, Vote, Hammer, Coins];
 
@@ -83,16 +84,33 @@
 	}
 
 	function handleStepClick(index: number) {
+		if (!scrollContainer) return;
 		activeStep = index;
+
+		const containerTop = scrollContainer.getBoundingClientRect().top + window.scrollY;
+		const containerHeight = scrollContainer.offsetHeight;
+		const viewportHeight = window.innerHeight;
+		const scrollableDistance = containerHeight - viewportHeight;
+		const targetScroll = containerTop + (index / 5) * scrollableDistance;
+
+		window.scrollTo({ top: targetScroll, behavior: 'smooth' });
 	}
 </script>
 
 <!-- Scroll container: tall enough for 5 steps + some breathing room -->
 <div bind:this={scrollContainer} class="relative" style="height: 300vh;">
 	<!-- Sticky diagram + detail panel -->
-	<div class="sticky top-16 flex flex-col items-center py-8">
+	<div class="sticky top-0 h-screen flex flex-col items-center justify-center">
+		<div class="text-center mb-4">
+			<SectionHeading
+				title="How It Works"
+				subtitle="A complete cycle of collective action: from identifying problems to rewarding solutions."
+				centered
+			/>
+		</div>
+
 		<!-- Progress indicator -->
-		<div class="flex gap-2 mb-6">
+		<div class="flex gap-2 mb-4">
 			{#each steps as step, i}
 				<button
 					onclick={() => handleStepClick(i)}
@@ -112,7 +130,7 @@
 		<div class="flex justify-center mb-6">
 			<svg
 				viewBox="0 0 400 400"
-				class="w-64 md:w-80"
+				class="w-72 md:w-[28rem] lg:w-[32rem]"
 				role="img"
 				aria-label="Kindact 5-step cycle diagram — Step {activeStep + 1}: {steps[activeStep].name}"
 			>
