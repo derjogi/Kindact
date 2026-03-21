@@ -1,17 +1,18 @@
 ---
 status: planned
-implementation_note: 'Schema created (AISummary model). AI pipeline integration not yet implemented.'
-created: '2026-03-17'
-tags:
-  - ai
-  - mvp
-  - deliberation
+created: 2026-03-17
 priority: high
-created_at: '2026-03-17T11:07:39.774Z'
+tags:
+- ai
+- mvp
+- deliberation
 depends_on:
-  - 004-issue-intake
-  - 005-deliberation-workspace
-updated_at: '2026-03-17T11:08:18.397Z'
+- 004-issue-intake
+- 005-deliberation-workspace
+- 024-ai-provider-registry
+created_at: 2026-03-17T11:07:39.774Z
+updated_at: 2026-03-22T20:40:42.799077514Z
+implementation_note: Schema created (AISummary model). AI pipeline integration not yet implemented.
 ---
 
 # AI Assistance & Summaries
