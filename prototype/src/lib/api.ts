@@ -153,6 +153,35 @@ export async function fetchMyBalance() {
   return authedRequest<{ balance: number }>("/api/me/balance");
 }
 
+// ─── AI ─────────────────────────────────────────────────────────────────────
+
+export async function generateAISummary(issueId: string) {
+  return request<Record<string, unknown>>(`/api/ai/issues/${issueId}/summary`, {
+    method: "POST",
+  });
+}
+
+export async function generateAIImprovements(issueId: string) {
+  return request<{ suggestions: string; modelVersion: string }>(
+    `/api/ai/issues/${issueId}/improve`,
+    { method: "POST" },
+  );
+}
+
+export async function generateAITopics(issueId: string) {
+  return request<{ tags: string[]; modelVersion: string }>(
+    `/api/ai/issues/${issueId}/topics`,
+    { method: "POST" },
+  );
+}
+
+export async function findSimilarIssues(issueId: string) {
+  return request<{ similar: { id: string; reason: string }[]; modelVersion: string }>(
+    `/api/ai/issues/${issueId}/similar`,
+    { method: "POST" },
+  );
+}
+
 // ─── Ledger ─────────────────────────────────────────────────────────────────
 
 export async function fetchAccount(accountId: string) {
