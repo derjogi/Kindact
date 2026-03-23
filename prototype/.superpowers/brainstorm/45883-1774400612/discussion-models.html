@@ -1,0 +1,161 @@
+<h2>Discussion Model: Kialo-style vs Reddit-style vs Hybrid</h2>
+<p class="subtitle">Which structure best serves Kindact's goal of surfacing the <em>best</em> ideas and making concerns visible?</p>
+
+<div class="cards">
+  <!-- Option A: Kialo-style -->
+  <div class="card" data-choice="kialo" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 20px; background: #1a1a2e;">
+      <div style="font-family: monospace; font-size: 11px; color: #e0e0e0; line-height: 1.6;">
+        <div style="background: #2a2a4a; border-radius: 6px; padding: 10px; margin-bottom: 8px; border-left: 3px solid #8b8bff;">
+          <div style="color: #aaa; font-size: 9px;">THESIS</div>
+          "Install bioswale + larger pipes on Elm St"
+        </div>
+        <div style="display: flex; gap: 12px; margin-left: 16px;">
+          <div style="flex: 1;">
+            <div style="color: #4ade80; font-size: 9px; margin-bottom: 4px;">⬆ PRO</div>
+            <div style="background: #1a2e1a; border-radius: 4px; padding: 6px; font-size: 10px; margin-bottom: 4px; border-left: 2px solid #4ade80;">
+              "Bioswale is cheaper long-term"
+              <div style="margin-left: 12px; margin-top: 4px;">
+                <div style="color: #f87171; font-size: 8px;">↳ CON</div>
+                <div style="background: #2e1a1a; border-radius: 3px; padding: 4px; font-size: 9px; border-left: 2px solid #f87171;">
+                  "Requires ongoing maintenance"
+                </div>
+              </div>
+            </div>
+            <div style="background: #1a2e1a; border-radius: 4px; padding: 6px; font-size: 10px; border-left: 2px solid #4ade80;">
+              "Permeable pavement reduces runoff 30%"
+            </div>
+          </div>
+          <div style="flex: 1;">
+            <div style="color: #f87171; font-size: 9px; margin-bottom: 4px;">⬇ CON</div>
+            <div style="background: #2e1a1a; border-radius: 4px; padding: 6px; font-size: 10px; border-left: 2px solid #f87171;">
+              "Cost estimate seems too low"
+            </div>
+            <div style="background: #2e1a1a; border-radius: 4px; padding: 6px; font-size: 10px; margin-top: 4px; border-left: 2px solid #f87171;">
+              "Traffic disruption during construction"
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Kialo-style Argument Tree</h3>
+      <p>Every contribution is a <strong>claim</strong> in a strict pro/con tree. No freeform chat. Forces structured thinking. You navigate by drilling into branches.</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul>
+          <li>Forces clarity — every post must be a clear claim</li>
+          <li>Easy to see which arguments have strong/weak rebuttals</li>
+          <li>Great for complex policy debates</li>
+        </ul></div>
+        <div class="cons"><h4>Cons</h4><ul>
+          <li>Rigid — can't ask questions, share experiences, or have natural dialogue</li>
+          <li>High barrier to contribute (must frame everything as a claim)</li>
+          <li>Loses the social/community feel</li>
+        </ul></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Option B: Reddit-style -->
+  <div class="card" data-choice="reddit" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 20px; background: #1a1a2e;">
+      <div style="font-family: monospace; font-size: 11px; color: #e0e0e0; line-height: 1.6;">
+        <div style="background: #2a2a4a; border-radius: 6px; padding: 10px; margin-bottom: 6px;">
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: #aaa; font-size: 9px;">🦉 Owl · 2h ago</span>
+            <span style="font-size: 9px;">👍 12 · 👎 2</span>
+          </div>
+          "The drainage plan doesn't account for the north side slope"
+          <div style="margin-left: 20px; margin-top: 6px; border-left: 2px solid #444; padding-left: 8px;">
+            <div style="color: #aaa; font-size: 9px;">🦊 Fox · 1h ago &nbsp; 👍 8</div>
+            <div style="font-size: 10px;">"Good point — 2019 survey shows 4% grade there"</div>
+            <div style="margin-left: 16px; margin-top: 4px; border-left: 2px solid #555; padding-left: 8px;">
+              <div style="color: #aaa; font-size: 9px;">🐻 Bear · 45m ago &nbsp; 👍 3</div>
+              <div style="font-size: 10px;">"I can pull the survey data if needed"</div>
+            </div>
+          </div>
+        </div>
+        <div style="background: #2a2a4a; border-radius: 6px; padding: 10px;">
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: #aaa; font-size: 9px;">🐻 Bear · 5h ago</span>
+            <span style="font-size: 9px;">👍 15 · 👎 3</span>
+          </div>
+          "We should consider permeable pavement instead of just pipes"
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Reddit-style Threaded Discussion</h3>
+      <p>Traditional comment threads with nested replies, upvotes/downvotes. Natural conversation flow. What you already have.</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul>
+          <li>Familiar — low barrier to participate</li>
+          <li>Natural dialogue: questions, experiences, humor all welcome</li>
+          <li>Good for community building</li>
+        </ul></div>
+        <div class="cons"><h4>Cons</h4><ul>
+          <li>Popular ≠ best — upvotes reward agreement, not quality</li>
+          <li>Hard to see overall argument structure</li>
+          <li>Threads go off-topic; key points get buried</li>
+        </ul></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Option C: Hybrid -->
+  <div class="card" data-choice="hybrid" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 20px; background: #1a1a2e;">
+      <div style="font-family: monospace; font-size: 11px; color: #e0e0e0; line-height: 1.6;">
+        <!-- AI summary at top -->
+        <div style="background: #1a2e2a; border-radius: 6px; padding: 8px; margin-bottom: 8px; border: 1px solid #2a4a3a;">
+          <div style="color: #4ade80; font-size: 9px;">🤖 AI SUMMARY — live-updated</div>
+          <div style="font-size: 10px; margin-top: 2px;">"3 main camps: bioswale (7 supporters), pipes-only (4), hybrid approach (5). Key unresolved: cost allocation."</div>
+        </div>
+        <!-- Spotlighted comments -->
+        <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+          <div style="flex: 1; background: #2a2a4a; border-radius: 6px; padding: 8px; border-top: 2px solid #8b8bff;">
+            <div style="color: #aaa; font-size: 8px;">🔦 SPOTLIGHT · 🦉 Owl</div>
+            <div style="font-size: 10px; margin-top: 2px;">"Slope on north side not accounted for"</div>
+            <div style="font-size: 8px; color: #888; margin-top: 2px;">👍 12 · 💬 4 replies</div>
+          </div>
+          <div style="flex: 1; background: #2a2a4a; border-radius: 6px; padding: 8px; border-top: 2px solid #8b8bff;">
+            <div style="color: #aaa; font-size: 8px;">🔦 SPOTLIGHT · 🐢 Turtle</div>
+            <div style="font-size: 10px; margin-top: 2px;">"Has anyone modeled flood return periods?"</div>
+            <div style="font-size: 8px; color: #888; margin-top: 2px;">👍 1 · 💬 0 replies · 🆕 new</div>
+          </div>
+        </div>
+        <!-- Search + thread list -->
+        <div style="background: #333; border-radius: 4px; padding: 6px; margin-bottom: 6px;">
+          <div style="font-size: 9px; color: #aaa;">🔍 "Is anyone talking about cost?"</div>
+          <div style="font-size: 9px; color: #8b8bff; margin-top: 2px;">→ 3 threads mention cost estimates</div>
+        </div>
+        <div style="font-size: 9px; color: #888;">▼ All threads (18) · Sort: Smart mix ▾</div>
+        <div style="background: #2a2a4a; border-radius: 4px; padding: 6px; margin-top: 4px; font-size: 10px;">
+          🦊 Fox: "Bioswale design should account for 4% grade" <span style="color:#888;">· 💬 3 · 👍 8</span>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Hybrid: Spotlight + Threads + AI</h3>
+      <p>Reddit-style threads as the base, but with <strong>spotlighted comments</strong> (semi-random selection from top/new/random), <strong>AI search</strong> ("is anyone talking about X?"), and <strong>AI-generated summary</strong> that identifies argument clusters.</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul>
+          <li>Low barrier (threaded discussion) + structured visibility (spotlights)</li>
+          <li>AI search solves "is this already discussed?" problem</li>
+          <li>Semi-random spotlights surface overlooked perspectives</li>
+          <li>Can <em>optionally</em> tag comments as pro/con for structured view</li>
+        </ul></div>
+        <div class="cons"><h4>Cons</h4><ul>
+          <li>More complex to build</li>
+          <li>AI summaries could be wrong or biased</li>
+          <li>Spotlight algorithm needs careful tuning</li>
+        </ul></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top: 24px;">
+  <h3>💡 Note</h3>
+  <p>These aren't mutually exclusive — Option C could include a "structured view" toggle that shows a Kialo-like argument tree derived from pro/con-tagged comments. But the <strong>primary interaction model</strong> matters for the data structure and mock data we're about to create.</p>
+</div>

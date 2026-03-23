@@ -1,0 +1,174 @@
+<h2>Summary: Click-to-Reveal Sources</h2>
+<p class="subtitle">Clean text, no decoration. Click any word → sources panel shows relevant comments. Hover shows faint highlight.</p>
+
+<div class="section">
+  <h3>Interaction Flow</h3>
+</div>
+
+<div class="split">
+  <!-- State 1: Clean idle -->
+  <div class="mockup">
+    <div class="mockup-header">1. Idle — plain text, no decoration</div>
+    <div class="mockup-body" style="padding: 16px; font-family: system-ui; font-size: 12px;">
+      <div style="display: flex; gap: 16px;">
+        <div style="flex: 1;">
+          <div style="font-size: 10px; font-weight: 600; color: #a8a29e; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">Summary</div>
+          <p style="margin: 0 0 8px 0; color: #1c1917; line-height: 1.7;">
+            <strong>Route prioritization:</strong> Safety-first vs usage-first. Concern that usage data is biased toward neighborhoods with existing infrastructure.
+          </p>
+          <p style="margin: 0 0 8px 0; color: #1c1917; line-height: 1.7;">
+            <strong>Cost estimate:</strong> Multiple contributors agree the $200k figure is unrealistic. Suggested range: $300-500k. A civil engineer has offered to help refine.
+          </p>
+          <p style="margin: 0; color: #1c1917; line-height: 1.7;">
+            <strong>Consensus:</strong> Main & 5th needs immediate attention. Quick-win flex posts proposed as interim protection.
+          </p>
+        </div>
+        <div style="width: 150px; flex-shrink: 0; border-left: 1px solid #f5f5f4; padding-left: 12px; display: flex; align-items: center; justify-content: center;">
+          <div style="text-align: center; color: #d6d3d1; font-size: 10px; line-height: 1.6;">
+            <div style="font-size: 20px; margin-bottom: 4px;">💬</div>
+            Click on any part of the summary to see related comments
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- State 2: Hover -->
+  <div class="mockup">
+    <div class="mockup-header">2. Hover over "data" — faint highlight on word</div>
+    <div class="mockup-body" style="padding: 16px; font-family: system-ui; font-size: 12px;">
+      <div style="display: flex; gap: 16px;">
+        <div style="flex: 1;">
+          <div style="font-size: 10px; font-weight: 600; color: #a8a29e; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">Summary</div>
+          <p style="margin: 0 0 8px 0; color: #1c1917; line-height: 1.7; cursor: text;">
+            <strong>Route prioritization:</strong> Safety-first vs usage-first. Concern that usage <span style="background: #f5f5f0; border-radius: 2px; padding: 0 1px;">data</span> is biased toward neighborhoods with existing infrastructure.
+          </p>
+          <p style="margin: 0 0 8px 0; color: #1c1917; line-height: 1.7;">
+            <strong>Cost estimate:</strong> Multiple contributors agree the $200k figure is unrealistic. Suggested range: $300-500k. A civil engineer has offered to help refine.
+          </p>
+          <p style="margin: 0; color: #1c1917; line-height: 1.7;">
+            <strong>Consensus:</strong> Main & 5th needs immediate attention. Quick-win flex posts proposed as interim protection.
+          </p>
+        </div>
+        <div style="width: 150px; flex-shrink: 0; border-left: 1px solid #f5f5f4; padding-left: 12px; display: flex; align-items: center; justify-content: center;">
+          <div style="text-align: center; color: #d6d3d1; font-size: 10px; line-height: 1.6;">
+            <div style="font-size: 20px; margin-bottom: 4px;">💬</div>
+            Click on any part of the summary to see related comments
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top: 16px;"></div>
+
+<div class="split">
+  <!-- State 3: Clicked "data" -->
+  <div class="mockup">
+    <div class="mockup-header">3. Clicked "data" — sources for "usage data" context</div>
+    <div class="mockup-body" style="padding: 16px; font-family: system-ui; font-size: 12px;">
+      <div style="display: flex; gap: 16px;">
+        <div style="flex: 1;">
+          <div style="font-size: 10px; font-weight: 600; color: #a8a29e; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">Summary</div>
+          <p style="margin: 0 0 8px 0; color: #1c1917; line-height: 1.7;">
+            <strong>Route prioritization:</strong> Safety-first vs usage-first. Concern that <span style="background: #fef9c3; border-radius: 2px; padding: 0 2px;">usage</span> <span style="background: #fef3c7; border-bottom: 1px dotted #d97706; border-radius: 2px; padding: 0 2px;">data</span> <span style="background: #fef9c3; border-radius: 2px; padding: 0 2px;">is biased</span> toward neighborhoods with existing infrastructure.
+          </p>
+          <p style="margin: 0 0 8px 0; color: #a8a29e; line-height: 1.7;">
+            <strong>Cost estimate:</strong> Multiple contributors agree the $200k figure is unrealistic. Suggested range: $300-500k. A civil engineer has offered to help refine.
+          </p>
+          <p style="margin: 0; color: #a8a29e; line-height: 1.7;">
+            <strong>Consensus:</strong> Main & 5th needs immediate attention. Quick-win flex posts proposed as interim protection.
+          </p>
+        </div>
+        <div style="width: 150px; flex-shrink: 0; border-left: 1px solid #f5f5f4; padding-left: 12px;">
+          <div style="font-size: 8px; color: #a8a29e; text-transform: uppercase; margin-bottom: 6px;">Related to "usage data"</div>
+          <div style="background: #fffbeb; border-radius: 6px; padding: 8px; border: 1px solid #fde68a; margin-bottom: 6px; cursor: pointer; font-size: 10px;">
+            <div style="font-size: 9px; color: #92400e; font-weight: 500;">🦡 Badger · 👍 14</div>
+            <div style="color: #451a03; margin-top: 3px; line-height: 1.4;">"...west side neighborhoods have zero bike infrastructure..."</div>
+            <div style="font-size: 8px; color: #b45309; margin-top: 3px;">↓ jump to comment</div>
+          </div>
+          <div style="background: #fffbeb; border-radius: 6px; padding: 8px; border: 1px solid #fde68a; margin-bottom: 6px; cursor: pointer; font-size: 10px;">
+            <div style="font-size: 9px; color: #92400e; font-weight: 500;">🦉 Owl · 👍 19</div>
+            <div style="color: #451a03; margin-top: 3px; line-height: 1.4;">"...cyclist survey data is inherently biased..."</div>
+            <div style="font-size: 8px; color: #b45309; margin-top: 3px;">↓ jump to comment</div>
+          </div>
+          <div style="font-size: 8px; color: #a8a29e; margin-top: 8px; text-transform: uppercase; margin-bottom: 6px;">See also</div>
+          <div style="background: #fafaf9; border-radius: 6px; padding: 8px; border: 1px solid #e7e5e4; cursor: pointer; font-size: 10px;">
+            <div style="font-size: 9px; color: #78716c; font-weight: 500;">🦊 Fox · 👍 19</div>
+            <div style="color: #57534e; margin-top: 3px; line-height: 1.4;">"...top 3 near-miss locations are all painted-lane segments..."</div>
+            <div style="font-size: 8px; color: #a8a29e; margin-top: 3px;">↓ jump to comment</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- State 4: Clicked "biased" instead -->
+  <div class="mockup">
+    <div class="mockup-header">4. Clicked "biased" instead — slightly different sources</div>
+    <div class="mockup-body" style="padding: 16px; font-family: system-ui; font-size: 12px;">
+      <div style="display: flex; gap: 16px;">
+        <div style="flex: 1;">
+          <div style="font-size: 10px; font-weight: 600; color: #a8a29e; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">Summary</div>
+          <p style="margin: 0 0 8px 0; color: #1c1917; line-height: 1.7;">
+            <strong>Route prioritization:</strong> Safety-first vs usage-first. Concern that <span style="background: #fef9c3; border-radius: 2px; padding: 0 2px;">usage data</span> <span style="background: #fef9c3; border-radius: 2px; padding: 0 2px;">is</span> <span style="background: #fef3c7; border-bottom: 1px dotted #d97706; border-radius: 2px; padding: 0 2px;">biased</span> <span style="background: #fef9c3; border-radius: 2px; padding: 0 2px;">toward neighborhoods with existing infrastructure</span>.
+          </p>
+          <p style="margin: 0 0 8px 0; color: #a8a29e; line-height: 1.7;">
+            <strong>Cost estimate:</strong> Multiple contributors agree the $200k figure is unrealistic...
+          </p>
+          <p style="margin: 0; color: #a8a29e; line-height: 1.7;">
+            <strong>Consensus:</strong> Main & 5th needs immediate attention...
+          </p>
+        </div>
+        <div style="width: 150px; flex-shrink: 0; border-left: 1px solid #f5f5f4; padding-left: 12px;">
+          <div style="font-size: 8px; color: #a8a29e; text-transform: uppercase; margin-bottom: 6px;">Related to "biased"</div>
+          <div style="background: #fffbeb; border-radius: 6px; padding: 8px; border: 1px solid #fde68a; margin-bottom: 6px; cursor: pointer; font-size: 10px;">
+            <div style="font-size: 9px; color: #92400e; font-weight: 500;">🦉 Owl · 👍 19</div>
+            <div style="color: #451a03; margin-top: 3px; line-height: 1.4;">"...captures where people bike <em>now</em>, which skews toward neighborhoods that already have infrastructure..."</div>
+            <div style="font-size: 8px; color: #b45309; margin-top: 3px;">↓ jump to comment</div>
+          </div>
+          <div style="background: #fffbeb; border-radius: 6px; padding: 8px; border: 1px solid #fde68a; margin-bottom: 6px; cursor: pointer; font-size: 10px;">
+            <div style="font-size: 9px; color: #92400e; font-weight: 500;">🦡 Badger · 👍 14</div>
+            <div style="color: #451a03; margin-top: 3px; line-height: 1.4;">"...west side neighborhoods (lower income) have zero bike infrastructure while east side already has..."</div>
+            <div style="font-size: 8px; color: #b45309; margin-top: 3px;">↓ jump to comment</div>
+          </div>
+          <div style="font-size: 8px; color: #a8a29e; margin-top: 8px; text-transform: uppercase; margin-bottom: 6px;">See also</div>
+          <div style="background: #fafaf9; border-radius: 6px; padding: 8px; border: 1px solid #e7e5e4; cursor: pointer; font-size: 10px;">
+            <div style="font-size: 9px; color: #78716c; font-weight: 500;">🐢 Turtle · 👍 9</div>
+            <div style="color: #57534e; margin-top: 3px; line-height: 1.4;">"...people here drive because they have to, not because they want to..."</div>
+            <div style="font-size: 8px; color: #a8a29e; margin-top: 3px;">↓ approximate match</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top: 24px;">
+  <h3>How this works under the hood</h3>
+  <p style="font-size: 13px; line-height: 1.7; color: #44403c;">The AI pre-computes <strong>overlapping reference spans</strong> at multiple granularities when generating the summary. Stored as:</p>
+  <pre style="background: #1a1a2e; color: #e0e0e0; padding: 12px; border-radius: 6px; font-size: 11px; overflow-x: auto; line-height: 1.6;">
+{
+  "content": "...usage data is biased toward neighborhoods...",
+  "references": [
+    { "start": 72, "end": 82, "text": "usage data",
+      "commentIds": ["c35", "c35a", "c31a"],
+      "strength": "direct" },
+    { "start": 86, "end": 92, "text": "biased",
+      "commentIds": ["c35a", "c35"],
+      "strength": "direct" },
+    { "start": 72, "end": 127,
+      "text": "usage data is biased toward...infrastructure",
+      "commentIds": ["c35", "c35a", "c33b"],
+      "strength": "direct" },
+    { "start": 86, "end": 127,
+      "text": "biased toward...infrastructure",
+      "commentIds": ["c35a", "c33b"],
+      "strength": "approximate" }
+  ]
+}</pre>
+  <p style="font-size: 13px; line-height: 1.7; color: #44403c; margin-top: 12px;">
+    When the user clicks a word, the UI finds all spans containing that character position, merges the comment IDs, and groups them by <code>strength</code> ("direct" → <strong>Related</strong>, "approximate" → <strong>See also</strong>). The surrounding context (neighboring words in matching spans) gets the faint yellow highlight.
+  </p>
+</div>

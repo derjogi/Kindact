@@ -1,0 +1,163 @@
+<h2>Expanded Thread: Stance Indicator Style</h2>
+<p class="subtitle">When a spotlight/search result is clicked, it expands into a thread. How should pro/con/neutral replies look?</p>
+
+<div class="cards">
+
+  <!-- Option A: Subtle border accent -->
+  <div class="card" data-choice="border-accent" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 20px; background: #fafaf9;">
+      <div style="font-family: system-ui; font-size: 12px; color: #1c1917; line-height: 1.5;">
+        <!-- Parent comment (spotlight) -->
+        <div style="background: white; border-radius: 8px; padding: 12px; border: 1px solid #e7e5e4; margin-bottom: 4px;">
+          <div style="display: flex; justify-content: space-between; font-size: 10px; color: #a8a29e;">
+            <span>🦉 Owl · 2h ago</span>
+            <span>👍 12 · 👎 2</span>
+          </div>
+          <div style="margin-top: 4px;">"The drainage plan doesn't account for the slope on the north side of the street."</div>
+        </div>
+
+        <!-- Reply: supporting (pro) -->
+        <div style="margin-left: 24px; border-left: 2px solid #e7e5e4; padding-left: 12px;">
+          <div style="background: white; border-radius: 8px; padding: 10px; border: 1px solid #e7e5e4; border-left: 3px solid #4ade80; margin-bottom: 4px;">
+            <div style="display: flex; justify-content: space-between; font-size: 10px; color: #a8a29e;">
+              <span>🦊 Fox · 1h ago</span>
+              <div><span style="color: #4ade80; font-weight: 600; font-size: 9px; background: #f0fdf4; padding: 1px 6px; border-radius: 3px;">SUPPORTING</span> &nbsp; 👍 8</div>
+            </div>
+            <div style="margin-top: 4px;">"Good point — the 2019 survey shows a 4% grade there. The bioswale design should account for that."</div>
+          </div>
+
+          <!-- Reply to reply: counter -->
+          <div style="margin-left: 24px; border-left: 2px solid #e7e5e4; padding-left: 12px;">
+            <div style="background: white; border-radius: 8px; padding: 10px; border: 1px solid #e7e5e4; border-left: 3px solid #fb923c; margin-bottom: 4px;">
+              <div style="display: flex; justify-content: space-between; font-size: 10px; color: #a8a29e;">
+                <span>🦌 Deer · 45m ago</span>
+                <div><span style="color: #fb923c; font-weight: 600; font-size: 9px; background: #fff7ed; padding: 1px 6px; border-radius: 3px;">COUNTER</span> &nbsp; 👍 3</div>
+              </div>
+              <div style="margin-top: 4px;">"The 4% grade is well within bioswale tolerances. Portland uses them on 6% slopes."</div>
+            </div>
+          </div>
+
+          <!-- Reply: neutral/banter -->
+          <div style="background: white; border-radius: 8px; padding: 10px; border: 1px solid #e7e5e4; margin-bottom: 4px;">
+            <div style="display: flex; justify-content: space-between; font-size: 10px; color: #a8a29e;">
+              <span>🐻 Bear · 30m ago</span>
+              <span>👍 1</span>
+            </div>
+            <div style="margin-top: 4px;">"I can pull up the full survey data if anyone wants to see it."</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Subtle Left Border + Label</h3>
+      <p>Thin colored left border (green = supporting, orange = counter). Small pill label. Neutral comments have no decoration. Gentle — doesn't dominate the visual.</p>
+    </div>
+  </div>
+
+  <!-- Option B: Background tint -->
+  <div class="card" data-choice="bg-tint" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 20px; background: #fafaf9;">
+      <div style="font-family: system-ui; font-size: 12px; color: #1c1917; line-height: 1.5;">
+        <!-- Parent -->
+        <div style="background: white; border-radius: 8px; padding: 12px; border: 1px solid #e7e5e4; margin-bottom: 4px;">
+          <div style="display: flex; justify-content: space-between; font-size: 10px; color: #a8a29e;">
+            <span>🦉 Owl · 2h ago</span>
+            <span>👍 12 · 👎 2</span>
+          </div>
+          <div style="margin-top: 4px;">"The drainage plan doesn't account for the slope on the north side of the street."</div>
+        </div>
+
+        <div style="margin-left: 24px; border-left: 2px solid #e7e5e4; padding-left: 12px;">
+          <!-- Supporting: green tint -->
+          <div style="background: #f0fdf4; border-radius: 8px; padding: 10px; border: 1px solid #bbf7d0; margin-bottom: 4px;">
+            <div style="display: flex; justify-content: space-between; font-size: 10px; color: #a8a29e;">
+              <span>🦊 Fox · 1h ago</span>
+              <div><span style="color: #16a34a; font-size: 9px;">▲ supporting</span> &nbsp; 👍 8</div>
+            </div>
+            <div style="margin-top: 4px;">"Good point — the 2019 survey shows a 4% grade there. The bioswale design should account for that."</div>
+          </div>
+
+          <div style="margin-left: 24px; border-left: 2px solid #e7e5e4; padding-left: 12px;">
+            <!-- Counter: orange tint -->
+            <div style="background: #fff7ed; border-radius: 8px; padding: 10px; border: 1px solid #fed7aa; margin-bottom: 4px;">
+              <div style="display: flex; justify-content: space-between; font-size: 10px; color: #a8a29e;">
+                <span>🦌 Deer · 45m ago</span>
+                <div><span style="color: #ea580c; font-size: 9px;">▼ counter</span> &nbsp; 👍 3</div>
+              </div>
+              <div style="margin-top: 4px;">"The 4% grade is well within bioswale tolerances. Portland uses them on 6% slopes."</div>
+            </div>
+          </div>
+
+          <!-- Neutral -->
+          <div style="background: white; border-radius: 8px; padding: 10px; border: 1px solid #e7e5e4; margin-bottom: 4px;">
+            <div style="display: flex; justify-content: space-between; font-size: 10px; color: #a8a29e;">
+              <span>🐻 Bear · 30m ago</span>
+              <span>👍 1</span>
+            </div>
+            <div style="margin-top: 4px;">"I can pull up the full survey data if anyone wants to see it."</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Background Tint + Text Label</h3>
+      <p>Entire comment gets a very faint background tint (green/orange). Small text label instead of pill. More visible stance at a glance, but could feel busy with many comments.</p>
+    </div>
+  </div>
+
+  <!-- Option C: Icon-only minimal -->
+  <div class="card" data-choice="icon-only" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 20px; background: #fafaf9;">
+      <div style="font-family: system-ui; font-size: 12px; color: #1c1917; line-height: 1.5;">
+        <!-- Parent -->
+        <div style="background: white; border-radius: 8px; padding: 12px; border: 1px solid #e7e5e4; margin-bottom: 4px;">
+          <div style="display: flex; justify-content: space-between; font-size: 10px; color: #a8a29e;">
+            <span>🦉 Owl · 2h ago</span>
+            <span>👍 12 · 👎 2</span>
+          </div>
+          <div style="margin-top: 4px;">"The drainage plan doesn't account for the slope on the north side of the street."</div>
+        </div>
+
+        <div style="margin-left: 24px; border-left: 2px solid #e7e5e4; padding-left: 12px;">
+          <!-- Supporting: just a small icon -->
+          <div style="background: white; border-radius: 8px; padding: 10px; border: 1px solid #e7e5e4; margin-bottom: 4px;">
+            <div style="display: flex; justify-content: space-between; font-size: 10px; color: #a8a29e;">
+              <span><span style="color: #4ade80; font-size: 12px;">↱</span> 🦊 Fox · 1h ago</span>
+              <span>👍 8</span>
+            </div>
+            <div style="margin-top: 4px;">"Good point — the 2019 survey shows a 4% grade there. The bioswale design should account for that."</div>
+          </div>
+
+          <div style="margin-left: 24px; border-left: 2px solid #e7e5e4; padding-left: 12px;">
+            <!-- Counter: just a small icon -->
+            <div style="background: white; border-radius: 8px; padding: 10px; border: 1px solid #e7e5e4; margin-bottom: 4px;">
+              <div style="display: flex; justify-content: space-between; font-size: 10px; color: #a8a29e;">
+                <span><span style="color: #fb923c; font-size: 12px;">↳</span> 🦌 Deer · 45m ago</span>
+                <span>👍 3</span>
+              </div>
+              <div style="margin-top: 4px;">"The 4% grade is well within bioswale tolerances. Portland uses them on 6% slopes."</div>
+            </div>
+          </div>
+
+          <!-- Neutral: no icon -->
+          <div style="background: white; border-radius: 8px; padding: 10px; border: 1px solid #e7e5e4; margin-bottom: 4px;">
+            <div style="display: flex; justify-content: space-between; font-size: 10px; color: #a8a29e;">
+              <span>🐻 Bear · 30m ago</span>
+              <span>👍 1</span>
+            </div>
+            <div style="margin-top: 4px;">"I can pull up the full survey data if anyone wants to see it."</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Icon-only Minimal</h3>
+      <p>Just a small colored arrow icon next to the author name. No background change, no pill. Most minimal — stance is there if you look, but doesn't distract from reading the actual discussion.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top: 20px;">
+  <h3>Design note</h3>
+  <p>The stance (supporting/counter/neutral) is set <strong>by the comment author</strong> when posting — it describes their reply's relationship to the parent. It's optional: if you're just asking a question or chatting, you leave it unset (neutral). The terminology "supporting/counter" is relative to the <em>parent comment</em>, not the overall issue.</p>
+</div>
