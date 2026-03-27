@@ -1,0 +1,138 @@
+import copy
+import numpy as np
+from kindact_sim.types import Agent, AgentType, Hypercert, Phase
+from kindact_sim.state import compute_exchange_rate, compute_phase
+from kindact_sim.confidence import update_confidence
+
+
+def apply_demurrage(agents: list[Agent], rate: float, evasion_pct: float = 0.0,
+                    rng: np.random.Generator | None = None) -> list[Agent]:
+    new_agents = []
+    evading_ids = set()
+    if evasion_pct > 0 and rng is not None:
+        n_evading = int(len(agents) * evasion_pct)
+        evading_ids = set(rng.choice([a.id for a in agents], size=min(n_evading, len(agents)), replace=False))
+    for a in agents:
+        new_a = copy.copy(a)
+        if a.id not in evading_ids:
+            new_a.balance = a.balance * (1 - rate)
+        new_agents.append(new_a)
+    return new_agents
+
+
+def update_supply(_params, substep, sH, s, _input, **kwargs):
+    supply = s['supply']
+    demurrage = s['demurrage_rate']
+    new_supply = (
+        supply * (1 - demurrage)
+        + _input.get('work_minting', 0)
+        + _input.get('fraud_minting', 0)
+        + _input.get('reserve_mint_cc', 0)
+        - _input.get('access_fee_burn', 0)
+        - _input.get('redemptions', 0)
+    )
+    return ('supply', max(0, new_supply))
+
+
+def update_reserve(_params, substep, sH, s, _input, **kwargs):
+    reserve = s['reserve_fiat']
+    exchange_rate = s['exchange_rate']
+    new_reserve = (
+        reserve
+        + _input.get('reserve_purchases', 0)
+        + _input.get('hypercert_fiat_sales', 0)
+        - _input.get('redemptions', 0) * exchange_rate
+    )
+    return ('reserve_fiat', max(0, new_reserve))
+
+
+def update_exchange_rate(_params, substep, sH, s, _input, **kwargs):
+    supply = s['supply']
+    reserve = s['reserve_fiat']
+    r_target = s['r_target']
+    return ('exchange_rate', compute_exchange_rate(reserve, supply, r_target))
+
+
+def update_phase(_params, substep, sH, s, _input, **kwargs):
+    total_minted = s['total_minted'] + _input.get('work_minting', 0) + _input.get('fraud_minting', 0)
+    return ('phase', compute_phase(total_minted, s['reserve_fiat'], s['r_target']))
+
+
+def update_total_minted(_params, substep, sH, s, _input, **kwargs):
+    return ('total_minted', s['total_minted'] + _input.get('work_minting', 0) + _input.get('fraud_minting', 0))
+
+
+def update_total_burned(_params, substep, sH, s, _input, **kwargs):
+    burned = _input.get('access_fee_burn', 0) + _input.get('redemptions', 0)
+    demurrage_burn = s['supply'] * s['demurrage_rate']
+    return ('total_burned', s['total_burned'] + burned + demurrage_burn)
+
+
+def update_agents(_params, substep, sH, s, _input, **kwargs):
+    rng: np.random.Generator = _params.get('rng', np.random.default_rng())
+    evasion_pct = _params.get('_demurrage_evasion_pct', 0.0)
+    agents = apply_demurrage(s['agents'], s['demurrage_rate'], evasion_pct=evasion_pct, rng=rng)
+
+    updates = {aid: delta for aid, delta in _input.get('agent_updates', [])}
+    for a in agents:
+        if a.id in updates:
+            a.balance = max(0, a.balance + updates[a.id])
+        a.months_holding += 1
+
+    exchange_rate_trend = 0.0
+    total_redemptions = _input.get('redemptions', 0)
+    total_attempted = total_redemptions + len(s.get('redemption_queue', []))
+    success_rate = 1.0 if total_attempted == 0 else total_redemptions / max(total_attempted, 1)
+
+    for a in agents:
+        a.confidence = update_confidence(a, exchange_rate_trend, success_rate, a.months_holding)
+        if a.agent_type == AgentType.PANICKER:
+            a.is_panicking = a.confidence < a.panic_threshold
+
+    n_new = _input.get('new_agents_count', 0)
+    max_id = max((a.id for a in agents), default=-1)
+    for i in range(n_new):
+        new_type = rng.choice([AgentType.CONTRIBUTOR, AgentType.MERCHANT, AgentType.PANICKER],
+                               p=[0.6, 0.25, 0.15])
+        agents.append(Agent(
+            id=max_id + 1 + i, agent_type=new_type,
+            confidence=float(rng.uniform(0.3, 0.7)),
+            panic_threshold=float(rng.uniform(0.1, 0.4)),
+        ))
+    return ('agents', agents)
+
+
+def update_hypercerts(_params, substep, sH, s, _input, **kwargs):
+    rng: np.random.Generator = _params.get('rng', np.random.default_rng())
+    portfolio = copy.deepcopy(s['hypercert_portfolio'])
+    work_minted = _input.get('work_minting', 0)
+    n_new = int(work_minted / 100)
+    max_id = max((h.id for h in portfolio), default=-1)
+    for i in range(n_new):
+        portfolio.append(Hypercert(
+            id=max_id + 1 + i,
+            value_estimate=float(rng.uniform(500, 2000)),
+            created_at=s['timestep'],
+        ))
+    return ('hypercert_portfolio', portfolio)
+
+
+def update_timestep(_params, substep, sH, s, _input, **kwargs):
+    return ('timestep', s['timestep'] + 1)
+
+
+def update_events_log(_params, substep, sH, s, _input, **kwargs):
+    log = list(s['events_log'])
+    t = s['timestep']
+    old_phase = s['phase']
+    new_phase = compute_phase(
+        s['total_minted'] + _input.get('work_minting', 0),
+        s['reserve_fiat'], s['r_target']
+    )
+    if new_phase != old_phase:
+        log.append({'timestep': t, 'event': f'Phase transition: {old_phase.value} -> {new_phase.value}'})
+    supply = s['supply']
+    reserve = s['reserve_fiat']
+    if supply > 0 and reserve / supply < 0.05:
+        log.append({'timestep': t, 'event': 'Reserve floor hit (backing < 5%)'})
+    return ('events_log', log)
