@@ -34,6 +34,11 @@ export interface Comment {
   upvotes: number;
   downvotes: number;
   stance?: "pro" | "con";
+  quotedText?: string;
+  sourceType?: "description" | "metric" | "boundary";
+  sourceId?: string;
+  quoteStart?: number;
+  quoteEnd?: number;
 }
 
 export interface ArgumentNode {

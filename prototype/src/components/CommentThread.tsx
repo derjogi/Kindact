@@ -9,11 +9,16 @@ interface DbComment {
   authorId: string;
   text: string;
   parentId: string | null;
-  upvotes: number;
-  downvotes: number;
+  upvotes?: number;
+  downvotes?: number;
   stance?: string | null;
   createdAt: string;
   alias: string;
+  quotedText?: string | null;
+  sourceType?: string | null;
+  sourceId?: string | null;
+  quoteStart?: number | null;
+  quoteEnd?: number | null;
 }
 
 function CommentItem({
@@ -43,22 +48,29 @@ function CommentItem({
   };
 
   return (
-    <div className={depth > 0 ? "ml-6 border-l-2 border-stone-100 pl-4" : ""}>
+    <div className={depth > 0
+      ? `ml-6 border-l-[3px] pl-4 ${
+          comment.stance === "pro"
+            ? "border-emerald-400"
+            : comment.stance === "con"
+              ? "border-orange-400"
+              : "border-stone-100"
+        }`
+      : ""}>
       <div className="group py-3">
         <div className="flex items-center gap-2 text-sm">
           <span className="font-medium text-stone-700">
             {comment.alias}
           </span>
           <span className="text-stone-400">· {comment.createdAt}</span>
-          {comment.stance && (
-            <span
-              className={`px-1.5 py-0.5 rounded text-xs ${
-                comment.stance === "pro"
-                  ? "bg-emerald-50 text-emerald-600"
-                  : "bg-rose-50 text-rose-600"
-              }`}
-            >
-              {comment.stance}
+          {depth > 0 && comment.stance === "pro" && (
+            <span className="px-1.5 py-0.5 rounded text-xs bg-emerald-50 text-emerald-600 font-medium">
+              SUPPORTING
+            </span>
+          )}
+          {depth > 0 && comment.stance === "con" && (
+            <span className="px-1.5 py-0.5 rounded text-xs bg-orange-50 text-orange-600 font-medium">
+              COUNTER
             </span>
           )}
         </div>
@@ -67,10 +79,10 @@ function CommentItem({
         </p>
         <div className="mt-1.5 flex items-center gap-1 text-xs text-stone-400">
           <button className="hover:text-emerald-600 active:text-emerald-700 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center">
-            👍 {comment.upvotes}
+            👍
           </button>
           <button className="hover:text-rose-600 active:text-rose-700 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center">
-            👎 {comment.downvotes}
+            👎
           </button>
           <button
             onClick={() => setShowReply(!showReply)}

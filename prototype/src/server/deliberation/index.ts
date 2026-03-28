@@ -147,6 +147,7 @@ export async function getDeliberation(issueId: string) {
       comments: { orderBy: { createdAt: "asc" } },
       arguments: { orderBy: { createdAt: "asc" } },
       proposalDoc: true,
+      aiSummary: true,
     },
   });
   if (!issue) throw notFound("Issue not found");
@@ -157,7 +158,18 @@ export async function getDeliberation(issueId: string) {
   );
 
   const comments = issue.comments.map((c) => ({
-    ...c,
+    id: c.id,
+    issueId: c.issueId,
+    authorId: c.authorId,
+    text: c.text,
+    parentId: c.parentId,
+    stance: c.stance,
+    createdAt: c.createdAt,
+    quotedText: c.quotedText,
+    sourceType: c.sourceType,
+    sourceId: c.sourceId,
+    quoteStart: c.quoteStart,
+    quoteEnd: c.quoteEnd,
     alias: aliasMap.get(c.authorId) ?? "Anonymous",
   }));
 
@@ -170,5 +182,6 @@ export async function getDeliberation(issueId: string) {
     comments,
     arguments: arguments_,
     proposal: issue.proposalDoc,
+    aiSummary: issue.aiSummary,
   };
 }

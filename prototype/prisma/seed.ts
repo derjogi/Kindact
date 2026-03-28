@@ -1,4 +1,4 @@
-import { PrismaClient, IssueStatus, IssueScope } from "../src/generated/prisma/client";
+import { PrismaClient, Prisma, IssueStatus, IssueScope } from "../src/generated/prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -165,18 +165,6 @@ async function seed() {
       });
     }
 
-    // AISummary
-    if (issue.aiSummary) {
-      await prisma.aISummary.create({
-        data: {
-          issueId: iid,
-          content: issue.aiSummary,
-          modelVersion: "gpt-4o-2026-01",
-          promptVersion: "v1",
-        },
-      });
-    }
-
     // Track aliases created per issue to map alias→userId for comments/arguments
     const aliasesCreated = new Set<string>();
 
@@ -215,9 +203,36 @@ async function seed() {
           upvotes: comment.upvotes,
           downvotes: comment.downvotes,
           stance: comment.stance ?? null,
+          quotedText: comment.quotedText ?? null,
+          sourceType: comment.sourceType ?? null,
+          sourceId: comment.sourceId ?? null,
+          quoteStart: comment.quoteStart ?? null,
+          quoteEnd: comment.quoteEnd ?? null,
         },
       });
       commentIdMap[comment.id] = created.id;
+    }
+
+    // AISummary (after comments so we can reference commentIdMap)
+    if (issue.aiSummary) {
+      let references: Prisma.InputJsonValue | undefined = undefined;
+      if (issue.id === "6") {
+        references = [
+          { start: 0, end: 85, commentIds: [commentIdMap["c30"], commentIdMap["c31"]].filter(Boolean), strength: "direct" },
+          { start: 86, end: 175, commentIds: [commentIdMap["c34"], commentIdMap["c34a"]].filter(Boolean), strength: "direct" },
+          { start: 176, end: 280, commentIds: [commentIdMap["c35"], commentIdMap["c35a"]].filter(Boolean), strength: "approximate" },
+          { start: 281, end: 380, commentIds: [commentIdMap["c36"], commentIdMap["c36a"], commentIdMap["c36b"]].filter(Boolean), strength: "direct" },
+        ];
+      }
+      await prisma.aISummary.create({
+        data: {
+          issueId: iid,
+          content: issue.aiSummary,
+          modelVersion: "gpt-4o-2026-01",
+          promptVersion: "v1",
+          references: references,
+        },
+      });
     }
 
     // ArgumentNodes — parent first, then children

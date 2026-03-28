@@ -1,17 +1,18 @@
 ---
-status: in-progress
-created: '2026-03-18'
-tags:
-  - frontend
-  - mvp
-  - prototype
-  - ux
+status: complete
+created: 2026-03-18
 priority: high
+tags:
+- frontend
+- mvp
+- prototype
+- ux
 depends_on:
-  - 020-ui-desktop
-  - 021-ui-mobile
+- 020-ui-desktop
+- 021-ui-mobile
+updated_at: 2026-03-29T08:38:19.193503608Z
 related:
-  - 018-frontend
+- 018-frontend
 ---
 # UI Prototype (Mock-Data Frontend)
 

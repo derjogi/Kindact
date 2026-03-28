@@ -214,6 +214,11 @@ model Comment {
   upvotes   Int      @default(0)
   downvotes Int      @default(0)
   stance    String?  // "pro" | "con" | null
+  quotedText String?  @map("quoted_text")
+  sourceType String?  @map("source_type")  // "description" | "metric" | "boundary"
+  sourceId   String?  @map("source_id")
+  quoteStart Int?     @map("quote_start")
+  quoteEnd   Int?     @map("quote_end")
   createdAt DateTime @default(now()) @map("created_at")
 
   issue  Issue    @relation(fields: [issueId], references: [id])
@@ -288,6 +293,7 @@ model AISummary {
   modelVersion  String   @map("model_version")
   promptVersion String   @map("prompt_version")
   sourceRefs    String[] @default([]) @map("source_refs") // comment/argument IDs cited
+  references    Json?    // character-position spans mapping to comment IDs
   generatedAt   DateTime @default(now()) @map("generated_at")
 
   issue Issue @relation(fields: [issueId], references: [id])

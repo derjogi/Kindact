@@ -365,20 +365,15 @@ Add 8km of protected bike lanes to connect existing segments into a continuous n
       { label: "Air quality", icon: "🌬️", direction: "improve", delta: "+5%", confidence: "medium" },
       { label: "Economy", icon: "💰", direction: "regress", delta: "-6%", confidence: "low" },
     ],
-    aiSummary: `**Key debates:**
-- **Route prioritization:** Safety-first (dangerous intersections, school zones) vs usage-first (most-ridden segments). Emerging concern that usage data is biased toward neighborhoods with existing infrastructure.
-- **Protected vs painted lanes:** Strong consensus that painted lanes are inadequate for safety, but budget constraints force a tradeoff — ~2.5km protected vs 8km painted. Hybrid approach (protected on dangerous segments, painted elsewhere) gaining traction.
-- **Cost estimate:** Multiple contributors with domain expertise agree the $200k figure is unrealistic. Suggested range: $300-500k. A civil engineer has offered to help refine.
+    aiSummary: `Safety concerns dominate: Main & 5th intersection cited as most dangerous with 4 accidents this year. School zone routes lack any protected infrastructure, affecting families at Elm Elementary.
 
-**Areas of consensus:**
-- The current fragmented network is genuinely dangerous
-- Main & 5th intersection needs immediate attention
-- School route safety is a high priority
+Protected vs painted lanes is the central tradeoff: personal accounts of dooring incidents on narrow painted lanes drive consensus that paint alone is inadequate. Budget math shows ~2.5km protected vs 8km painted at $200k — a hybrid approach covering dangerous segments first is gaining support.
 
-**Open questions:**
-- Should a quick-win issue be created for temporary flex-post protection at Main & 5th?
-- How to handle parking displacement on College Ave?
-- Should equity (west side access gap) be an explicit prioritization criterion?`,
+Cost realism is a key theme: domain experts including a civil engineer flag the $200k estimate as unrealistic, suggesting $300-500k. The Oak Ave project's $85k for 1.2km (painted) supports higher projections. Community wants revised estimates before any vote.
+
+Equity gap identified: west side neighborhoods have zero bike infrastructure while east side has the riverside path. Survey data inherently biased toward areas with existing lanes, underrepresenting demand where cycling is currently too dangerous.
+
+Quick-win momentum: temporary flex-post bollards at Main & 5th proposed as a fast-track separate issue — under $2k, installable in a week, though requiring traffic study and council approval (6-week minimum). Seen as a way to demonstrate protected infrastructure benefits.`,
     comments: [
       {
         id: "c30",
@@ -389,6 +384,10 @@ Add 8km of protected bike lanes to connect existing segments into a continuous n
         parentId: null,
         upvotes: 28,
         downvotes: 3,
+        quotedText: "Cyclists must merge with car traffic at the most dangerous intersections",
+        sourceType: "description",
+        quoteStart: 95,
+        quoteEnd: 167,
       },
       {
         id: "c31",
@@ -399,6 +398,10 @@ Add 8km of protected bike lanes to connect existing segments into a continuous n
         parentId: null,
         upvotes: 41,
         downvotes: 2,
+        quotedText: "protected bike lanes to connect existing segments",
+        sourceType: "description",
+        quoteStart: 199,
+        quoteEnd: 249,
       },
       {
         id: "c31a",
@@ -538,6 +541,10 @@ Add 8km of protected bike lanes to connect existing segments into a continuous n
         parentId: null,
         upvotes: 35,
         downvotes: 0,
+        quotedText: "Priority routes identified by cyclist survey data",
+        sourceType: "description",
+        quoteStart: 263,
+        quoteEnd: 313,
       },
       {
         id: "c34a",
