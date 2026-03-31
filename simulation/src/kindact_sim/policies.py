@@ -76,27 +76,25 @@ def agent_decisions(_params: dict, substep: int, sH: list, s: dict, **kwargs) ->
             fee = min(agent.balance, 5.0)
             access_fee_burn += fee
             demurrage = s['demurrage_rate']
+            reserve_readiness = min(1.0, (reserve / 100_000) ** 0.5) if reserve > 0 else 0.0
             can_redeem = phase != Phase.BOOTSTRAP and reserve >= 100_000
-            if can_redeem:
-                if agent.confidence > 0.6 and exchange_rate < 0.8:
-                    expected_appreciation = (1.0 - exchange_rate)
-                    if expected_appreciation > demurrage * 3:
-                        buy_fiat = rng.uniform(50, 200) * (agent.confidence - 0.5) * 2
-                        buy_fiat = max(0, buy_fiat)
-                        reserve_purchases += buy_fiat
-                        cc_received = buy_fiat / max(exchange_rate * 1.03, 0.001)
-                        agent_updates.append((agent.id, cc_received - fee))
-                    else:
-                        agent_updates.append((agent.id, -fee))
-                elif agent.confidence < 0.3 and agent.balance > 0:
-                    desired = agent.balance * 0.5
-                    desired_redemptions += desired
-                    redeem_amount = min(desired, daily_redeem_cap - redemptions)
-                    redeem_amount = max(0, redeem_amount)
-                    redemptions += redeem_amount
-                    agent_updates.append((agent.id, -fee - redeem_amount))
+            if agent.confidence > 0.6 and exchange_rate < 0.8:
+                expected_appreciation = (1.0 - exchange_rate)
+                if expected_appreciation > demurrage * 3:
+                    buy_fiat = rng.uniform(50, 200) * (agent.confidence - 0.5) * 2 * reserve_readiness
+                    buy_fiat = max(0, buy_fiat)
+                    reserve_purchases += buy_fiat
+                    cc_received = buy_fiat / max(exchange_rate * 1.03, 0.001)
+                    agent_updates.append((agent.id, cc_received - fee))
                 else:
                     agent_updates.append((agent.id, -fee))
+            elif can_redeem and agent.confidence < 0.3 and agent.balance > 0:
+                desired = agent.balance * 0.5
+                desired_redemptions += desired
+                redeem_amount = min(desired, daily_redeem_cap - redemptions)
+                redeem_amount = max(0, redeem_amount)
+                redemptions += redeem_amount
+                agent_updates.append((agent.id, -fee - redeem_amount))
             else:
                 agent_updates.append((agent.id, -fee))
 

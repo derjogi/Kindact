@@ -51,35 +51,43 @@ def test_merchant_redeems_partial():
     assert result['redemptions'] >= 0
 
 
-def test_speculator_no_purchase_during_bootstrap():
-    """Speculators should not buy $CC during bootstrap phase."""
-    spec = Agent(id=0, agent_type=AgentType.SPECULATOR, balance=0, confidence=0.8)
-    s = _make_state(phase=Phase.BOOTSTRAP, agents=[spec], reserve=50_000, exchange_rate=0.1)
-    params = {'reward_per_issue': 50.0, 'issues_per_user_month': 2.0, 'verification_quality': 0.9,
-              'growth_rate': 0, 'hypercert_sale_prob': 0.0, 'hypercert_avg_price': 1000.0, 'rng': np.random.default_rng(42)}
-    result = agent_decisions(params, 1, [], s)
-    assert result['reserve_purchases'] == 0
-
-
-def test_speculator_no_purchase_when_reserve_low():
-    """Speculators should not buy when reserve < 100k (can't cash out)."""
-    spec = Agent(id=0, agent_type=AgentType.SPECULATOR, balance=0, confidence=0.8)
-    s = _make_state(phase=Phase.GROWTH, agents=[spec], reserve=50_000, exchange_rate=0.1)
-    params = {'reward_per_issue': 50.0, 'issues_per_user_month': 2.0, 'verification_quality': 0.9,
-              'growth_rate': 0, 'hypercert_sale_prob': 0.0, 'hypercert_avg_price': 1000.0, 'rng': np.random.default_rng(42)}
-    result = agent_decisions(params, 1, [], s)
-    assert result['reserve_purchases'] == 0
-
-
-def test_speculator_buys_when_conditions_met():
-    """Speculators buy when: growth phase, reserve >= 100k, high confidence, low rate, appreciation > demurrage."""
+def test_speculator_tiny_purchase_when_reserve_very_low():
+    """Speculators buy only a tiny amount when reserve is very small (readiness ≈ 0.1)."""
     spec = Agent(id=0, agent_type=AgentType.SPECULATOR, balance=0, confidence=0.9)
-    s = _make_state(phase=Phase.GROWTH, agents=[spec], reserve=200_000, exchange_rate=0.1)
+    s = _make_state(phase=Phase.BOOTSTRAP, agents=[spec], reserve=1_000, exchange_rate=0.1)
+    s['demurrage_rate'] = 0.01
+    params = {'reward_per_issue': 50.0, 'issues_per_user_month': 2.0, 'verification_quality': 0.9,
+              'growth_rate': 0, 'hypercert_sale_prob': 0.0, 'hypercert_avg_price': 1000.0, 'rng': np.random.default_rng(42)}
+    result = agent_decisions(params, 1, [], s)
+    # reserve_readiness = sqrt(1000/100000) ≈ 0.1, so purchase is ~10% of full size
+    assert result['reserve_purchases'] < 20
+
+
+def test_speculator_moderate_purchase_at_half_reserve():
+    """Speculators buy a moderate amount when reserve is at 50k (readiness ≈ 0.71)."""
+    spec = Agent(id=0, agent_type=AgentType.SPECULATOR, balance=0, confidence=0.9)
+    s = _make_state(phase=Phase.GROWTH, agents=[spec], reserve=50_000, exchange_rate=0.1)
     s['demurrage_rate'] = 0.01
     params = {'reward_per_issue': 50.0, 'issues_per_user_month': 2.0, 'verification_quality': 0.9,
               'growth_rate': 0, 'hypercert_sale_prob': 0.0, 'hypercert_avg_price': 1000.0, 'rng': np.random.default_rng(42)}
     result = agent_decisions(params, 1, [], s)
     assert result['reserve_purchases'] > 0
+
+
+def test_speculator_full_purchase_when_reserve_funded():
+    """Speculators buy at full size when reserve >= 100k (readiness = 1.0)."""
+    spec = Agent(id=0, agent_type=AgentType.SPECULATOR, balance=0, confidence=0.9)
+    s = _make_state(phase=Phase.GROWTH, agents=[spec], reserve=200_000, exchange_rate=0.1)
+    s['demurrage_rate'] = 0.01
+    params = {'reward_per_issue': 50.0, 'issues_per_user_month': 2.0, 'verification_quality': 0.9,
+              'growth_rate': 0, 'hypercert_sale_prob': 0.0, 'hypercert_avg_price': 1000.0, 'rng': np.random.default_rng(42)}
+    result_full = agent_decisions(params, 1, [], s)
+    # Compare: same setup but reserve=50k
+    s2 = _make_state(phase=Phase.GROWTH, agents=[Agent(id=0, agent_type=AgentType.SPECULATOR, balance=0, confidence=0.9)],
+                     reserve=50_000, exchange_rate=0.1)
+    s2['demurrage_rate'] = 0.01
+    result_half = agent_decisions(params, 1, [], s2)
+    assert result_full['reserve_purchases'] > result_half['reserve_purchases']
 
 
 def test_speculator_no_buy_when_rate_near_parity():
@@ -91,6 +99,17 @@ def test_speculator_no_buy_when_rate_near_parity():
               'growth_rate': 0, 'hypercert_sale_prob': 0.0, 'hypercert_avg_price': 1000.0, 'rng': np.random.default_rng(42)}
     result = agent_decisions(params, 1, [], s)
     # exchange_rate 0.98 → expected appreciation = 0.02 < demurrage*3 = 0.03
+    assert result['reserve_purchases'] == 0
+
+
+def test_speculator_no_purchase_when_reserve_zero():
+    """Speculators should not buy when reserve is zero."""
+    spec = Agent(id=0, agent_type=AgentType.SPECULATOR, balance=0, confidence=0.9)
+    s = _make_state(phase=Phase.BOOTSTRAP, agents=[spec], reserve=0, exchange_rate=0.0)
+    s['demurrage_rate'] = 0.01
+    params = {'reward_per_issue': 50.0, 'issues_per_user_month': 2.0, 'verification_quality': 0.9,
+              'growth_rate': 0, 'hypercert_sale_prob': 0.0, 'hypercert_avg_price': 1000.0, 'rng': np.random.default_rng(42)}
+    result = agent_decisions(params, 1, [], s)
     assert result['reserve_purchases'] == 0
 
 
