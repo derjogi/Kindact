@@ -79,10 +79,15 @@ def update_agents(_params, substep, sH, s, _input, **kwargs):
             a.balance = max(0, a.balance + updates[a.id])
         a.months_holding += 1
 
-    exchange_rate_trend = 0.0
-    total_redemptions = _input.get('redemptions', 0)
-    total_attempted = total_redemptions + len(s.get('redemption_queue', []))
-    success_rate = 1.0 if total_attempted == 0 else total_redemptions / max(total_attempted, 1)
+    # Compute actual exchange rate trend from previous vs current state
+    new_rate = compute_exchange_rate(s['reserve_fiat'], s['supply'], s['r_target'])
+    old_rate = s['exchange_rate']
+    exchange_rate_trend = new_rate - old_rate
+
+    # Compute redemption success rate from desired vs actual
+    desired = _input.get('desired_redemptions', 0)
+    actual = _input.get('redemptions', 0)
+    success_rate = 1.0 if desired == 0 else actual / desired
 
     for a in agents:
         a.confidence = update_confidence(a, exchange_rate_trend, success_rate, a.months_holding)
@@ -115,6 +120,18 @@ def update_hypercerts(_params, substep, sH, s, _input, **kwargs):
             created_at=s['timestep'],
         ))
     return ('hypercert_portfolio', portfolio)
+
+
+def update_redemption_queue(_params, substep, sH, s, _input, **kwargs):
+    desired = _input.get('desired_redemptions', 0)
+    actual = _input.get('redemptions', 0)
+    unfulfilled = max(0, desired - actual)
+    queue = list(s['redemption_queue'])
+    if unfulfilled > 0:
+        queue.append({'timestep': s['timestep'], 'amount': unfulfilled})
+    # Expire entries older than 3 months
+    queue = [e for e in queue if s['timestep'] - e['timestep'] < 3]
+    return ('redemption_queue', queue)
 
 
 def update_timestep(_params, substep, sH, s, _input, **kwargs):

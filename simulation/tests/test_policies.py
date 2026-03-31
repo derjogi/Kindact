@@ -49,3 +49,59 @@ def test_merchant_redeems_partial():
               'growth_rate': 15, 'hypercert_sale_prob': 0.1, 'hypercert_avg_price': 1000.0, 'rng': np.random.default_rng(42)}
     result = agent_decisions(params, 1, [], s)
     assert result['redemptions'] >= 0
+
+
+def test_speculator_no_purchase_during_bootstrap():
+    """Speculators should not buy $CC during bootstrap phase."""
+    spec = Agent(id=0, agent_type=AgentType.SPECULATOR, balance=0, confidence=0.8)
+    s = _make_state(phase=Phase.BOOTSTRAP, agents=[spec], reserve=50_000, exchange_rate=0.1)
+    params = {'reward_per_issue': 50.0, 'issues_per_user_month': 2.0, 'verification_quality': 0.9,
+              'growth_rate': 0, 'hypercert_sale_prob': 0.0, 'hypercert_avg_price': 1000.0, 'rng': np.random.default_rng(42)}
+    result = agent_decisions(params, 1, [], s)
+    assert result['reserve_purchases'] == 0
+
+
+def test_speculator_no_purchase_when_reserve_low():
+    """Speculators should not buy when reserve < 100k (can't cash out)."""
+    spec = Agent(id=0, agent_type=AgentType.SPECULATOR, balance=0, confidence=0.8)
+    s = _make_state(phase=Phase.GROWTH, agents=[spec], reserve=50_000, exchange_rate=0.1)
+    params = {'reward_per_issue': 50.0, 'issues_per_user_month': 2.0, 'verification_quality': 0.9,
+              'growth_rate': 0, 'hypercert_sale_prob': 0.0, 'hypercert_avg_price': 1000.0, 'rng': np.random.default_rng(42)}
+    result = agent_decisions(params, 1, [], s)
+    assert result['reserve_purchases'] == 0
+
+
+def test_speculator_buys_when_conditions_met():
+    """Speculators buy when: growth phase, reserve >= 100k, high confidence, low rate, appreciation > demurrage."""
+    spec = Agent(id=0, agent_type=AgentType.SPECULATOR, balance=0, confidence=0.9)
+    s = _make_state(phase=Phase.GROWTH, agents=[spec], reserve=200_000, exchange_rate=0.1)
+    s['demurrage_rate'] = 0.01
+    params = {'reward_per_issue': 50.0, 'issues_per_user_month': 2.0, 'verification_quality': 0.9,
+              'growth_rate': 0, 'hypercert_sale_prob': 0.0, 'hypercert_avg_price': 1000.0, 'rng': np.random.default_rng(42)}
+    result = agent_decisions(params, 1, [], s)
+    assert result['reserve_purchases'] > 0
+
+
+def test_speculator_no_buy_when_rate_near_parity():
+    """Speculators shouldn't buy when exchange rate is high (no appreciation left above demurrage)."""
+    spec = Agent(id=0, agent_type=AgentType.SPECULATOR, balance=0, confidence=0.9)
+    s = _make_state(phase=Phase.GROWTH, agents=[spec], reserve=200_000, exchange_rate=0.98)
+    s['demurrage_rate'] = 0.01
+    params = {'reward_per_issue': 50.0, 'issues_per_user_month': 2.0, 'verification_quality': 0.9,
+              'growth_rate': 0, 'hypercert_sale_prob': 0.0, 'hypercert_avg_price': 1000.0, 'rng': np.random.default_rng(42)}
+    result = agent_decisions(params, 1, [], s)
+    # exchange_rate 0.98 → expected appreciation = 0.02 < demurrage*3 = 0.03
+    assert result['reserve_purchases'] == 0
+
+
+def test_desired_redemptions_tracked():
+    """Policy output includes desired_redemptions separate from actual."""
+    panicker = Agent(id=0, agent_type=AgentType.PANICKER, balance=50_000, confidence=0.1,
+                     panic_threshold=0.2, is_panicking=True)
+    s = _make_state(phase=Phase.GROWTH, agents=[panicker], reserve=10_000)
+    params = {'reward_per_issue': 50.0, 'issues_per_user_month': 2.0, 'verification_quality': 0.9,
+              'growth_rate': 0, 'hypercert_sale_prob': 0.0, 'hypercert_avg_price': 1000.0, 'rng': np.random.default_rng(42)}
+    result = agent_decisions(params, 1, [], s)
+    # Panicker wants to redeem full balance (50k) but cap is 0.01*10k = 100
+    assert result['desired_redemptions'] >= result['redemptions']
+    assert result['desired_redemptions'] > result['redemptions']  # cap must be binding

@@ -42,6 +42,7 @@ def agent_decisions(_params: dict, substep: int, sH: list, s: dict, **kwargs) ->
     work_minting = 0.0
     access_fee_burn = 0.0
     redemptions = 0.0
+    desired_redemptions = 0.0
     reserve_purchases = 0.0
     fraud_minting = 0.0
     agent_updates: list[tuple[int, float]] = []
@@ -62,9 +63,11 @@ def agent_decisions(_params: dict, substep: int, sH: list, s: dict, **kwargs) ->
             fee = min(agent.balance, 5.0)
             access_fee_burn += fee
             redeem_amount = 0.0
-            if phase != Phase.BOOTSTRAP and agent.balance > 0:
+            if phase != Phase.BOOTSTRAP and reserve >= 100_000 and agent.balance > 0:
                 redeem_frac = rng.uniform(0.1, 0.4)
-                redeem_amount = min(agent.balance * redeem_frac, daily_redeem_cap - redemptions)
+                desired = agent.balance * redeem_frac
+                desired_redemptions += desired
+                redeem_amount = min(desired, daily_redeem_cap - redemptions)
                 redeem_amount = max(0, redeem_amount)
                 redemptions += redeem_amount
             agent_updates.append((agent.id, trade_income - fee - redeem_amount))
@@ -72,14 +75,23 @@ def agent_decisions(_params: dict, substep: int, sH: list, s: dict, **kwargs) ->
         elif agent.agent_type == AgentType.SPECULATOR:
             fee = min(agent.balance, 5.0)
             access_fee_burn += fee
-            if phase != Phase.BOOTSTRAP:
+            demurrage = s['demurrage_rate']
+            can_redeem = phase != Phase.BOOTSTRAP and reserve >= 100_000
+            if can_redeem:
                 if agent.confidence > 0.6 and exchange_rate < 0.8:
-                    buy_fiat = rng.uniform(50, 200)
-                    reserve_purchases += buy_fiat
-                    cc_received = buy_fiat / max(exchange_rate * 1.03, 0.001)
-                    agent_updates.append((agent.id, cc_received - fee))
+                    expected_appreciation = (1.0 - exchange_rate)
+                    if expected_appreciation > demurrage * 3:
+                        buy_fiat = rng.uniform(50, 200) * (agent.confidence - 0.5) * 2
+                        buy_fiat = max(0, buy_fiat)
+                        reserve_purchases += buy_fiat
+                        cc_received = buy_fiat / max(exchange_rate * 1.03, 0.001)
+                        agent_updates.append((agent.id, cc_received - fee))
+                    else:
+                        agent_updates.append((agent.id, -fee))
                 elif agent.confidence < 0.3 and agent.balance > 0:
-                    redeem_amount = min(agent.balance * 0.5, daily_redeem_cap - redemptions)
+                    desired = agent.balance * 0.5
+                    desired_redemptions += desired
+                    redeem_amount = min(desired, daily_redeem_cap - redemptions)
                     redeem_amount = max(0, redeem_amount)
                     redemptions += redeem_amount
                     agent_updates.append((agent.id, -fee - redeem_amount))
@@ -103,7 +115,9 @@ def agent_decisions(_params: dict, substep: int, sH: list, s: dict, **kwargs) ->
             fee = min(agent.balance, 5.0)
             access_fee_burn += fee
             if agent.is_panicking and phase != Phase.BOOTSTRAP and agent.balance > 0:
-                redeem_amount = min(agent.balance, daily_redeem_cap - redemptions)
+                desired = agent.balance
+                desired_redemptions += desired
+                redeem_amount = min(desired, daily_redeem_cap - redemptions)
                 redeem_amount = max(0, redeem_amount)
                 redemptions += redeem_amount
                 agent_updates.append((agent.id, -fee - redeem_amount))
@@ -116,6 +130,7 @@ def agent_decisions(_params: dict, substep: int, sH: list, s: dict, **kwargs) ->
     # Add whale dump redemption if event is active
     whale_redeem = params.get('_whale_redeem', 0)
     if whale_redeem > 0 and phase != Phase.BOOTSTRAP:
+        desired_redemptions += whale_redeem
         redemptions += min(whale_redeem, daily_redeem_cap - redemptions)
 
     # Hypercert sales
@@ -136,6 +151,7 @@ def agent_decisions(_params: dict, substep: int, sH: list, s: dict, **kwargs) ->
         'work_minting': work_minting,
         'access_fee_burn': access_fee_burn,
         'redemptions': redemptions,
+        'desired_redemptions': desired_redemptions,
         'reserve_purchases': reserve_purchases,
         'hypercert_fiat_sales': hypercert_fiat_sales,
         'fraud_minting': fraud_minting,
