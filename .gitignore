@@ -8,6 +8,8 @@ build/
 dist/
 .svelte-kit/
 .vercel/
+.next/
+.venv/
 
 # Environment
 .env
@@ -30,3 +32,7 @@ npm-debug.log*
 # Lock files (optional - remove if you want to track these)
 # package-lock.json
 # bun.lockb
+
+__pycache__/
+*.pyc
+*.so.node
