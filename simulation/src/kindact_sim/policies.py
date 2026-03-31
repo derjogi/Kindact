@@ -99,7 +99,9 @@ def agent_decisions(_params: dict, substep: int, sH: list, s: dict, **kwargs) ->
                 agent_updates.append((agent.id, -fee))
 
         elif agent.agent_type == AgentType.IMPACT_BUYER:
-            pass
+            fee = min(agent.balance, 5.0)
+            access_fee_burn += fee
+            agent_updates.append((agent.id, -fee))
 
         elif agent.agent_type == AgentType.FRAUDSTER:
             if rng.random() > verification_q:
@@ -131,17 +133,41 @@ def agent_decisions(_params: dict, substep: int, sH: list, s: dict, **kwargs) ->
         desired_redemptions += whale_redeem
         redemptions += min(whale_redeem, daily_redeem_cap - redemptions)
 
-    # Hypercert sales
+    # Hypercert sales — two channels:
+    # 1. Market sales: probability scaled by platform maturity (external investors)
+    # 2. Community purchases: impact buyers and high-confidence contributors
     hypercert_fiat_sales = 0.0
-    sale_prob = params['hypercert_sale_prob']
+    base_sale_prob = params['hypercert_sale_prob']
     sale_price = params['hypercert_avg_price']
     portfolio = s['hypercert_portfolio']
+    n_agents = len(agents)
+    sold_count = sum(1 for h in portfolio if h.sold)
+    network_scale = min(1.0, (n_agents / 500) ** 0.5)
+    track_record = sold_count / (sold_count + 10)
+    platform_attractiveness = network_scale * track_record
+    sale_prob = base_sale_prob * platform_attractiveness
     unsold = [h for h in portfolio if not h.sold]
     for h in unsold:
         if rng.random() < sale_prob:
             hypercert_fiat_sales += sale_price
             h.sold = True
             h.sale_price = sale_price
+
+    # Community purchases — believers investing in their own ecosystem
+    still_unsold = [h for h in unsold if not h.sold]
+    if still_unsold:
+        for agent in agents:
+            if agent.agent_type == AgentType.IMPACT_BUYER and agent.confidence > 0.4:
+                buy_prob = 0.03 * agent.confidence
+            elif agent.agent_type == AgentType.CONTRIBUTOR and agent.confidence > 0.7:
+                buy_prob = 0.01 * (agent.confidence - 0.5)
+            else:
+                continue
+            if rng.random() < buy_prob and still_unsold:
+                h = still_unsold.pop(0)
+                hypercert_fiat_sales += sale_price * rng.uniform(0.5, 1.0)
+                h.sold = True
+                h.sale_price = sale_price
 
     new_agents_count = max(0, int(rng.poisson(params['growth_rate'])))
 

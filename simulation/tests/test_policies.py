@@ -113,6 +113,95 @@ def test_speculator_no_purchase_when_reserve_zero():
     assert result['reserve_purchases'] == 0
 
 
+def test_impact_buyer_can_buy_hypercert_early():
+    """Impact buyers with high confidence can buy hypercerts even on a young platform."""
+    from kindact_sim.types import Hypercert
+    # Run multiple seeds to verify at least one produces a sale (prob ~2.7% per agent)
+    agents = [Agent(id=i, agent_type=AgentType.IMPACT_BUYER, balance=100, confidence=0.9)
+              for i in range(50)]
+    unsold_certs = [Hypercert(id=i, value_estimate=1000, created_at=0) for i in range(50)]
+    any_sale = False
+    for seed in range(10):
+        # Reset sold state
+        for h in unsold_certs:
+            h.sold = False
+        s = _make_state(phase=Phase.BOOTSTRAP, agents=agents, reserve=0)
+        s['hypercert_portfolio'] = unsold_certs
+        params = {'reward_per_issue': 50.0, 'issues_per_user_month': 2.0, 'verification_quality': 0.9,
+                  'growth_rate': 0, 'hypercert_sale_prob': 0.5, 'hypercert_avg_price': 1000.0, 'rng': np.random.default_rng(seed)}
+        result = agent_decisions(params, 1, [], s)
+        if result['hypercert_fiat_sales'] > 0:
+            any_sale = True
+            break
+    assert any_sale, "No community purchase across 10 seeds — probability too low"
+
+
+def test_high_confidence_contributor_can_buy_hypercert():
+    """Contributors with very high confidence occasionally buy hypercerts."""
+    from kindact_sim.types import Hypercert
+    agents = [Agent(id=i, agent_type=AgentType.CONTRIBUTOR, balance=100, confidence=0.9)
+              for i in range(100)]
+    unsold_certs = [Hypercert(id=i, value_estimate=1000, created_at=0) for i in range(100)]
+    any_sale = False
+    for seed in range(10):
+        for h in unsold_certs:
+            h.sold = False
+        s = _make_state(phase=Phase.BOOTSTRAP, agents=agents, reserve=0)
+        s['hypercert_portfolio'] = unsold_certs
+        params = {'reward_per_issue': 50.0, 'issues_per_user_month': 2.0, 'verification_quality': 0.9,
+                  'growth_rate': 0, 'hypercert_sale_prob': 0.5, 'hypercert_avg_price': 1000.0, 'rng': np.random.default_rng(seed)}
+        result = agent_decisions(params, 1, [], s)
+        if result['hypercert_fiat_sales'] > 0:
+            any_sale = True
+            break
+    assert any_sale, "No contributor purchase across 10 seeds — probability too low"
+
+
+def test_low_confidence_impact_buyer_does_not_buy():
+    """Impact buyers with very low confidence don't buy hypercerts."""
+    from kindact_sim.types import Hypercert
+    agents = [Agent(id=i, agent_type=AgentType.IMPACT_BUYER, balance=100, confidence=0.2)
+              for i in range(10)]
+    unsold_certs = [Hypercert(id=i, value_estimate=1000, created_at=0) for i in range(10)]
+    s = _make_state(phase=Phase.BOOTSTRAP, agents=agents, reserve=0)
+    s['hypercert_portfolio'] = unsold_certs
+    params = {'reward_per_issue': 50.0, 'issues_per_user_month': 2.0, 'verification_quality': 0.9,
+              'growth_rate': 0, 'hypercert_sale_prob': 0.5, 'hypercert_avg_price': 1000.0, 'rng': np.random.default_rng(42)}
+    result = agent_decisions(params, 1, [], s)
+    # confidence 0.2 < 0.4 threshold → no community purchases, and no market sales (track_record=0)
+    assert result['hypercert_fiat_sales'] == 0
+
+
+def test_hypercert_sales_near_zero_on_young_platform():
+    """With few users and no prior sales, hypercert sale probability is near zero."""
+    from kindact_sim.types import Hypercert
+    agents = [Agent(id=i, agent_type=AgentType.CONTRIBUTOR, balance=100) for i in range(50)]
+    unsold_certs = [Hypercert(id=i, value_estimate=1000, created_at=0) for i in range(20)]
+    s = _make_state(phase=Phase.GROWTH, agents=agents, reserve=10_000)
+    s['hypercert_portfolio'] = unsold_certs
+    params = {'reward_per_issue': 50.0, 'issues_per_user_month': 2.0, 'verification_quality': 0.9,
+              'growth_rate': 0, 'hypercert_sale_prob': 0.5, 'hypercert_avg_price': 1000.0, 'rng': np.random.default_rng(42)}
+    result = agent_decisions(params, 1, [], s)
+    # 50 users, 0 sold → network_scale=0.32, track_record=0/(0+10)=0 → attractiveness=0
+    assert result['hypercert_fiat_sales'] == 0
+
+
+def test_hypercert_sales_increase_with_maturity():
+    """With more users and prior sales, hypercerts sell more often."""
+    from kindact_sim.types import Hypercert
+    agents = [Agent(id=i, agent_type=AgentType.CONTRIBUTOR, balance=100) for i in range(300)]
+    sold_certs = [Hypercert(id=i, value_estimate=1000, created_at=0, sold=True, sale_price=1000) for i in range(20)]
+    unsold_certs = [Hypercert(id=i + 20, value_estimate=1000, created_at=5) for i in range(50)]
+    s = _make_state(phase=Phase.GROWTH, agents=agents, reserve=100_000)
+    s['hypercert_portfolio'] = sold_certs + unsold_certs
+    params = {'reward_per_issue': 50.0, 'issues_per_user_month': 2.0, 'verification_quality': 0.9,
+              'growth_rate': 0, 'hypercert_sale_prob': 0.5, 'hypercert_avg_price': 1000.0, 'rng': np.random.default_rng(42)}
+    result = agent_decisions(params, 1, [], s)
+    # 300 users, 20 sold → network_scale=0.77, track_record=20/30=0.67 → attractiveness≈0.52
+    # effective prob ≈ 0.26 on 50 unsold certs → should get some sales
+    assert result['hypercert_fiat_sales'] > 0
+
+
 def test_desired_redemptions_tracked():
     """Policy output includes desired_redemptions separate from actual."""
     panicker = Agent(id=0, agent_type=AgentType.PANICKER, balance=50_000, confidence=0.1,
