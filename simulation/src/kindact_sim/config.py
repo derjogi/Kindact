@@ -11,15 +11,21 @@ from kindact_sim.mechanisms import (
     update_timestep, update_events_log,
 )
 from kindact_sim.scenarios import SCENARIOS, ScenarioConfig
+from kindact_sim.agent_config import AgentConfig
 
 
-def build_experiment(scenario_name: str, n_runs: int = 1, seed: int = 42) -> Experiment:
+def build_experiment(scenario_name: str, n_runs: int = 1, seed: int = 42,
+                     agent_config: AgentConfig | None = None) -> Experiment:
+    if agent_config is None:
+        agent_config = AgentConfig()
     scenario = SCENARIOS[scenario_name]
-    genesis = build_genesis_state(n_users=scenario.n_users, seed=seed)
+    genesis = build_genesis_state(n_users=scenario.n_users, seed=seed,
+                                  population_mix=agent_config.population_mix)
 
     params = dict(scenario.params)
     params['rng'] = np.random.default_rng(seed)
     params['_scenario_name'] = scenario_name
+    params['_agent_config'] = agent_config
 
     partial_state_update_blocks = [
         {

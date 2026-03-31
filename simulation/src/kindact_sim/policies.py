@@ -50,6 +50,20 @@ def agent_decisions(_params: dict, substep: int, sH: list, s: dict, **kwargs) ->
     daily_redeem_cap = 0.01 * reserve
 
     for agent in agents:
+        # Any panicking agent (regardless of type) tries to cash out
+        if agent.is_panicking and agent.agent_type != AgentType.PANICKER and phase != Phase.BOOTSTRAP:
+            fee = min(agent.balance, 5.0)
+            access_fee_burn += fee
+            if agent.balance > fee:
+                redeem_amount = min(agent.balance - fee, daily_redeem_cap - redemptions)
+                redeem_amount = max(0, redeem_amount)
+                desired_redemptions += redeem_amount
+                redemptions += redeem_amount
+                agent_updates.append((agent.id, -fee - redeem_amount))
+            else:
+                agent_updates.append((agent.id, -fee))
+            continue
+
         if agent.agent_type == AgentType.CONTRIBUTOR:
             n_issues = rng.poisson(issues_rate)
             minted = n_issues * reward

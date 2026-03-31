@@ -1,7 +1,7 @@
 import copy
 import numpy as np
 from kindact_sim.types import Agent, AgentType, Hypercert, Phase
-from kindact_sim.state import compute_exchange_rate, compute_phase
+from kindact_sim.state import compute_exchange_rate, compute_phase, make_agents_from_weights
 from kindact_sim.confidence import update_confidence
 
 
@@ -91,19 +91,19 @@ def update_agents(_params, substep, sH, s, _input, **kwargs):
 
     for a in agents:
         a.confidence = update_confidence(a, exchange_rate_trend, success_rate, a.months_holding)
-        if a.agent_type == AgentType.PANICKER:
-            a.is_panicking = a.confidence < a.panic_threshold
+        a.is_panicking = a.confidence < a.panic_threshold
 
     n_new = _input.get('new_agents_count', 0)
-    max_id = max((a.id for a in agents), default=-1)
-    for i in range(n_new):
-        new_type = rng.choice([AgentType.CONTRIBUTOR, AgentType.MERCHANT, AgentType.PANICKER],
-                               p=[0.6, 0.25, 0.15])
-        agents.append(Agent(
-            id=max_id + 1 + i, agent_type=new_type,
-            confidence=float(rng.uniform(0.3, 0.7)),
-            panic_threshold=float(rng.uniform(0.1, 0.4)),
-        ))
+    if n_new > 0:
+        max_id = max((a.id for a in agents), default=-1)
+        agent_config = _params.get('_agent_config')
+        if agent_config is not None:
+            inflow_weights = agent_config.get_inflow_weights(s['timestep'])
+        else:
+            from kindact_sim.agent_config import DEFAULT_POPULATION_MIX
+            inflow_weights = DEFAULT_POPULATION_MIX
+        new_agents = make_agents_from_weights(n_new, inflow_weights, rng, start_id=max_id + 1)
+        agents.extend(new_agents)
     return ('agents', agents)
 
 

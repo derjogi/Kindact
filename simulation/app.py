@@ -9,9 +9,13 @@ from kindact_sim.run import run_simulation
 from kindact_sim.scenarios import SCENARIOS
 from kindact_sim.config import build_experiment
 from kindact_sim.state import build_genesis_state
+from kindact_sim.agent_config import AgentConfig, DEFAULT_POPULATION_MIX
+from kindact_sim.types import AgentType
 
 st.set_page_config(page_title="Kindact Economy Simulator", layout="wide")
 st.title("🌱 Kindact Economy Simulator")
+
+ALL_AGENT_TYPES = [t.value for t in AgentType]
 
 # --- Sidebar Controls ---
 with st.sidebar:
@@ -31,6 +35,96 @@ with st.sidebar:
     hypercert_prob = st.slider("Hypercert sale probability", 0.0, 0.5, 0.1, 0.01)
     hypercert_price = st.slider("Avg Hypercert price ($)", 100, 5000, 1000, 100)
 
+    # --- Agent Configuration ---
+    st.header("Agent Population")
+    saved_configs = AgentConfig.list_saved()
+    config_options = ["(custom)"] + saved_configs
+    selected_config = st.selectbox("Load preset", options=config_options)
+
+    if selected_config != "(custom)" and selected_config:
+        loaded = AgentConfig.load(selected_config)
+        if 'agent_pop_mix' not in st.session_state or st.session_state.get('_loaded_config') != selected_config:
+            st.session_state['agent_pop_mix'] = dict(loaded.population_mix)
+            st.session_state['agent_flux'] = list(loaded.flux_schedule)
+            st.session_state['_loaded_config'] = selected_config
+
+    if 'agent_pop_mix' not in st.session_state:
+        st.session_state['agent_pop_mix'] = dict(DEFAULT_POPULATION_MIX)
+    if 'agent_flux' not in st.session_state:
+        st.session_state['agent_flux'] = []
+
+    with st.expander("🎭 Population Mix (initial)", expanded=False):
+        st.caption("Set the proportion of each agent type in the initial population. Values are normalized automatically.")
+        pop_mix = {}
+        for atype in ALL_AGENT_TYPES:
+            pop_mix[atype] = st.slider(
+                atype.replace("_", " ").title(),
+                0.0, 1.0,
+                float(st.session_state['agent_pop_mix'].get(atype, 0.0)),
+                0.01,
+                key=f"pop_{atype}",
+            )
+        total = sum(pop_mix.values())
+        if total > 0:
+            pop_mix = {k: v / total for k, v in pop_mix.items()}
+        st.session_state['agent_pop_mix'] = pop_mix
+        st.caption(f"Total: {sum(pop_mix.values()):.0%}")
+
+    with st.expander("📈 Inflow Flux Schedule", expanded=False):
+        st.caption("Define how the mix of *new agents joining* changes over time. "
+                   "Between entries, weights are linearly interpolated.")
+        flux = st.session_state['agent_flux']
+
+        if st.button("➕ Add flux entry"):
+            last_month = flux[-1]['month'] + 6 if flux else 0
+            flux.append({'month': last_month, 'weights': dict(pop_mix)})
+            st.session_state['agent_flux'] = flux
+
+        entries_to_remove = []
+        for idx, entry in enumerate(flux):
+            st.markdown(f"**Month {entry['month']}**")
+            col_month, col_remove = st.columns([3, 1])
+            with col_month:
+                new_month = st.number_input("Month", value=entry['month'], step=1,
+                                             key=f"flux_month_{idx}", label_visibility="collapsed")
+                entry['month'] = int(new_month)
+            with col_remove:
+                if st.button("🗑️", key=f"flux_rm_{idx}"):
+                    entries_to_remove.append(idx)
+
+            weights = {}
+            for atype in ALL_AGENT_TYPES:
+                weights[atype] = st.slider(
+                    atype.replace("_", " ").title(),
+                    0.0, 1.0,
+                    float(entry['weights'].get(atype, 0.0)),
+                    0.01,
+                    key=f"flux_{idx}_{atype}",
+                )
+            w_total = sum(weights.values())
+            if w_total > 0:
+                weights = {k: v / w_total for k, v in weights.items()}
+            entry['weights'] = weights
+            st.divider()
+
+        for idx in sorted(entries_to_remove, reverse=True):
+            flux.pop(idx)
+        st.session_state['agent_flux'] = flux
+
+        if not flux:
+            st.info("No flux schedule — initial population mix is used for all new agents.")
+
+    with st.expander("💾 Save / Load Config", expanded=False):
+        save_name = st.text_input("Config name", value="my_config")
+        if st.button("Save current config"):
+            ac = AgentConfig(
+                name=save_name,
+                population_mix=st.session_state['agent_pop_mix'],
+                flux_schedule=st.session_state['agent_flux'],
+            )
+            path = ac.save(f"{save_name}.json")
+            st.success(f"Saved to {path.name}")
+
     st.header("Simulation")
     n_runs = st.slider("Monte Carlo runs", 1, 100, 1)
     seed = st.number_input("Random seed", value=42, step=1)
@@ -39,7 +133,8 @@ with st.sidebar:
 
 
 def _run_custom(scenario_name: str, n_runs: int, seed: int,
-                demurrage_rate: float, param_overrides: dict) -> pd.DataFrame:
+                demurrage_rate: float, param_overrides: dict,
+                agent_config: AgentConfig | None = None) -> pd.DataFrame:
     """Run simulation with custom parameter and state overrides."""
     custom_scenario = copy.deepcopy(SCENARIOS[scenario_name])
     custom_scenario.params.update(param_overrides)
@@ -49,8 +144,10 @@ def _run_custom(scenario_name: str, n_runs: int, seed: int,
     # Monkey-patch genesis builder to inject custom demurrage_rate
     _orig_build = build_genesis_state.__wrapped__ if hasattr(build_genesis_state, '__wrapped__') else build_genesis_state
 
-    def _patched_genesis(n_users=50, r_target=1_000_000, seed=None):
-        state = _orig_build(n_users=n_users, r_target=r_target, seed=seed)
+    pop_mix = agent_config.population_mix if agent_config else None
+
+    def _patched_genesis(n_users=50, r_target=1_000_000, seed=None, population_mix=None):
+        state = _orig_build(n_users=n_users, r_target=r_target, seed=seed, population_mix=pop_mix)
         state['demurrage_rate'] = demurrage_rate
         return state
 
@@ -58,7 +155,7 @@ def _run_custom(scenario_name: str, n_runs: int, seed: int,
     orig_fn = config_mod.build_genesis_state
     config_mod.build_genesis_state = _patched_genesis
     try:
-        df = run_simulation('_custom', n_runs=n_runs, seed=seed)
+        df = run_simulation('_custom', n_runs=n_runs, seed=seed, agent_config=agent_config)
     finally:
         config_mod.build_genesis_state = orig_fn
         SCENARIOS.pop('_custom', None)
@@ -76,9 +173,16 @@ if run_button:
         'hypercert_avg_price': float(hypercert_price),
     }
 
+    agent_config = AgentConfig(
+        name="dashboard",
+        population_mix=st.session_state['agent_pop_mix'],
+        flux_schedule=st.session_state['agent_flux'],
+    )
+
     with st.spinner("Running simulation..."):
         df = _run_custom(scenario_name, n_runs=n_runs, seed=int(seed),
-                         demurrage_rate=float(demurrage), param_overrides=param_overrides)
+                         demurrage_rate=float(demurrage), param_overrides=param_overrides,
+                         agent_config=agent_config)
 
     st.session_state['df'] = df
     st.session_state['scenario_name'] = scenario_name

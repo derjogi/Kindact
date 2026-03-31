@@ -2,11 +2,13 @@ import pandas as pd
 from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
 
 from kindact_sim.config import build_experiment
+from kindact_sim.agent_config import AgentConfig
 
 
-def run_simulation(scenario_name: str, n_runs: int = 1, seed: int = 42) -> pd.DataFrame:
+def run_simulation(scenario_name: str, n_runs: int = 1, seed: int = 42,
+                   agent_config: AgentConfig | None = None) -> pd.DataFrame:
     """Run simulation and return results as a DataFrame."""
-    exp = build_experiment(scenario_name, n_runs=n_runs, seed=seed)
+    exp = build_experiment(scenario_name, n_runs=n_runs, seed=seed, agent_config=agent_config)
 
     exec_mode = ExecutionMode()
     local_ctx = ExecutionContext(context=exec_mode.local_mode)
