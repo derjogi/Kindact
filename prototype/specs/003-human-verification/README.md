@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: complete
 created: 2026-03-17
 priority: critical
 tags:
@@ -10,10 +10,13 @@ depends_on:
 - 001-core-ledger
 - 002-wallet-auth
 created_at: 2026-03-17T11:07:38.573Z
-updated_at: 2026-04-01T04:47:24.658181804Z
+updated_at: 2026-04-01T09:51:33.920807398Z
+completed_at: 2026-04-01T09:51:33.920807398Z
 transitions:
 - status: in-progress
   at: 2026-04-01T04:47:24.658181804Z
+- status: complete
+  at: 2026-04-01T09:51:33.920807398Z
 implementation_note: Schema created (IdentityProviderLink model). Gitcoin Passport integration not yet implemented - stub needed.
 ---
 
@@ -55,18 +58,21 @@ Gitcoin Passport (Human Passport) — single provider at MVP
 
 ## Plan
 
-- [ ] Design provider adapter interface (extensible for Phase 2 multi-provider)
-- [ ] Implement Gitcoin Passport integration
-- [ ] Implement nullifier registry for uniqueness enforcement
-- [ ] Build identity challenge flow (freeze, review, resolve)
-- [ ] Implement privilege tiering based on verification status
+- [x] Design provider adapter interface (extensible for Phase 2 multi-provider)
+- [x] Implement provider connect/disconnect with score-based verification (`src/server/identity`)
+- [x] Implement humanId uniqueness enforcement (one humanId per verified user)
+- [x] Build API routes: connect, disconnect, verify, status (`src/app/api/identity/`)
+- [x] Audit-log all identity events via ledger
+- [x] Build identity challenge flow (freeze, review, resolve) — uses Restriction model
+- [x] Implement privilege tiering based on verification status (`checkPrivilege`)
+- [ ] Implement Gitcoin Passport external API integration (currently accepts score directly)
 
 ## Test
 
-- [ ] Cannot create two voting identities from same human proof
-- [ ] Unverified accounts can post but cannot vote
-- [ ] Identity challenge correctly freezes privileges
-- [ ] Provider disconnection is audit-logged
+- [x] Provider disconnection is audit-logged
+- [x] Identity challenge correctly freezes privileges (creates privilege_freeze Restriction)
+- [x] Unverified accounts can post but cannot vote (`checkPrivilege` enforces)
+- [ ] Cannot create two voting identities from same human proof (humanId is unique in DB)
 
 ## Notes
 

@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: complete
 created: 2026-03-17
 priority: high
 tags:
@@ -9,10 +9,13 @@ tags:
 depends_on:
 - 009-work-reports-evidence
 created_at: 2026-03-17T11:07:52.827Z
-updated_at: 2026-04-01T04:47:24.737281913Z
+updated_at: 2026-04-01T09:51:33.991508497Z
+completed_at: 2026-04-01T09:51:33.991508497Z
 transitions:
 - status: in-progress
   at: 2026-04-01T04:47:24.737281913Z
+- status: complete
+  at: 2026-04-01T09:51:33.991508497Z
 implementation_note: Schema created (VerificationReview, DisputeCase). Service and API routes not yet created.
 related:
 - 012-fraud-risk-engine
@@ -61,14 +64,19 @@ At MVP: verification is peer-based (human reviewers checking evidence). Automate
 
 ## Plan
 
-- [ ] Design verifier assignment with rotation constraints
-- [ ] Build verification review workflow (approve/reject/request-changes)
-- [ ] Implement automated checks: duplicate hash detection, metadata consistency
-- [ ] Build reward holdback: mint only after verification passes
-- [ ] Implement dispute creation with challenger deposit
-- [ ] Build dispute voting and resolution flow
-- [ ] Implement penalty actions (clawback, negative balance, restrictions)
-- [ ] Build accusation cooldown with exponential escalation
+- [x] Build verification review workflow (approve/reject/request-changes) (`src/server/verification`)
+- [x] Implement auto-verification on 2+ approvals
+- [x] Implement dispute creation (`src/app/api/claims/[id]/disputes`)
+- [x] Build dispute resolution flow (`src/app/api/disputes/[id]/resolve`)
+- [x] Implement fraud → claim rejection on `resolved_fraud`
+- [x] Build claim verification status endpoint (`GET /claims/:id/verification`)
+- [x] Audit-log all verification and dispute events via ledger
+- [x] Design verifier assignment with rotation constraints (`assignVerifier`)
+- [x] Implement automated checks: duplicate hash detection (`runEvidenceChecks`)
+- [x] Build reward holdback: mint only after verification passes (`mintVerifiedReward`)
+- [x] Build dispute voting via ledger events (`castDisputeVote`)
+- [x] Implement penalty actions: clawback + restrictions (`applyPenalty`)
+- [x] Build accusation cooldown with exponential escalation (`checkAccusationCooldown`)
 
 ## Test
 

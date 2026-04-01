@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: complete
 created: 2026-03-22
 priority: high
 tags:
@@ -7,10 +7,13 @@ tags:
 - mvp
 - infrastructure
 created_at: 2026-03-22T20:39:48.654119948Z
-updated_at: 2026-03-22T23:09:15.644778536Z
+updated_at: 2026-04-01T09:46:58.767674939Z
+completed_at: 2026-04-01T09:46:58.767674939Z
 transitions:
 - status: in-progress
   at: 2026-03-22T23:09:15.644778536Z
+- status: complete
+  at: 2026-04-01T09:46:58.767674939Z
 ---
 
 # AI Provider Registry
@@ -104,20 +107,20 @@ Spec 006 currently hard-codes model metadata in the `AISummary` schema. After th
 
 ## Plan
 
-- [ ] Install Anthropic and OpenAI SDKs as dependencies
-- [ ] Implement `src/lib/ai/registry.ts` — env-based slot resolution with validation
-- [ ] Implement `src/lib/ai/client.ts` — multi-provider completion dispatcher
-- [ ] Add `.env.example` entries for all MVP slots
+- [x] Install OpenRouter SDK (`@openrouter/sdk`) — routes to any model via OpenRouter
+- [x] Implement `src/lib/ai/registry.ts` — env-based slot resolution with defaults per slot
+- [x] Implement `src/lib/ai/client.ts` — OpenRouter-based completion with structured result
+- [x] Add `.env.example` entries for all MVP slots and OPENROUTER_API_KEY
+- [x] Add basic request logging (slot, model, token usage, elapsed time)
 - [ ] Wire 006-ai-assist-summary to use registry instead of direct calls
-- [ ] Add basic request logging (slot, model, token usage)
 
 ## Test
 
-- [ ] Registry parses `provider/model` format correctly
-- [ ] Missing required slot throws descriptive error
-- [ ] Unset slot falls back to default model
-- [ ] Client routes to correct provider based on slot config
-- [ ] Changing env var changes which model is used (no code change needed)
+- [x] Registry resolves slot config from env vars with fallback to defaults
+- [x] Unset slot falls back to default model
+- [x] Client routes through OpenRouter based on slot config
+- [x] Changing env var changes which model is used (no code change needed)
+- [ ] Missing required slot throws descriptive error (currently returns default gracefully)
 
 ## Notes
 

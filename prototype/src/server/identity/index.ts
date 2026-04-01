@@ -134,3 +134,130 @@ export async function disconnectProvider(params: {
 
   return { disconnected: true, clearedHumanId: !remaining };
 }
+
+// ─── Identity Challenges ────────────────────────────────────────────────────
+
+export async function createIdentityChallenge(params: {
+  challengerId: string;
+  targetUserId: string;
+  reason: string;
+}) {
+  const target = await prisma.user.findUnique({
+    where: { id: params.targetUserId },
+  });
+  if (!target) throw notFound("Target user not found");
+
+  const restriction = await prisma.restriction.create({
+    data: {
+      userId: params.targetUserId,
+      type: "privilege_freeze",
+      reasonCode: `identity_challenge:${params.challengerId}`,
+    },
+  });
+
+  await appendEvent({
+    actor: params.challengerId,
+    objectType: "identity_challenge",
+    objectId: restriction.id,
+    action: "created",
+    payload: {
+      targetUserId: params.targetUserId,
+      reason: params.reason,
+    },
+  });
+
+  return restriction;
+}
+
+export async function resolveIdentityChallenge(params: {
+  challengeId: string;
+  resolution: "confirmed" | "dismissed";
+}) {
+  const restriction = await prisma.restriction.findUnique({
+    where: { id: params.challengeId },
+  });
+  if (!restriction) throw notFound("Challenge not found");
+  if (!restriction.reasonCode.startsWith("identity_challenge:")) {
+    throw badRequest("Not an identity challenge");
+  }
+  if (restriction.liftedAt) throw badRequest("Challenge already resolved");
+
+  await prisma.restriction.update({
+    where: { id: restriction.id },
+    data: { liftedAt: new Date() },
+  });
+
+  if (params.resolution === "confirmed") {
+    await prisma.user.update({
+      where: { id: restriction.userId },
+      data: { humanId: null },
+    });
+  }
+
+  await appendEvent({
+    actor: restriction.userId,
+    objectType: "identity_challenge",
+    objectId: restriction.id,
+    action: params.resolution === "confirmed" ? "confirmed" : "dismissed",
+    payload: {
+      targetUserId: restriction.userId,
+      clearedHumanId: params.resolution === "confirmed",
+    },
+  });
+
+  return {
+    resolved: true,
+    resolution: params.resolution,
+    clearedHumanId: params.resolution === "confirmed",
+  };
+}
+
+export async function getIdentityChallenges(userId: string) {
+  const restrictions = await prisma.restriction.findMany({
+    where: {
+      userId,
+      reasonCode: { startsWith: "identity_challenge:" },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
+  return restrictions.map((r) => ({
+    id: r.id,
+    challengerId: r.reasonCode.replace("identity_challenge:", ""),
+    targetUserId: r.userId,
+    status: r.liftedAt ? "resolved" : "pending",
+    createdAt: r.createdAt,
+    liftedAt: r.liftedAt,
+  }));
+}
+
+// ─── Privilege Tiering ──────────────────────────────────────────────────────
+
+export async function checkPrivilege(
+  userId: string,
+  privilege: "vote" | "verify" | "post"
+): Promise<{ allowed: boolean; reason?: string }> {
+  if (privilege === "post") return { allowed: true };
+
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) throw notFound("User not found");
+
+  if (!user.humanId) {
+    return { allowed: false, reason: "Identity verification required" };
+  }
+
+  const activeFreeze = await prisma.restriction.findFirst({
+    where: {
+      userId,
+      type: "privilege_freeze",
+      liftedAt: null,
+      OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }],
+    },
+  });
+
+  if (activeFreeze) {
+    return { allowed: false, reason: "Account has an active privilege freeze" };
+  }
+
+  return { allowed: true };
+}
