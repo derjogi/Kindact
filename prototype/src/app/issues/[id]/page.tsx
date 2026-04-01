@@ -11,6 +11,7 @@ import SummaryWithRefs from "@/components/SummaryWithRefs";
 import ThreadList from "@/components/ThreadList";
 import DiscussionSearch from "@/components/DiscussionSearch";
 import { fetchIssue, fetchDeliberation } from "@/lib/api";
+import { useStore } from "@/lib/store";
 
 const statusColors: Record<string, string> = {
   draft: "bg-stone-400",
@@ -66,6 +67,19 @@ export default function IssueDetail({
   const [searchQuery, setSearchQuery] = useState<string | null>(null);
 
   const mainRef = useRef<HTMLDivElement>(null);
+
+  const recordVisit = useStore((s) => s.recordVisit);
+  const lastVisited = useStore((s) => s.getLastVisited(id));
+
+  // Record visit after data loads (capture the previous timestamp first)
+  const lastVisitedRef = useRef(lastVisited);
+  useEffect(() => {
+    if (!loading && issue) {
+      // Small delay so components can read the *previous* lastVisited
+      const timeout = setTimeout(() => recordVisit(id), 100);
+      return () => clearTimeout(timeout);
+    }
+  }, [loading, issue, id, recordVisit]);
 
   const loadData = useCallback(async () => {
     try {
@@ -135,6 +149,15 @@ export default function IssueDetail({
   const aiSummary = deliberation?.aiSummary ?? issue.aiSummary;
   const summaryContent = aiSummary?.content ?? "";
   const summaryRefs = aiSummary?.references ?? null;
+
+  // "Updated since last visit" logic
+  const prevVisit = lastVisitedRef.current;
+  const summaryUpdatedAt = aiSummary?.updatedAt as string | undefined;
+  const summaryUpdatedSinceLastVisit = !!(
+    prevVisit &&
+    summaryUpdatedAt &&
+    new Date(summaryUpdatedAt) > new Date(prevVisit)
+  );
 
   // Quote comments (comments that reference the description)
   const quoteComments = comments
@@ -311,6 +334,7 @@ export default function IssueDetail({
               comments={commentInfos}
               onActiveSources={handleSetSources}
               onClearSources={handleClearSources}
+              updatedSinceLastVisit={summaryUpdatedSinceLastVisit}
             />
           )}
 
@@ -344,6 +368,7 @@ export default function IssueDetail({
                     comments={filteredComments as unknown as Parameters<typeof ThreadList>[0]["comments"]}
                     issueId={issue.id}
                     onCommentAdded={loadData}
+                    lastVisited={prevVisit ?? undefined}
                   />
                 </>
               )}

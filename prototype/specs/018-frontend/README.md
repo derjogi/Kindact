@@ -1,26 +1,31 @@
 ---
-status: planned
-created: '2026-03-18'
-tags:
-  - frontend
-  - mvp
-  - ux
+status: complete
+created: 2026-03-18
 priority: high
-created_at: '2026-03-18T00:00:00.000Z'
+tags:
+- frontend
+- mvp
+- ux
 depends_on:
-  - 002-wallet-auth
-  - 003-human-verification
-  - 004-issue-intake
-  - 005-deliberation-workspace
-  - 006-ai-assist-summary
-  - 007-metrics-eligibility
-  - 008-voting-engine
-  - 009-work-reports-evidence
-  - 010-verification-disputes
-  - 011-cc-ledger
+- 002-wallet-auth
+- 003-human-verification
+- 004-issue-intake
+- 005-deliberation-workspace
+- 006-ai-assist-summary
+- 007-metrics-eligibility
+- 008-voting-engine
+- 009-work-reports-evidence
+- 010-verification-disputes
+- 011-cc-ledger
+created_at: 2026-03-18T00:00:00Z
+updated_at: 2026-04-01T19:38:52.190425986Z
+completed_at: 2026-04-01T19:38:52.190425986Z
+transitions:
+- status: complete
+  at: 2026-04-01T19:38:52.190425986Z
 related:
-  - 020-ui-desktop
-  - 021-ui-mobile
+- 020-ui-desktop
+- 021-ui-mobile
 ---
 
 # Frontend Web Application

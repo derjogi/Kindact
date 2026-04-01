@@ -23,11 +23,12 @@ interface ThreadListProps {
   comments: ThreadComment[];
   issueId: string;
   onCommentAdded?: () => void;
+  lastVisited?: string;
 }
 
 type SortOption = "newest" | "oldest";
 
-export default function ThreadList({ comments, issueId, onCommentAdded }: ThreadListProps) {
+export default function ThreadList({ comments, issueId, onCommentAdded, lastVisited }: ThreadListProps) {
   const [sortBy, setSortBy] = useState<SortOption>("oldest");
   const [expandedThread, setExpandedThread] = useState<string | null>(null);
 
@@ -77,6 +78,7 @@ export default function ThreadList({ comments, issueId, onCommentAdded }: Thread
             allComments={comments}
             issueId={issueId}
             onCommentAdded={onCommentAdded}
+            lastVisited={lastVisited}
           />
         ))}
         {rest.length > 0 && spotlights.length > 0 && (
@@ -93,6 +95,7 @@ export default function ThreadList({ comments, issueId, onCommentAdded }: Thread
             allComments={comments}
             issueId={issueId}
             onCommentAdded={onCommentAdded}
+            lastVisited={lastVisited}
           />
         ))}
       </div>
@@ -109,6 +112,7 @@ function ThreadItem({
   allComments,
   issueId,
   onCommentAdded,
+  lastVisited,
 }: {
   thread: ThreadComment;
   replies: number;
@@ -118,7 +122,13 @@ function ThreadItem({
   allComments: ThreadComment[];
   issueId: string;
   onCommentAdded?: () => void;
+  lastVisited?: string;
 }) {
+  const isNew = !!(
+    lastVisited &&
+    new Date(thread.createdAt) > new Date(lastVisited)
+  );
+
   return (
     <div
       id={`comment-${thread.id}`}
@@ -133,6 +143,11 @@ function ThreadItem({
         <div className="flex items-center gap-2 text-sm">
           <span className="font-medium text-stone-700">{thread.alias}</span>
           <span className="text-stone-400 text-xs">{thread.createdAt}</span>
+          {isNew && (
+            <span className="rounded-full bg-emerald-50 px-1.5 py-0.5 text-[10px] font-medium text-emerald-600">
+              NEW
+            </span>
+          )}
           {replies > 0 && (
             <span className="text-xs text-stone-400 ml-auto">
               💬 {replies} {replies === 1 ? "reply" : "replies"}

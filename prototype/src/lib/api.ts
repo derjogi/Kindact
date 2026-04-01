@@ -153,6 +153,24 @@ export async function fetchMyBalance() {
   return authedRequest<{ balance: number }>("/api/me/balance");
 }
 
+export async function fetchMyIssues() {
+  return authedRequest<{ items: unknown[] }>("/api/me/issues");
+}
+
+export async function fetchMyVotes() {
+  return authedRequest<{ items: unknown[] }>("/api/me/votes");
+}
+
+export async function fetchMyClaims() {
+  return authedRequest<{ items: unknown[] }>("/api/me/claims");
+}
+
+export async function fetchNotifications() {
+  return authedRequest<{ items: unknown[]; nextCursor?: string }>(
+    "/api/notifications",
+  );
+}
+
 // ─── AI ─────────────────────────────────────────────────────────────────────
 
 export async function generateAISummary(issueId: string) {

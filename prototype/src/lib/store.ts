@@ -7,15 +7,19 @@ import { Comment } from "./types";
 interface AppState {
   votes: Record<string, "approve" | "reject">;
   userComments: Comment[];
+  lastVisited: Record<string, string>; // issueId → ISO timestamp
   castVote: (issueId: string, vote: "approve" | "reject") => void;
   addComment: (issueId: string, text: string, parentId: string | null) => void;
+  recordVisit: (issueId: string) => void;
+  getLastVisited: (issueId: string) => string | null;
 }
 
 export const useStore = create<AppState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       votes: {},
       userComments: [],
+      lastVisited: {},
       castVote: (issueId, vote) =>
         set((state) => ({
           votes: { ...state.votes, [issueId]: vote },
@@ -37,6 +41,11 @@ export const useStore = create<AppState>()(
             },
           ],
         })),
+      recordVisit: (issueId) =>
+        set((state) => ({
+          lastVisited: { ...state.lastVisited, [issueId]: new Date().toISOString() },
+        })),
+      getLastVisited: (issueId) => get().lastVisited[issueId] ?? null,
     }),
     { name: "kindact-prototype" }
   )

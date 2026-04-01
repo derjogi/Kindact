@@ -1,21 +1,29 @@
 ---
-status: planned
-created: '2026-03-18'
-tags:
-  - frontend
-  - mvp
-  - ux
-  - desktop
-  - wireframes
+status: complete
+created: 2026-03-18
 priority: high
+tags:
+- frontend
+- mvp
+- ux
+- desktop
+- wireframes
 depends_on:
-  - 018-frontend
+- 018-frontend
+created_at: 2026-04-01T19:38:49.551244442Z
+updated_at: 2026-04-01T19:42:07.971498691Z
+completed_at: 2026-04-01T19:42:07.971498691Z
+transitions:
+- status: in-progress
+  at: 2026-04-01T19:38:49.551244442Z
+- status: complete
+  at: 2026-04-01T19:42:07.971498691Z
 related:
-  - 021-ui-mobile
-  - 004-issue-intake
-  - 005-deliberation-workspace
-  - 007-metrics-eligibility
-  - 008-voting-engine
+- 021-ui-mobile
+- 004-issue-intake
+- 005-deliberation-workspace
+- 007-metrics-eligibility
+- 008-voting-engine
 ---
 
 # Desktop UI Design

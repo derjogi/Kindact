@@ -29,6 +29,7 @@ interface SummaryWithRefsProps {
     label: string,
   ) => void;
   onClearSources: () => void;
+  updatedSinceLastVisit?: boolean;
 }
 
 export default function SummaryWithRefs({
@@ -37,6 +38,7 @@ export default function SummaryWithRefs({
   comments,
   onActiveSources,
   onClearSources,
+  updatedSinceLastVisit,
 }: SummaryWithRefsProps) {
   const [stickyIndex, setStickyIndex] = useState<number | null>(null);
 
@@ -132,9 +134,11 @@ export default function SummaryWithRefs({
         <h2 className="text-sm font-medium uppercase tracking-wide text-stone-500">
           Summary
         </h2>
-        <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-xs text-emerald-600">
-          🟢 Updated recently
-        </span>
+        {updatedSinceLastVisit && (
+          <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-xs text-emerald-600">
+            🟢 Updated since your last visit
+          </span>
+        )}
       </div>
       <div
         className="text-sm leading-relaxed text-stone-700"
