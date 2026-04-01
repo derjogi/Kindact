@@ -1,17 +1,20 @@
 ---
-status: planned
-implementation_note: 'Schema created (IdentityProviderLink model). Gitcoin Passport integration not yet implemented - stub needed.'
-created: '2026-03-17'
-tags:
-  - identity
-  - mvp
-  - sybil-resistance
+status: in-progress
+created: 2026-03-17
 priority: critical
-created_at: '2026-03-17T11:07:38.573Z'
+tags:
+- identity
+- mvp
+- sybil-resistance
 depends_on:
-  - 001-core-ledger
-  - 002-wallet-auth
-updated_at: '2026-03-17T11:08:17.140Z'
+- 001-core-ledger
+- 002-wallet-auth
+created_at: 2026-03-17T11:07:38.573Z
+updated_at: 2026-04-01T04:47:24.658181804Z
+transitions:
+- status: in-progress
+  at: 2026-04-01T04:47:24.658181804Z
+implementation_note: Schema created (IdentityProviderLink model). Gitcoin Passport integration not yet implemented - stub needed.
 ---
 
 # Human Verification

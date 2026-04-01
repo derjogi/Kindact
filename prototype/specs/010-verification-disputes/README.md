@@ -1,18 +1,21 @@
 ---
-status: planned
-implementation_note: 'Schema created (VerificationReview, DisputeCase). Service and API routes not yet created.'
-created: '2026-03-17'
-tags:
-  - verification
-  - mvp
-  - core-loop
+status: in-progress
+created: 2026-03-17
 priority: high
-created_at: '2026-03-17T11:07:52.827Z'
+tags:
+- verification
+- mvp
+- core-loop
 depends_on:
-  - 009-work-reports-evidence
-updated_at: '2026-03-17T11:08:34.661Z'
+- 009-work-reports-evidence
+created_at: 2026-03-17T11:07:52.827Z
+updated_at: 2026-04-01T04:47:24.737281913Z
+transitions:
+- status: in-progress
+  at: 2026-04-01T04:47:24.737281913Z
+implementation_note: Schema created (VerificationReview, DisputeCase). Service and API routes not yet created.
 related:
-  - 012-fraud-risk-engine
+- 012-fraud-risk-engine
 ---
 
 # Verification & Disputes
