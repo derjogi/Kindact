@@ -106,6 +106,95 @@ def test_redemption_success_rate_affects_confidence():
     assert new_agents[0].confidence < 0.6
 
 
+def test_acceptance_willingness_rises_with_exchange_rate():
+    """Acceptance willingness should be higher when exchange rate is meaningful."""
+    agent = Agent(id=0, agent_type=AgentType.CONTRIBUTOR, balance=100.0, confidence=0.5,
+                  intrinsic_motivation=0.5)
+    # Low exchange rate scenario
+    s_low = _make_state(agents=[agent], supply=200_000, reserve_fiat=1_000,
+                        exchange_rate=0.01, r_target=1_000_000)
+    inp = _make_input(new_agents_count=0, agent_updates=[])
+    params = {'rng': np.random.default_rng(42)}
+    _, agents_low = update_agents(params, 1, [], s_low, inp)
+
+    # High exchange rate scenario
+    agent2 = Agent(id=0, agent_type=AgentType.CONTRIBUTOR, balance=100.0, confidence=0.5,
+                   intrinsic_motivation=0.5)
+    s_high = _make_state(agents=[agent2], supply=200_000, reserve_fiat=500_000,
+                         exchange_rate=0.5, r_target=1_000_000)
+    _, agents_high = update_agents(params, 1, [], s_high, inp)
+
+    assert agents_high[0].acceptance_willingness > agents_low[0].acceptance_willingness
+
+
+def test_early_agents_have_higher_motivation():
+    """Genesis agents (Phase 1) should have higher intrinsic motivation on average."""
+    from kindact_sim.state import make_agents_from_weights
+    from kindact_sim.agent_config import DEFAULT_POPULATION_MIX
+    rng = np.random.default_rng(42)
+    early = make_agents_from_weights(200, DEFAULT_POPULATION_MIX, rng,
+                                     motivation_alpha=5.0, motivation_beta=2.0)
+    late = make_agents_from_weights(200, DEFAULT_POPULATION_MIX, rng,
+                                    motivation_alpha=2.0, motivation_beta=4.0)
+    avg_early = sum(a.intrinsic_motivation for a in early) / len(early)
+    avg_late = sum(a.intrinsic_motivation for a in late) / len(late)
+    assert avg_early > avg_late
+    assert avg_early > 0.6   # skewed high
+    assert avg_late < 0.4    # skewed low
+
+
+def test_dormant_agent_skips_actions():
+    """An agent with activity_level < 0.1 should produce no work or fees."""
+    from kindact_sim.policies import agent_decisions
+    dormant = Agent(id=0, agent_type=AgentType.CONTRIBUTOR, balance=100.0, confidence=0.5,
+                    activity_level=0.05)
+    s = _make_state(agents=[dormant])
+    params = {'reward_per_issue': 50.0, 'issues_per_user_month': 2.0, 'verification_quality': 0.9,
+              'growth_rate': 0, 'hypercert_sale_prob': 0.0, 'hypercert_avg_price': 1000.0,
+              'access_fee_fraction': 1.0, 'access_fee_amount': 10.0,
+              'rng': np.random.default_rng(42)}
+    result = agent_decisions(params, 1, [], s)
+    assert result['work_minting'] == 0
+    assert result['access_fee_burn'] == 0
+
+
+def test_low_confidence_agent_becomes_dormant():
+    """An agent with sustained low confidence should see activity_level drop."""
+    agent = Agent(id=0, agent_type=AgentType.MERCHANT, balance=10.0, confidence=0.1,
+                  intrinsic_motivation=0.2, activity_level=0.5)
+    s = _make_state(agents=[agent], supply=200_000, reserve_fiat=1_000,
+                    exchange_rate=0.01, r_target=1_000_000)
+    inp = _make_input(new_agents_count=0, agent_updates=[], work_minting=0)
+    params = {'rng': np.random.default_rng(42)}
+    _, updated = update_agents(params, 1, [], s, inp)
+    assert updated[0].activity_level < 0.5  # should have dropped
+
+
+def test_high_motivation_resists_dormancy():
+    """An agent with high intrinsic motivation should resist going dormant."""
+    agent = Agent(id=0, agent_type=AgentType.CONTRIBUTOR, balance=10.0, confidence=0.3,
+                  intrinsic_motivation=0.9, activity_level=0.8)
+    s = _make_state(agents=[agent], supply=200_000, reserve_fiat=1_000,
+                    exchange_rate=0.01, r_target=1_000_000)
+    inp = _make_input(new_agents_count=0, agent_updates=[], work_minting=100)
+    params = {'rng': np.random.default_rng(42)}
+    _, updated = update_agents(params, 1, [], s, inp)
+    assert updated[0].activity_level > 0.5  # motivation keeps them active
+
+
+def test_agent_exits_after_prolonged_dormancy():
+    """Agents dormant for 3+ months should be removed."""
+    agent = Agent(id=0, agent_type=AgentType.CONTRIBUTOR, balance=10.0, confidence=0.05,
+                  intrinsic_motivation=0.05, activity_level=0.01, months_dormant=2)
+    s = _make_state(agents=[agent], supply=200_000, reserve_fiat=1_000,
+                    exchange_rate=0.01, r_target=1_000_000)
+    inp = _make_input(new_agents_count=0, agent_updates=[], work_minting=0)
+    params = {'rng': np.random.default_rng(42)}
+    _, updated = update_agents(params, 1, [], s, inp)
+    # months_dormant was 2, activity stays <0.1, increments to 3 → agent removed
+    assert len(updated) == 0
+
+
 def test_redemption_queue_tracks_unfulfilled():
     """When desired > actual, unfulfilled amount is queued."""
     s = _make_state(timestep=5, redemption_queue=[])

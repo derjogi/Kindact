@@ -22,6 +22,11 @@ def agent_decisions(_params: dict, substep: int, sH: list, s: dict, **kwargs) ->
     reward = params['reward_per_issue']
     issues_rate = params['issues_per_user_month']
     verification_q = params['verification_quality']
+    access_fee_fraction = params.get('access_fee_fraction', 0.05)
+    access_fee_amount = params.get('access_fee_amount', 10.0)
+
+    # Pre-determine which agents pay access fees this month
+    _fee_rolls = rng.random(len(agents))
 
     # Handle bank_run confidence shock event
     confidence_shock = params.get('_confidence_shock')
@@ -49,11 +54,18 @@ def agent_decisions(_params: dict, substep: int, sH: list, s: dict, **kwargs) ->
 
     daily_redeem_cap = 0.01 * reserve
 
-    for agent in agents:
+    for idx, agent in enumerate(agents):
+        # Dormant agents do nothing (still lose to demurrage in mechanisms)
+        if agent.activity_level < 0.1:
+            agent_updates.append((agent.id, 0))
+            continue
+
+        # Determine access fee for this agent (only ~5% pay each month)
+        fee = min(agent.balance, access_fee_amount) if _fee_rolls[idx] < access_fee_fraction else 0.0
+        access_fee_burn += fee
+
         # Any panicking agent (regardless of type) tries to cash out
         if agent.is_panicking and agent.agent_type != AgentType.PANICKER and phase != Phase.BOOTSTRAP:
-            fee = min(agent.balance, 5.0)
-            access_fee_burn += fee
             if agent.balance > fee:
                 redeem_amount = min(agent.balance - fee, daily_redeem_cap - redemptions)
                 redeem_amount = max(0, redeem_amount)
@@ -65,17 +77,16 @@ def agent_decisions(_params: dict, substep: int, sH: list, s: dict, **kwargs) ->
             continue
 
         if agent.agent_type == AgentType.CONTRIBUTOR:
-            n_issues = rng.poisson(issues_rate)
+            # Willingness to work for $CC depends on acceptance_willingness
+            effective_rate = issues_rate * max(0.2, agent.acceptance_willingness)
+            n_issues = rng.poisson(effective_rate)
             minted = n_issues * reward
             work_minting += minted
-            fee = min(agent.balance, 5.0)
-            access_fee_burn += fee
             agent_updates.append((agent.id, minted - fee))
 
         elif agent.agent_type == AgentType.MERCHANT:
-            trade_income = rng.uniform(0, 20)
-            fee = min(agent.balance, 5.0)
-            access_fee_burn += fee
+            # Trade income scales with merchant's willingness to accept $CC
+            trade_income = rng.uniform(0, 20) * agent.acceptance_willingness
             redeem_amount = 0.0
             if phase != Phase.BOOTSTRAP and reserve >= 100_000 and agent.balance > 0:
                 redeem_frac = rng.uniform(0.1, 0.4)
@@ -87,8 +98,6 @@ def agent_decisions(_params: dict, substep: int, sH: list, s: dict, **kwargs) ->
             agent_updates.append((agent.id, trade_income - fee - redeem_amount))
 
         elif agent.agent_type == AgentType.SPECULATOR:
-            fee = min(agent.balance, 5.0)
-            access_fee_burn += fee
             demurrage = s['demurrage_rate']
             reserve_readiness = min(1.0, (reserve / 100_000) ** 0.5) if reserve > 0 else 0.0
             can_redeem = phase != Phase.BOOTSTRAP and reserve >= 100_000
@@ -113,21 +122,17 @@ def agent_decisions(_params: dict, substep: int, sH: list, s: dict, **kwargs) ->
                 agent_updates.append((agent.id, -fee))
 
         elif agent.agent_type == AgentType.IMPACT_BUYER:
-            fee = min(agent.balance, 5.0)
-            access_fee_burn += fee
             agent_updates.append((agent.id, -fee))
 
         elif agent.agent_type == AgentType.FRAUDSTER:
             if rng.random() > verification_q:
                 fraud_amount = rng.uniform(1, 3) * reward
                 fraud_minting += fraud_amount
-                agent_updates.append((agent.id, fraud_amount))
+                agent_updates.append((agent.id, fraud_amount - fee))
             else:
-                agent_updates.append((agent.id, 0))
+                agent_updates.append((agent.id, -fee))
 
         elif agent.agent_type == AgentType.PANICKER:
-            fee = min(agent.balance, 5.0)
-            access_fee_burn += fee
             if agent.is_panicking and phase != Phase.BOOTSTRAP and agent.balance > 0:
                 desired = agent.balance
                 desired_redemptions += desired
@@ -151,21 +156,39 @@ def agent_decisions(_params: dict, substep: int, sH: list, s: dict, **kwargs) ->
     # 1. Market sales: probability scaled by platform maturity (external investors)
     # 2. Community purchases: impact buyers and high-confidence contributors
     hypercert_fiat_sales = 0.0
+    timestep = s['timestep']
     base_sale_prob = params['hypercert_sale_prob']
-    sale_price = params['hypercert_avg_price']
+    hc_min_price = params.get('hypercert_min_price', 100.0)
+    hc_max_price = params.get('hypercert_max_price', 2000.0)
+    no_sale_months = params.get('hypercert_no_sale_months', 5)
+    # For backward compat: if old flat price param is present, use it as max
+    if 'hypercert_avg_price' in params and 'hypercert_min_price' not in params:
+        hc_max_price = params['hypercert_avg_price']
+        hc_min_price = hc_max_price * 0.1
     portfolio = s['hypercert_portfolio']
     n_agents = len(agents)
     sold_count = sum(1 for h in portfolio if h.sold)
     network_scale = min(1.0, (n_agents / 500) ** 0.5)
     track_record = sold_count / (sold_count + 10)
     platform_attractiveness = network_scale * track_record
-    sale_prob = base_sale_prob * platform_attractiveness
+
+    # Maturity-dependent price curve
+    maturity_factor = min(1.0, (timestep / 24) ** 0.5) if timestep > 0 else 0.0
+    base_price = hc_min_price + (hc_max_price - hc_min_price) * track_record * maturity_factor
+
+    # No external sales in early months
+    if timestep < no_sale_months:
+        sale_prob = 0.0
+    else:
+        sale_prob = base_sale_prob * platform_attractiveness
+
     unsold = [h for h in portfolio if not h.sold]
     for h in unsold:
         if rng.random() < sale_prob:
-            hypercert_fiat_sales += sale_price
+            actual_price = base_price * float(rng.uniform(0.7, 1.3))
+            hypercert_fiat_sales += actual_price
             h.sold = True
-            h.sale_price = sale_price
+            h.sale_price = actual_price
 
     # Community purchases — believers investing in their own ecosystem
     still_unsold = [h for h in unsold if not h.sold]
@@ -179,9 +202,10 @@ def agent_decisions(_params: dict, substep: int, sH: list, s: dict, **kwargs) ->
                 continue
             if rng.random() < buy_prob and still_unsold:
                 h = still_unsold.pop(0)
-                hypercert_fiat_sales += sale_price * rng.uniform(0.5, 1.0)
+                actual_price = base_price * float(rng.uniform(0.5, 1.0))
+                hypercert_fiat_sales += actual_price
                 h.sold = True
-                h.sale_price = sale_price
+                h.sale_price = actual_price
 
     new_agents_count = max(0, int(rng.poisson(params['growth_rate'])))
 

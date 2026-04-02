@@ -28,6 +28,10 @@ class Agent:
     months_holding: int = 0
     total_earned: float = 0.0
     total_redeemed: float = 0.0
+    intrinsic_motivation: float = 0.5
+    acceptance_willingness: float = 0.5
+    activity_level: float = 1.0
+    months_dormant: int = 0
 
 
 @dataclass

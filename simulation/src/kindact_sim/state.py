@@ -27,15 +27,20 @@ def make_agents_from_weights(
     weights: dict[str, float],
     rng: np.random.Generator,
     start_id: int = 0,
+    motivation_alpha: float = 5.0,
+    motivation_beta: float = 2.0,
 ) -> list[Agent]:
     """Create n agents sampled from the given type weights dict.
 
     weights: mapping of AgentType.value -> probability (e.g. {"contributor": 0.6, ...}).
+    motivation_alpha/beta: Beta distribution params for intrinsic_motivation.
+        Early adopters: (5, 2) → skewed high. Later: (2, 4) → skewed low.
     """
     types = [AgentType(k) for k in weights]
     probs = np.array([weights[k] for k in weights])
     probs = probs / probs.sum()  # normalize
     assigned = rng.choice(len(types), size=n, p=probs)
+    motivations = rng.beta(motivation_alpha, motivation_beta, size=n)
     agents = []
     for i in range(n):
         agents.append(Agent(
@@ -43,6 +48,7 @@ def make_agents_from_weights(
             agent_type=types[assigned[i]],
             panic_threshold=float(rng.uniform(0.1, 0.4)),
             confidence=float(rng.uniform(0.3, 0.7)),
+            intrinsic_motivation=float(motivations[i]),
         ))
     return agents
 

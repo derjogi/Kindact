@@ -35,6 +35,15 @@ def run_simulation(scenario_name: str, n_runs: int = 1, seed: int = 42,
         df['total_agent_balance'] = df['agents'].apply(
             lambda agents: sum(a.balance for a in agents)
         )
+        df['avg_acceptance'] = df['agents'].apply(
+            lambda agents: sum(a.acceptance_willingness for a in agents) / len(agents) if agents else 0
+        )
+        df['n_dormant'] = df['agents'].apply(
+            lambda agents: sum(1 for a in agents if a.activity_level < 0.1)
+        )
+        df['avg_activity'] = df['agents'].apply(
+            lambda agents: sum(a.activity_level for a in agents) / len(agents) if agents else 0
+        )
 
     if 'run' not in df.columns and 'subset' in df.columns:
         df['run'] = df['subset']

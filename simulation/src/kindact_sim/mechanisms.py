@@ -93,6 +93,44 @@ def update_agents(_params, substep, sH, s, _input, **kwargs):
         a.confidence = update_confidence(a, exchange_rate_trend, success_rate, a.months_holding)
         a.is_panicking = a.confidence < a.panic_threshold
 
+    # Compute acceptance_willingness for each agent
+    n_agents = len(agents)
+    n_accepting = sum(1 for a in agents if a.acceptance_willingness > 0.3)
+    merchant_density = n_accepting / n_agents if n_agents > 0 else 0.0
+    new_rate = compute_exchange_rate(s['reserve_fiat'], s['supply'], s['r_target'])
+    exchange_rate_signal = min(1.0, new_rate * 2)  # 0 at rate=0, saturates at rate=0.5+
+
+    for a in agents:
+        a.acceptance_willingness = max(0.0, min(1.0,
+            0.35 * a.intrinsic_motivation
+            + 0.25 * exchange_rate_signal
+            + 0.20 * merchant_density
+            + 0.20 * a.confidence
+        ))
+
+    # Update activity_level based on confidence, earnings, and motivation
+    earned_this_step = _input.get('work_minting', 0)
+    has_earnings = earned_this_step > 0
+    for a in agents:
+        earned_signal = 0.3 if (has_earnings and a.agent_type in (AgentType.CONTRIBUTOR, AgentType.PANICKER)) else -0.1
+        activity_delta = (
+            0.35 * (a.confidence - 0.5)
+            + 0.25 * earned_signal
+            + 0.25 * (a.intrinsic_motivation - 0.5)
+            + 0.15 * (a.activity_level - 0.5)
+        )
+        a.activity_level = max(0.0, min(1.0, a.activity_level + activity_delta * 0.1))
+
+        # Track dormancy
+        if a.activity_level < 0.1:
+            a.months_dormant += 1
+        else:
+            a.months_dormant = 0
+
+    # Remove agents who have been dormant for 3+ consecutive months (exit)
+    # Their balance decays via demurrage but effectively leaves circulation
+    agents = [a for a in agents if a.months_dormant < 3]
+
     n_new = _input.get('new_agents_count', 0)
     if n_new > 0:
         max_id = max((a.id for a in agents), default=-1)
@@ -102,7 +140,18 @@ def update_agents(_params, substep, sH, s, _input, **kwargs):
         else:
             from kindact_sim.agent_config import DEFAULT_POPULATION_MIX
             inflow_weights = DEFAULT_POPULATION_MIX
-        new_agents = make_agents_from_weights(n_new, inflow_weights, rng, start_id=max_id + 1)
+        # Later joiners have lower intrinsic motivation
+        phase = s['phase']
+        if phase == Phase.BOOTSTRAP:
+            m_alpha, m_beta = 5.0, 2.0    # idealists
+        elif phase == Phase.GROWTH:
+            m_alpha, m_beta = 3.0, 3.0    # mixed
+        else:
+            m_alpha, m_beta = 2.0, 4.0    # need monetary incentive
+        new_agents = make_agents_from_weights(
+            n_new, inflow_weights, rng, start_id=max_id + 1,
+            motivation_alpha=m_alpha, motivation_beta=m_beta,
+        )
         agents.extend(new_agents)
     return ('agents', agents)
 

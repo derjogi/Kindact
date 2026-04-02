@@ -55,7 +55,11 @@ _DEFAULT_PARAMS = {
     'verification_quality': 0.9,
     'growth_rate': 15,
     'hypercert_sale_prob': 0.1,
-    'hypercert_avg_price': 1000.0,
+    'hypercert_min_price': 100.0,
+    'hypercert_max_price': 2000.0,
+    'hypercert_no_sale_months': 5,
+    'access_fee_fraction': 0.05,
+    'access_fee_amount': 10.0,
 }
 
 SCENARIOS: dict[str, ScenarioConfig] = {
