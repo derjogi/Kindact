@@ -45,8 +45,34 @@ def apply_events(scenario: ScenarioConfig, base_params: dict, timestep: int) -> 
         elif etype == 'stagnation_end':
             params['growth_rate'] = base_params.get('growth_rate', 15)
             params['issues_per_user_month'] = base_params.get('issues_per_user_month', 2.0)
+        elif etype == 'inflation_spike':
+            params['reward_per_issue'] = base_params.get('reward_per_issue', 50.0) * 2.0
+        elif etype == 'compounding_inflation':
+            rate = event.get('monthly_rate', 0.10)
+            months_elapsed = event.get('months_elapsed', 1)
+            base_reward = base_params.get('reward_per_issue', 50.0)
+            params['reward_per_issue'] = base_reward * (1 + rate) ** months_elapsed
+        elif etype == 'compounding_inflation_end':
+            params['reward_per_issue'] = base_params.get('reward_per_issue', 50.0)
 
     return params
+
+
+def _make_inflation_events(
+    start: int, duration_months: int, monthly_rate: float = 0.10
+) -> dict[int, list[dict]]:
+    """Generate per-month compounding inflation events."""
+    events: dict[int, list[dict]] = {}
+    for m in range(duration_months):
+        events[start + m] = [
+            {
+                "type": "compounding_inflation",
+                "monthly_rate": monthly_rate,
+                "months_elapsed": m + 1,
+            }
+        ]
+    events[start + duration_months] = [{"type": "compounding_inflation_end"}]
+    return events
 
 
 _DEFAULT_PARAMS = {
@@ -63,38 +89,77 @@ _DEFAULT_PARAMS = {
 }
 
 SCENARIOS: dict[str, ScenarioConfig] = {
-    'bootstrap': ScenarioConfig(
-        name='bootstrap', n_users=50, timesteps=36, params=dict(_DEFAULT_PARAMS), events={},
+    "bootstrap": ScenarioConfig(
+        name="bootstrap",
+        n_users=50,
+        timesteps=36,
+        params=dict(_DEFAULT_PARAMS),
+        events={},
         description="Baseline bootstrap: organic growth, no shocks.",
     ),
-    'bank_run': ScenarioConfig(
-        name='bank_run', n_users=50, timesteps=36, params=dict(_DEFAULT_PARAMS),
-        events={18: [{'type': 'bank_run', 'shock_pct': 0.4}]},
+    "bank_run": ScenarioConfig(
+        name="bank_run",
+        n_users=50,
+        timesteps=36,
+        params=dict(_DEFAULT_PARAMS),
+        events={18: [{"type": "bank_run", "shock_pct": 0.4}]},
         description="At month 18, 40% of agents panic and try to cash out.",
     ),
-    'hypercert_crash': ScenarioConfig(
-        name='hypercert_crash', n_users=50, timesteps=36, params=dict(_DEFAULT_PARAMS),
-        events={12: [{'type': 'hypercert_crash'}], 18: [{'type': 'hypercert_recovery'}]},
+    "hypercert_crash": ScenarioConfig(
+        name="hypercert_crash",
+        n_users=50,
+        timesteps=36,
+        params=dict(_DEFAULT_PARAMS),
+        events={
+            12: [{"type": "hypercert_crash"}],
+            18: [{"type": "hypercert_recovery"}],
+        },
         description="Hypercert sales crash to near-zero at month 12, recover at month 18.",
     ),
-    'fraud_wave': ScenarioConfig(
-        name='fraud_wave', n_users=50, timesteps=36, params=dict(_DEFAULT_PARAMS),
-        events={8: [{'type': 'fraud_wave', 'quality': 0.5}], 14: [{'type': 'fraud_wave_end'}]},
+    "fraud_wave": ScenarioConfig(
+        name="fraud_wave",
+        n_users=50,
+        timesteps=36,
+        params=dict(_DEFAULT_PARAMS),
+        events={
+            8: [{"type": "fraud_wave", "quality": 0.5}],
+            14: [{"type": "fraud_wave_end"}],
+        },
         description="Verification quality drops at month 8, recovers at month 14.",
     ),
-    'stagnation': ScenarioConfig(
-        name='stagnation', n_users=50, timesteps=36, params=dict(_DEFAULT_PARAMS),
-        events={15: [{'type': 'stagnation'}], 24: [{'type': 'stagnation_end'}]},
+    "stagnation": ScenarioConfig(
+        name="stagnation",
+        n_users=50,
+        timesteps=36,
+        params=dict(_DEFAULT_PARAMS),
+        events={15: [{"type": "stagnation"}], 24: [{"type": "stagnation_end"}]},
         description="Growth and activity stagnate from month 15-24.",
     ),
-    'whale_dump': ScenarioConfig(
-        name='whale_dump', n_users=50, timesteps=36, params=dict(_DEFAULT_PARAMS),
-        events={16: [{'type': 'whale_dump', 'pct_supply': 0.15}]},
+    "whale_dump": ScenarioConfig(
+        name="whale_dump",
+        n_users=50,
+        timesteps=36,
+        params=dict(_DEFAULT_PARAMS),
+        events={16: [{"type": "whale_dump", "pct_supply": 0.15}]},
         description="At month 16, one agent accumulates 15% of supply and redeems all at once.",
     ),
-    'demurrage_evasion': ScenarioConfig(
-        name='demurrage_evasion', n_users=50, timesteps=36, params=dict(_DEFAULT_PARAMS),
-        events={10: [{'type': 'demurrage_evasion', 'evasion_pct': 0.2}], 20: [{'type': 'demurrage_evasion_end'}]},
+    "demurrage_evasion": ScenarioConfig(
+        name="demurrage_evasion",
+        n_users=50,
+        timesteps=36,
+        params=dict(_DEFAULT_PARAMS),
+        events={
+            10: [{"type": "demurrage_evasion", "evasion_pct": 0.2}],
+            20: [{"type": "demurrage_evasion_end"}],
+        },
         description="20% of agents evade demurrage via circular transfers from month 10-20.",
+    ),
+    "cc_inflation": ScenarioConfig(
+        name="cc_inflation",
+        n_users=50,
+        timesteps=36,
+        params=dict(_DEFAULT_PARAMS),
+        events=_make_inflation_events(start=3, duration_months=12, monthly_rate=0.10),
+        description="CC rewards grow ~10% per month (months 3-14), testing demurrage as inflation brake.",
     ),
 }

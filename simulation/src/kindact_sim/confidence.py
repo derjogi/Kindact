@@ -4,7 +4,7 @@ from kindact_sim.types import Agent
 def update_confidence(
     agent: Agent,
     exchange_rate_trend: float,
-    redemption_success_rate: float,
+    redemption_success_rate: float | None,
     months_holding: int,
 ) -> float:
     w_trend = 0.3
@@ -13,8 +13,11 @@ def update_confidence(
     w_inertia = 0.2
 
     trend_signal = max(-1.0, min(1.0, exchange_rate_trend * 5))
-    redemption_signal = (redemption_success_rate - 0.5) * 2
-    holding_signal = min(1.0, months_holding / 12.0)
+    redemption_signal = 0.0 if redemption_success_rate is None else max(
+        -1.0, min(1.0, (redemption_success_rate - 0.5) * 2)
+    )
+    holding_progress = min(1.0, months_holding / 12.0)
+    holding_signal = (holding_progress - 0.5) * 2
     inertia_signal = (agent.confidence - 0.5) * 2
 
     delta = (

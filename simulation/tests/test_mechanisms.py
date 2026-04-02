@@ -106,6 +106,23 @@ def test_redemption_success_rate_affects_confidence():
     assert new_agents[0].confidence < 0.6
 
 
+def test_no_redemption_demand_is_not_treated_as_perfect_success():
+    """Absent redemption demand, confidence should not jump just because nobody tried to redeem."""
+    agent = Agent(id=0, agent_type=AgentType.CONTRIBUTOR, balance=100.0, confidence=0.5)
+    s = _make_state(
+        agents=[agent],
+        supply=200_000, reserve_fiat=50_000, exchange_rate=0.25,
+        r_target=1_000_000,
+    )
+    inp = _make_input(
+        new_agents_count=0, agent_updates=[],
+        redemptions=0, desired_redemptions=0,
+    )
+    params = {'rng': np.random.default_rng(42)}
+    _, new_agents = update_agents(params, 1, [], s, inp)
+    assert new_agents[0].confidence <= 0.5
+
+
 def test_acceptance_willingness_rises_with_exchange_rate():
     """Acceptance willingness should be higher when exchange rate is meaningful."""
     agent = Agent(id=0, agent_type=AgentType.CONTRIBUTOR, balance=100.0, confidence=0.5,

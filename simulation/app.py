@@ -47,6 +47,13 @@ with st.sidebar:
             st.session_state['agent_pop_mix'] = dict(loaded.population_mix)
             st.session_state['agent_flux'] = list(loaded.flux_schedule)
             st.session_state['_loaded_config'] = selected_config
+            # Sync slider widget keys so they reflect the loaded values
+            for atype in ALL_AGENT_TYPES:
+                st.session_state[f"pop_{atype}"] = float(loaded.population_mix.get(atype, 0.0))
+            for idx, entry in enumerate(loaded.flux_schedule):
+                st.session_state[f"flux_month_{idx}"] = entry['month']
+                for atype in ALL_AGENT_TYPES:
+                    st.session_state[f"flux_{idx}_{atype}"] = float(entry['weights'].get(atype, 0.0))
 
     if 'agent_pop_mix' not in st.session_state:
         st.session_state['agent_pop_mix'] = dict(DEFAULT_POPULATION_MIX)
@@ -128,13 +135,15 @@ with st.sidebar:
     st.header("Simulation")
     n_runs = st.slider("Monte Carlo runs", 1, 100, 1)
     seed = st.number_input("Random seed", value=42, step=1)
+    timesteps = st.slider("Simulation horizon (months)", 12, 240, min(240, SCENARIOS[scenario_name].timesteps), 12)
 
     run_button = st.button("▶ Run Simulation", type="primary", use_container_width=True)
 
 
 def _run_custom(scenario_name: str, n_runs: int, seed: int,
                 demurrage_rate: float, param_overrides: dict,
-                agent_config: AgentConfig | None = None) -> pd.DataFrame:
+                agent_config: AgentConfig | None = None,
+                timesteps: int | None = None) -> pd.DataFrame:
     """Run simulation with custom parameter and state overrides."""
     custom_scenario = copy.deepcopy(SCENARIOS[scenario_name])
     custom_scenario.params.update(param_overrides)
@@ -155,7 +164,8 @@ def _run_custom(scenario_name: str, n_runs: int, seed: int,
     orig_fn = config_mod.build_genesis_state
     config_mod.build_genesis_state = _patched_genesis
     try:
-        df = run_simulation('_custom', n_runs=n_runs, seed=seed, agent_config=agent_config)
+        df = run_simulation('_custom', n_runs=n_runs, seed=seed, agent_config=agent_config,
+                            timesteps=timesteps)
     finally:
         config_mod.build_genesis_state = orig_fn
         SCENARIOS.pop('_custom', None)
@@ -182,7 +192,7 @@ if run_button:
     with st.spinner("Running simulation..."):
         df = _run_custom(scenario_name, n_runs=n_runs, seed=int(seed),
                          demurrage_rate=float(demurrage), param_overrides=param_overrides,
-                         agent_config=agent_config)
+                         agent_config=agent_config, timesteps=int(timesteps))
 
     st.session_state['df'] = df
     st.session_state['scenario_name'] = scenario_name
@@ -272,10 +282,12 @@ if 'df' in st.session_state:
         st.subheader("Redemption Queue Depth")
         run_df = df[df['run'] == df['run'].iloc[0]] if 'run' in df.columns and df['run'].nunique() > 1 else df
         if 'redemption_queue' in run_df.columns:
-            queue_depth = run_df['redemption_queue'].apply(lambda q: len(q) if isinstance(q, list) else 0)
+            queue_depth = run_df['redemption_queue'].apply(
+                lambda q: sum(entry.get('amount', 0) for entry in q) if isinstance(q, list) else 0
+            )
             fig6 = go.Figure()
             fig6.add_trace(go.Scatter(x=run_df['timestep'], y=queue_depth, name='Queue Depth', fill='tozeroy', line=dict(color='#FF5722')))
-            fig6.update_layout(height=350, margin=dict(t=30, b=30), yaxis_title="Agents waiting")
+            fig6.update_layout(height=350, margin=dict(t=30, b=30), yaxis_title="Queued $CC")
             st.plotly_chart(fig6, use_container_width=True)
 
     # --- Event Log ---

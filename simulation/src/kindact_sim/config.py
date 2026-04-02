@@ -15,10 +15,12 @@ from kindact_sim.agent_config import AgentConfig
 
 
 def build_experiment(scenario_name: str, n_runs: int = 1, seed: int = 42,
-                     agent_config: AgentConfig | None = None) -> Experiment:
+                     agent_config: AgentConfig | None = None,
+                     timesteps: int | None = None) -> Experiment:
     if agent_config is None:
         agent_config = AgentConfig()
     scenario = SCENARIOS[scenario_name]
+    scenario_timesteps = scenario.timesteps if timesteps is None else timesteps
     genesis = build_genesis_state(n_users=scenario.n_users, seed=seed,
                                   population_mix=agent_config.population_mix)
 
@@ -55,7 +57,7 @@ def build_experiment(scenario_name: str, n_runs: int = 1, seed: int = 42,
 
     sim_config = config_sim({
         'N': n_runs,
-        'T': range(scenario.timesteps),
+        'T': range(scenario_timesteps),
         'M': params,
     })
 

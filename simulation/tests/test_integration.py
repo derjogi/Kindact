@@ -30,3 +30,9 @@ def test_bank_run_scenario_runs():
     df = run_simulation('bank_run', n_runs=1, seed=42)
     assert isinstance(df, pd.DataFrame)
     assert len(df) > 0
+
+
+def test_run_simulation_accepts_timestep_override():
+    df = run_simulation('bootstrap', n_runs=1, seed=42, timesteps=48)
+    assert df['timestep'].max() == 48
+    assert len(df) == 48

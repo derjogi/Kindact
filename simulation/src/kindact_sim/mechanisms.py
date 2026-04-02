@@ -87,7 +87,7 @@ def update_agents(_params, substep, sH, s, _input, **kwargs):
     # Compute redemption success rate from desired vs actual
     desired = _input.get('desired_redemptions', 0)
     actual = _input.get('redemptions', 0)
-    success_rate = 1.0 if desired == 0 else actual / desired
+    success_rate = None if desired == 0 else actual / desired
 
     for a in agents:
         a.confidence = update_confidence(a, exchange_rate_trend, success_rate, a.months_holding)
