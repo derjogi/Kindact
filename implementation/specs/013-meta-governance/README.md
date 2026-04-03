@@ -1,0 +1,113 @@
+---
+status: planned
+created: '2026-04-03'
+tags: [governance, platform, smart-contracts]
+priority: medium
+depends_on:
+  - 001-diamond-module-registry
+  - 007-voting-engine
+---
+
+# 013 — Meta-Governance
+
+## Overview
+
+The platform governs itself through its own mechanisms. Two-tier parameter governance, DiamondCut control, timelocks, and an emergency brake.
+
+## Design
+
+### MetaGovernanceFacet
+
+Manages changes to the platform's own rules and parameters.
+
+**Two tiers of changes**:
+
+| Tier | Examples | Requirements |
+|------|----------|-------------|
+| Normal | Demurrage rate, quorum thresholds, reward caps | Standard voting via 007, regular majority |
+| Constitutional | One-person-one-vote, open-source requirement, identity rules | Supermajority of TOTAL registered users: 67% must vote, 75% must approve |
+
+### Parameter Registry
+
+On-chain key-value store of all governable parameters:
+
+```
+struct Parameter {
+    bytes32 key;
+    bytes32 value;
+    Tier tier;              // NORMAL or CONSTITUTIONAL
+    uint256 lastChanged;
+}
+```
+
+### Change Proposals
+
+Special issue type referencing a parameter change:
+
+```
+struct ParameterProposal {
+    bytes32 parameterId;
+    bytes32 currentValue;
+    bytes32 proposedValue;
+    Tier tier;
+    bytes32 rationaleHash;
+}
+```
+
+### DiamondCut Governance
+
+Adding/removing facets (modules) requires meta-governance approval — prevents hostile module injection. DiamondCut calls can only originate from this facet after a successful vote.
+
+### Timelock
+
+Approved changes have a mandatory delay before taking effect:
+
+- **Normal**: 48h delay
+- **Constitutional**: 7d delay
+
+Allows community review and emergency intervention before changes activate.
+
+### Emergency Brake
+
+- Multisig of trusted guardians can pause the system on critical vulnerability
+- **Temporary**: must be ratified by community vote within 72h
+- If not ratified → auto-reverts, guardian privileges reviewed
+
+### Events
+
+- `ParameterChangeProposed(proposalId, parameterId, proposedValue, tier)`
+- `ParameterChangeApproved(proposalId, parameterId)`
+- `ParameterChanged(parameterId, oldValue, newValue)`
+- `EmergencyPause(guardian, reason)`
+- `EmergencyResolved(ratified, resumedAt)`
+
+### Extension Points
+
+- Community-defined parameter tiers (beyond normal/constitutional)
+- Module-specific governance rules (per-facet voting thresholds)
+
+## Plan
+
+1. Implement `MetaGovernanceFacet`
+2. Implement parameter registry (on-chain key-value store)
+3. Implement tiered voting thresholds (normal vs constitutional)
+4. Implement timelock (48h / 7d delays)
+5. Implement emergency brake (multisig pause + ratification)
+6. Integrate with DiamondCut and VotingEngine
+7. Tests
+
+## Test
+
+- Normal parameter change: standard majority passes, 48h delay, then applied
+- Constitutional change: requires 67% turnout of ALL users, 75% approval, 7d delay
+- Constitutional change fails with simple majority
+- DiamondCut blocked without meta-governance approval
+- Timelock: change reverted if emergency brake pulled during delay
+- Emergency pause: system halts, auto-reverts after 72h without ratification
+- Emergency pause: community ratifies, system stays paused until resolved
+- Parameter registry: read current values, historical changes
+
+## Notes
+
+- Constitutional quorum based on total users (not just active voters) is intentionally high — these are foundational rules
+- Guardian multisig should be a diverse set (geographic, demographic) to prevent capture
