@@ -1,0 +1,133 @@
+<h2>Summary ↔ Comment Linking</h2>
+<p class="subtitle">How should the AI summary reference its source comments?</p>
+
+<div class="cards">
+
+  <!-- Option A: Inline highlighted phrases -->
+  <div class="card" data-choice="inline-highlight" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 20px; background: #fafaf9;">
+      <div style="font-family: system-ui; font-size: 12px; color: #1c1917; line-height: 1.8;">
+        <div style="background: white; border-radius: 8px; padding: 16px; border: 1px solid #e7e5e4;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <span style="font-size: 10px; font-weight: 600; color: #a8a29e; text-transform: uppercase; letter-spacing: 0.05em;">Summary</span>
+            <span style="font-size: 9px; background: #ecfdf5; color: #059669; padding: 2px 8px; border-radius: 10px;">🟢 Updated recently</span>
+          </div>
+
+          <p style="margin: 0 0 8px 0;">
+            <strong>Route prioritization:</strong> Safety-first vs usage-first.
+            <span style="background: #fef3c7; padding: 1px 3px; border-radius: 3px; border-bottom: 2px solid #f59e0b; cursor: pointer;" title="Click to jump to comment">usage data is biased toward neighborhoods with existing infrastructure</span>
+            <span style="font-size: 9px; color: #f59e0b; vertical-align: super; cursor: pointer;">²</span>
+          </p>
+
+          <!-- Hover preview tooltip -->
+          <div style="margin-left: 16px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 10px; margin-bottom: 8px; position: relative;">
+            <div style="position: absolute; top: -6px; left: 20px; width: 10px; height: 10px; background: #fffbeb; border-left: 1px solid #fde68a; border-top: 1px solid #fde68a; transform: rotate(45deg);"></div>
+            <div style="font-size: 9px; color: #92400e; margin-bottom: 4px;">🦡 Badger · 2h ago · 👍 14</div>
+            <div style="font-size: 11px; color: #451a03;">"Has anyone looked at the equity angle? The west side neighborhoods (lower income) have zero bike infrastructure..."</div>
+            <div style="font-size: 9px; color: #b45309; margin-top: 4px;">+ 🦉 Owl's reply expanding on this → <u>click to jump</u></div>
+          </div>
+
+          <p style="margin: 0 0 8px 0;">
+            <strong>Cost estimate:</strong>
+            <span style="background: #fef3c7; padding: 1px 3px; border-radius: 3px; border-bottom: 2px solid #f59e0b; cursor: pointer;">$200k figure is unrealistic, suggested $300-500k</span>
+            <span style="font-size: 9px; color: #f59e0b; vertical-align: super;">³</span>
+          </p>
+
+          <p style="margin: 0;">
+            <strong>Consensus:</strong> Main & 5th needs immediate attention.
+            <span style="background: #fef3c7; padding: 1px 3px; border-radius: 3px; border-bottom: 2px solid #f59e0b; cursor: pointer;">temporary flex-post protection</span>
+            <span style="font-size: 9px; color: #f59e0b; vertical-align: super;">⁵</span>
+            proposed as quick win.
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Inline Highlights with Hover Preview</h3>
+      <p>Key phrases in the summary are <strong>highlighted</strong> (subtle underline + warm tint). Hovering shows a compact preview of the source comment(s). Clicking scrolls to the full comment thread below.</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul>
+          <li>Most natural reading flow — references are contextual</li>
+          <li>Immediately clear which parts of the summary are traceable</li>
+          <li>Hover = quick check, click = deep dive</li>
+        </ul></div>
+        <div class="cons"><h4>Cons</h4><ul>
+          <li>Highlighted text could feel cluttered in a long summary</li>
+          <li>AI needs to identify which phrases map to which comments</li>
+        </ul></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Option B: Margin annotations -->
+  <div class="card" data-choice="margin-notes" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 20px; background: #fafaf9;">
+      <div style="font-family: system-ui; font-size: 12px; color: #1c1917; line-height: 1.8;">
+        <div style="background: white; border-radius: 8px; padding: 16px; border: 1px solid #e7e5e4; display: flex; gap: 16px;">
+          <!-- Main summary text -->
+          <div style="flex: 1;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+              <span style="font-size: 10px; font-weight: 600; color: #a8a29e; text-transform: uppercase; letter-spacing: 0.05em;">Summary</span>
+              <span style="font-size: 9px; background: #ecfdf5; color: #059669; padding: 2px 8px; border-radius: 10px;">🟢 Updated recently</span>
+            </div>
+            <p style="margin: 0 0 8px 0; border-left: 2px solid #fde68a; padding-left: 8px;">
+              <strong>Route prioritization:</strong> Safety-first vs usage-first. Concern that usage data is biased toward existing infrastructure.
+            </p>
+            <p style="margin: 0 0 8px 0; border-left: 2px solid #fde68a; padding-left: 8px;">
+              <strong>Cost estimate:</strong> $200k figure is unrealistic. Suggested range: $300-500k.
+            </p>
+            <p style="margin: 0;">
+              <strong>Consensus:</strong> Main & 5th needs immediate attention. Quick-win flex posts proposed.
+            </p>
+          </div>
+          <!-- Right margin: source cards -->
+          <div style="width: 140px; flex-shrink: 0; border-left: 1px solid #f5f5f4; padding-left: 12px;">
+            <div style="font-size: 8px; color: #a8a29e; text-transform: uppercase; margin-bottom: 6px;">Sources</div>
+            <div style="background: #fafaf9; border-radius: 4px; padding: 6px; margin-bottom: 6px; border: 1px solid #e7e5e4; cursor: pointer; font-size: 9px;">
+              <div style="color: #78716c;">🦡 Badger</div>
+              <div style="color: #44403c; margin-top: 2px;">"equity angle..."</div>
+            </div>
+            <div style="background: #fafaf9; border-radius: 4px; padding: 6px; margin-bottom: 6px; border: 1px solid #e7e5e4; cursor: pointer; font-size: 9px;">
+              <div style="color: #78716c;">🦔 Hedgehog</div>
+              <div style="color: #44403c; margin-top: 2px;">"$200k unrealistic..."</div>
+            </div>
+            <div style="background: #fafaf9; border-radius: 4px; padding: 6px; border: 1px solid #e7e5e4; cursor: pointer; font-size: 9px;">
+              <div style="color: #78716c;">🪶 Heron</div>
+              <div style="color: #44403c; margin-top: 2px;">"flex-post..."</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Side Margin Sources</h3>
+      <p>Summary text is clean (no inline markup). Source comments appear in a <strong>right margin panel</strong>, visually aligned with the paragraph they support. Clicking a source card scrolls to the full comment.</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul>
+          <li>Clean reading experience — summary text is uncluttered</li>
+          <li>Sources are always visible, no hover needed</li>
+          <li>Academic/Wikipedia feel — fits Kindact's ethos</li>
+        </ul></div>
+        <div class="cons"><h4>Cons</h4><ul>
+          <li>Takes more horizontal space</li>
+          <li>Harder to connect which source maps to which sentence on mobile</li>
+        </ul></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="section" style="margin-top: 20px;">
+  <h3>Data model implication</h3>
+  <p>Both approaches need the same underlying data: the AI summary stored with a <code>references</code> array mapping text spans (or paragraph IDs) to comment IDs. The AI generates this mapping when it produces the summary. Example:</p>
+  <pre style="background: #1a1a2e; color: #e0e0e0; padding: 12px; border-radius: 6px; font-size: 11px; overflow-x: auto;">
+{
+  "content": "...usage data is biased toward existing infrastructure...",
+  "references": [
+    { "phrase": "usage data is biased", "commentIds": ["c35", "c35a"] },
+    { "phrase": "$200k figure is unrealistic", "commentIds": ["c32", "c32b"] },
+    { "phrase": "flex-post protection", "commentIds": ["c36", "c36b"] }
+  ]
+}</pre>
+</div>

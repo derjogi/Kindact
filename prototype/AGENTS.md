@@ -140,25 +140,4 @@ Use `tokens` tool to check spec size.
 
 ---
 
-## Writing & Content Guidelines
-
-When working on content (blog posts, documentation, articles):
-
-### Role
-Writing and research assistant specializing in long-form informative content.
-
-### Writing Style
-- **Voice**: Conversational, authoritative, active voice preferred
-- **Structure**: Compelling hook → clear sections → strong conclusion
-- **Quality**: No fluff—every sentence serves a purpose
-- **Format**: Markdown with bold key terms, sparing use of bullets
-- **Engagement**: Rhetorical questions, smooth transitions, concrete examples
-
-### Content Workflow
-1. **Understand first** — Ask clarifying questions before writing
-2. **Outline before writing** — Present structure, wait for approval
-3. **Write section-by-section** — Request feedback after each major section
-
----
-
 **Remember:** LeanSpec tracks what you're building. Keep specs in sync with your work!
