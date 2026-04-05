@@ -1,16 +1,23 @@
 ---
 status: planned
-created: '2026-04-03'
-tags: [issues, core-loop, smart-contracts]
+created: 2026-04-03
 priority: high
+tags:
+- issues
+- core-loop
+- smart-contracts
 depends_on:
-  - 001-diamond-module-registry
-  - 004-content-anchoring
+- 001-diamond-module-registry
+- 004-content-anchoring
+- '016'
+- '017'
+created_at: 2026-04-05T10:28:36.928106682Z
+updated_at: 2026-04-05T10:28:36.928106682Z
 ---
 
 # 005 — Issue Lifecycle
 
-On-chain issue state machine with off-chain content. Implements the first step of the core loop: identifying and tracking issues from creation through completion.
+On-chain issue state machine with off-chain content and issue-centric protocol binding. Implements the first step of the core loop: identifying issues, resolving which modules apply to them, and carrying those rules through decision, implementation, and dispute phases.
 
 ## Design
 
@@ -27,9 +34,14 @@ On-chain state machine managing issue lifecycle within the Diamond.
 | id | uint256 | Auto-incremented issue identifier |
 | status | enum | Current lifecycle state |
 | creatorWallet | address | Issue creator |
-| scope | enum | `Local`, `National`, `Global` |
+| scopeVectorHash | bytes32 | Canonical scope vector: location refs, topic tags, scope level |
 | rewardAmount | uint256 | Locked $CC mintable on completion |
 | contentHash | bytes32 | Points to off-chain body via 004 |
+| protocolBindingHash | bytes32 | Resolved issue protocol binding from 016 |
+| metricsBundleHash | bytes32 | Canonical baseline metrics bundle from 017 |
+| decisionSnapshotHash | bytes32 | Null until decision opens |
+| implementationSnapshotHash | bytes32 | Null until implementation begins |
+| disputeSnapshotHash | bytes32 | Null until dispute opens |
 | createdAt | uint48 | Creation timestamp |
 | updatedAt | uint48 | Last state change timestamp |
 
@@ -38,15 +50,17 @@ On-chain state machine managing issue lifecycle within the Diamond.
 Transitions enforced by contract — only specific roles/conditions trigger each:
 
 - `Draft → Deliberating` — creator or moderator initiates deliberation
-- `Deliberating → VoteReady` — requires deliberation metrics filled (min comments, min duration)
-- `VoteReady → Adopted` — triggered by voting engine (007) when vote passes
+- `Deliberating → VoteReady` — requires resolved protocol binding, baseline metrics present, and net-impact gate satisfied
+- `VoteReady → Adopted` — triggered by the active `decision.engine` in the issue's protocol binding when the snapshotted decision rules are satisfied
 - `Adopted → Implementing` — work package claimed (008)
 - `Implementing → Completed` — work verified and rewards minted (008)
 - `Completed → Archived` — time-based or manual
 
+At `VoteReady`, `Implementing`, and dispute-open boundaries, the issue records procedural snapshots defined by 016-extensibility-foundation.
+
 ### Off-chain Content
 
-Full issue content (title, summary, description, tags, revisions) stored content-addressed. Hash anchored on-chain via `ContentAnchorFacet` (004).
+Full issue content (title, summary, description, tags, revisions, canonical location refs) stored content-addressed. Hash anchored on-chain via `ContentAnchorFacet` (004).
 
 ### RewardIntent
 
@@ -60,8 +74,9 @@ Locked at issue creation or before voting. Specifies maximum $CC mintable on com
 
 ### Extension Points
 
-- Custom state machines per community (future)
-- Additional metadata fields via module hooks
+- Additional metadata fields and derived views via module hooks
+- Issue protocol binding, overlay resolution, and procedural snapshots are delegated to 016-extensibility-foundation
+- Metrics gating and canonical metric bundles are delegated to 017-core-metrics-framework
 
 ## Plan
 
@@ -83,4 +98,5 @@ Locked at issue creation or before voting. Specifies maximum $CC mintable on com
 
 - State machine is deliberately linear for v1; branching/parallel states deferred
 - Reward amounts capped by voter-scaled logic in 008
-- Scope field enables future filtering/routing but has no logic in v1
+- Scope must become richer than a coarse enum because protocol binding depends on canonical location refs and topic tags.
+- While the lifecycle remains linear in v1, decision continuity modules should be limited to semantics that can fit this lifecycle cleanly unless reopening/reversal states are added later.

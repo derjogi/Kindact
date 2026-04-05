@@ -59,7 +59,7 @@ For mutable objects (e.g., an issue description that gets edited):
 
 Initial set (extensible by modules):
 
-`issue`, `comment`, `argument`, `proposal`, `evidence`, `report`
+`issue`, `comment`, `argument`, `proposal`, `evidence`, `report`, `protocol_snapshot`, `metric_bundle`
 
 New object types are declared when a module registers via `ModuleRegistry`.
 
@@ -99,3 +99,4 @@ New object types are declared when a module registers via `ModuleRegistry`.
 - The Merkle tree is constructed off-chain; only the root goes on-chain.
 - Consider an off-chain indexer that watches `ContentAnchored` events and maintains a queryable database.
 - IPFS pinning strategy (self-hosted vs. Pinata/web3.storage) is an operational decision, not a contract concern.
+- This facet should be usable by extensibility snapshots and canonical metrics bundles, not just deliberation text content.

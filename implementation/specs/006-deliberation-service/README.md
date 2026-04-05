@@ -1,16 +1,23 @@
 ---
 status: planned
-created: '2026-04-03'
-tags: [deliberation, core-loop, off-chain]
+created: 2026-04-03
 priority: high
+tags:
+- deliberation
+- core-loop
+- off-chain
 depends_on:
-  - 004-content-anchoring
-  - 005-issue-lifecycle
+- 004-content-anchoring
+- 005-issue-lifecycle
+- '014'
+- '016'
+created_at: 2026-04-05T10:28:36.965643605Z
+updated_at: 2026-04-05T10:28:36.965643605Z
 ---
 
 # 006 — Deliberation Service
 
-Fully off-chain deliberation engine with periodic hash anchoring. Implements structured discussion between issue creation and voting.
+Fully off-chain deliberation engine with periodic hash anchoring and modular deliberation surfaces. Implements shared discussion infrastructure between issue creation and voting while allowing issue-specific surfaces to be activated by protocol binding.
 
 ## Design
 
@@ -22,10 +29,12 @@ This is an **off-chain service**, not a smart contract facet. All content lives 
 
 | Component | Description |
 |-----------|-------------|
-| Comments | Threaded discussion on issues |
-| ArgumentNodes | Pro/con argument tree (Kialo-style structured deliberation) |
-| ProposalDocument | Wiki-style collaborative editing of the proposal text |
-| AI Summaries | Continuous summarization of deliberation state |
+| Comments | Core threaded discussion on issues |
+| DeliberationSurfaceRegistry | Tracks which deliberation surfaces are active for a given issue binding |
+| ArgumentNodes | Optional pro/con argument tree module |
+| ProposalDocument | Optional wiki-style proposal module |
+| AI Summaries | Assistive summarization of deliberation state |
+| FallbackViews | Read-only summaries for module data that is not fully rendered in a given UI |
 
 ### Anonymization Layer
 
@@ -33,7 +42,7 @@ During deliberation, author identities are hidden from display. Backend knows id
 
 ### Randomized Ranking
 
-Comments displayed with mixed ranking: randomness + outlier detection + votes. Reduces popularity bias and ensures minority viewpoints surface.
+Comments can be displayed with mixed ranking: randomness + outlier detection + votes. Ranking should be configurable as an issue-level deliberation module rather than treated as a permanent default.
 
 ### AI Integration
 
@@ -44,7 +53,12 @@ Comments displayed with mixed ranking: randomness + outlier detection + votes. R
 
 ### API
 
-REST/GraphQL endpoints for CRUD on comments, arguments, proposals. Authenticated via wallet signature.
+REST/GraphQL endpoints for CRUD on comments, arguments, proposals, module surfaces, and fallback views. Authenticated via wallet signature.
+
+The API must distinguish between:
+
+- raw data availability for audit/export
+- default visibility/prominence in a given client surface
 
 ### Batch Anchoring
 
@@ -56,6 +70,7 @@ Periodic job computes Merkle root of all deliberation content and anchors on-cha
 
 ### Extension Points
 
+- Pluggable deliberation surfaces keyed to issue protocol binding
 - Pluggable ranking algorithms
 - Pluggable AI providers
 - Additional deliberation modes (future: fishbowl, Delphi)
@@ -84,6 +99,6 @@ Periodic job computes Merkle root of all deliberation content and anchors on-cha
 ## Notes
 
 - Anonymization is display-layer only; backend retains author mapping for moderation
-- Ranking algorithm should be configurable per community in the future
+- Deliberation is now explicitly module-oriented: comments remain core, while pro/con, wiki, clustering, and similar experiences are optional surfaces.
 - Batch anchoring interval is configurable (default: every N hours or M new items)
 - This service is the most complex off-chain component; may warrant its own repo

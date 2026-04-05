@@ -1,17 +1,24 @@
 ---
 status: planned
-created: '2026-04-03'
-tags: [frontend, ux]
+created: 2026-04-03
 priority: high
+tags:
+- frontend
+- ux
 depends_on:
-  - 014-off-chain-backend
+- 014-off-chain-backend
+- '006'
+- '016'
+- '017'
+created_at: 2026-04-05T10:28:37.332555954Z
+updated_at: 2026-04-05T10:28:37.332555954Z
 ---
 
 # 015 – Frontend
 
 ## Overview
 
-New frontend for Kindact, informed by prototype learnings. Wallet-first, React-based application connecting to the off-chain backend and directly to on-chain contracts.
+New frontend for Kindact, informed by prototype learnings. Wallet-first, React-based application connecting to the off-chain backend and directly to on-chain contracts, with issue-centric module rendering and lens-based discovery.
 
 ## Design
 
@@ -26,12 +33,13 @@ New frontend for Kindact, informed by prototype learnings. Wallet-first, React-b
 
 Informed by prototype's 020-ui-desktop wireframes and 025-deliberation-ui-redesign:
 
-- **Dashboard**: personalized feed of issues, notifications, $CC token balance, community activity
-- **Issue Detail**: full deliberation workspace — comments, pro/con arguments, proposal document, AI summary, participation metrics
+- **Dashboard**: personalized feed of issues, notifications, $CC token balance, community activity, and lens-based discovery subscriptions
+- **Issue Detail**: full deliberation workspace driven by the issue's protocol binding — comments, optional module tabs, proposal document, AI summary, participation metrics, and baseline metrics/gate explanations
 - **Voting**: eligibility check → vote casting → live tally visualization with result breakdown
 - **Implementation**: work packages, claim management, report submission, evidence upload
 - **Profile**: wallet info, identity verification status, $CC balance with demurrage visualization, contribution history
 - **Token**: balance, transaction history, demurrage tracker, exchange interface (when available)
+- **Lens Settings**: follow/mute lenses, configure presentation defaults, inspect active overlays
 
 ### Wallet-First Auth
 
@@ -51,12 +59,16 @@ Desktop-first layout, mobile-friendly. Prototype had separate mobile spec (021);
 - Prototype's deliberation UI (025) and desktop wireframes (020) are primary reference material
 - Prioritize clarity of governance state (what phase is this issue in? what can I do?)
 - Progressive disclosure: simple overview → detailed workspace on drill-down
+- Separate raw data availability from default visibility/prominence in the UI
+- A viewer's current lens must never suppress an issue's active protocol binding
+- Baseline metrics and the gate decision should be visible as first-class issue context, not hidden as a secondary panel
 
 ### Extension Points
 
 - Theme system for community branding
 - Community-customizable layouts
-- Plugin slots for module-specific UIs (new facets can ship UI components)
+- Plugin slots for module-specific UIs and fallback renderers driven by issue protocol binding
+- Canonical location pickers and lens discovery surfaces backed by shared geography refs
 
 ## Plan
 
@@ -83,3 +95,4 @@ Desktop-first layout, mobile-friendly. Prototype had separate mobile spec (021);
 - The prototype (../prototype/) contains validated UX patterns — review before building each screen.
 - Deliberation UI is the most complex screen; prototype spec 025 has the refined design.
 - Demurrage visualization (token decay over time) needs careful UX — make the economic model intuitive.
+- The frontend should render issue modules according to protocol binding, not according to the viewer's current dashboard lens.

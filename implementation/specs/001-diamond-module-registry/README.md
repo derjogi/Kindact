@@ -26,7 +26,7 @@ The EIP-2535 Diamond proxy is the system skeleton. All on-chain Kindact function
 | **DiamondCutFacet** | Add / replace / remove facets. Guarded by `MODULE_MANAGER` or governance. |
 | **DiamondLoupeFacet** | Introspection: `facets()`, `facetAddresses()`, `facetFunctionSelectors()`, `facetAddress(selector)`. |
 | **AccessControlFacet** | Role-based access adapted from OpenZeppelin's `AccessControl` for diamond storage. Roles: `ADMIN`, `MODULE_MANAGER`, `GOVERNANCE`. |
-| **ModuleRegistryFacet** | Maps `moduleId (bytes32)` → `ModuleRecord(facetAddress, version, dependencies[], status)`. Tracks versions and declared dependencies between modules. |
+| **ModuleRegistryFacet** | Maps `moduleId (bytes32)` → `ModuleRecord(facetAddress, version, dependencies[], status, manifestHash, slot, multiplicity, maturity)`. Tracks approved on-chain modules that affect trust, money, rights, or finality. |
 
 ### AppStorage
 
@@ -48,7 +48,7 @@ Single `AppStorage` struct stored at a diamond-storage slot (`keccak256("kindact
 
 ### Extension Points
 
-Any new module deploys a facet contract and registers via `DiamondCutFacet`. The `ModuleRegistry` records metadata and dependency declarations so the system can enforce ordering and compatibility.
+Any new on-chain module deploys a facet contract and registers via `DiamondCutFacet`. The `ModuleRegistry` records enough metadata for ordering, compatibility, and auditability, while the richer global module catalog stays off-chain per 016-extensibility-foundation.
 
 ## Plan
 
@@ -74,3 +74,4 @@ Any new module deploys a facet contract and registers via `DiamondCutFacet`. The
 - During bootstrap (before governance is live), `ADMIN` approves cuts directly.
 - Once governance is live, `ADMIN` role is renounced or transferred to the governance module.
 - Diamond reference implementation: [EIP-2535](https://eips.ethereum.org/EIPS/eip-2535), `diamond-3-hardhat`.
+- This registry should remain conservative: only modules with on-chain consequences belong here.

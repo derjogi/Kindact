@@ -1,11 +1,17 @@
 ---
 status: planned
-created: '2026-04-03'
-tags: [governance, platform, smart-contracts]
+created: 2026-04-03
 priority: medium
+tags:
+- governance
+- platform
+- smart-contracts
 depends_on:
-  - 001-diamond-module-registry
-  - 007-voting-engine
+- 001-diamond-module-registry
+- 007-voting-engine
+- '016'
+created_at: 2026-04-05T10:28:37.209443370Z
+updated_at: 2026-04-05T10:28:37.209443370Z
 ---
 
 # 013 — Meta-Governance
@@ -58,6 +64,12 @@ struct ParameterProposal {
 
 Adding/removing facets (modules) requires meta-governance approval — prevents hostile module injection. DiamondCut calls can only originate from this facet after a successful vote.
 
+### Module Catalog Governance
+
+Meta-governance also approves the global module catalog entries that affect trust, money, rights, or finality and can promote mature optional modules into core platform behavior.
+
+Lens-level overlay choices remain outside this spec; 016-extensibility-foundation owns the distinction between platform governance and lens governance.
+
 ### Timelock
 
 Approved changes have a mandatory delay before taking effect:
@@ -85,6 +97,7 @@ Allows community review and emergency intervention before changes activate.
 
 - Community-defined parameter tiers (beyond normal/constitutional)
 - Module-specific governance rules (per-facet voting thresholds)
+- Module maturity promotion paths (experimental → beta → stable → core)
 
 ## Plan
 

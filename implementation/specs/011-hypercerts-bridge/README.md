@@ -1,11 +1,18 @@
 ---
 status: planned
-created: '2026-04-03'
-tags: [impact, economics, smart-contracts, hypercerts]
+created: 2026-04-03
 priority: medium
+tags:
+- impact
+- economics
+- smart-contracts
+- hypercerts
 depends_on:
-  - 008-work-verification-rewards
-  - 010-reserve-exchange
+- 008-work-verification-rewards
+- 010-reserve-exchange
+- '017'
+created_at: 2026-04-05T10:28:37.131239513Z
+updated_at: 2026-04-05T10:28:37.131239513Z
 ---
 
 # 011 — Hypercerts Bridge
@@ -46,6 +53,7 @@ struct HypercertRecord {
 
 - Uses Hypercerts protocol SDK for minting (ERC-1155 compatible)
 - Impact metadata stored on IPFS, hash recorded on-chain
+- Impact metadata must reference the canonical metrics bundle defined by 017-core-metrics-framework so baseline dimensions remain comparable across issue types
 
 ### Events
 
@@ -58,7 +66,7 @@ struct HypercertRecord {
 
 - Integration with Verra/Gold Standard certifications
 - Retroactive funding round participation (RetroPGF)
-- Domain-specific impact schemas (climate, education, health)
+- Domain-specific dimension packs layered on top of the shared metrics baseline
 
 ## Plan
 
@@ -80,4 +88,4 @@ struct HypercertRecord {
 ## Notes
 
 - Hypercerts protocol is live on Optimism — same L2 target as Kindact
-- Impact metrics schema should be standardized across issue categories
+- Impact metrics schema should be standardized across issue categories, with extensible packs rather than incompatible domain schemas.

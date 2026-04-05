@@ -1,17 +1,23 @@
 ---
 status: planned
-created: '2026-04-03'
-tags: [decision-making, governance, smart-contracts]
+created: 2026-04-03
 priority: medium
+tags:
+- decision-making
+- governance
+- smart-contracts
 depends_on:
-  - 007-voting-engine
+- 007-voting-engine
+- '016'
+created_at: 2026-04-05T10:28:37.091541835Z
+updated_at: 2026-04-05T10:28:37.091541835Z
 ---
 
-# 009 — Delegation & Conviction Voting
+# 009 — Delegation & Decision Continuity
 
 ## Overview
 
-Liquid democracy + conviction voting. Extends VotingEngine with per-topic delegation and time-weighted conviction accumulation for decisions.
+Liquid democracy plus decision continuity rules. Extends the core voting engine with per-topic delegation as a decision modifier and conviction-based stabilization as a decision continuity policy.
 
 ## Design
 
@@ -38,7 +44,7 @@ struct Delegation {
 
 ### ConvictionFacet
 
-Decisions accumulate conviction over time — the longer uncontested, the harder to reverse.
+Decisions accumulate conviction over time — the longer uncontested, the harder to reverse. This is a continuity rule layered on top of the underlying decision engine, not an alternative tally method.
 
 **Conviction formula**: conviction grows linearly with time since adoption. Reversal requires:
 
@@ -59,6 +65,7 @@ Where `k` is a governance-adjustable parameter.
 
 - Weighted delegation (partial weight splitting)
 - Topic taxonomy evolution via meta-governance
+- Additional continuity policies such as reconsideration windows
 
 ## Plan
 
@@ -83,3 +90,4 @@ Where `k` is a governance-adjustable parameter.
 
 - Delegation graph stored on-chain but resolution can be computed off-chain for gas efficiency (submit proof)
 - Conviction parameters adjustable via 013-meta-governance
+- Delegation and continuity are resolved through the issue's procedural snapshot, so later overlay changes do not retroactively alter an active decision phase.

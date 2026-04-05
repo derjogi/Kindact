@@ -1,11 +1,17 @@
 ---
 status: planned
-created: '2026-04-03'
-tags: [verification, security, smart-contracts]
+created: 2026-04-03
 priority: medium
+tags:
+- verification
+- security
+- smart-contracts
 depends_on:
-  - 003-cc-token-core
-  - 008-work-verification-rewards
+- 003-cc-token-core
+- 008-work-verification-rewards
+- '016'
+created_at: 2026-04-05T10:28:37.168826256Z
+updated_at: 2026-04-05T10:28:37.168826256Z
 ---
 
 # 012 — Dispute Resolution
@@ -24,9 +30,10 @@ Handles challenges to verified work claims.
 
 1. **Challenge**: challenger flags a claim with a small $CC deposit (skin in the game)
 2. **Halt**: payments on the disputed claim halt immediately
-3. **Review**: community engagement period — original voters + new participants review evidence
-4. **Resolution threshold**: 2% of original voters (min 5 people), 80% agreement to confirm fraud
-5. **Outcomes**:
+3. **Snapshot**: issue records the active dispute procedure before review begins
+4. **Review**: community engagement period under the issue's snapshotted dispute rules
+5. **Resolution threshold**: 2% of original voters (min 5 people), 80% agreement to confirm fraud
+6. **Outcomes**:
    - *Fraud confirmed*: clawback $CC from perpetrator (balance can go negative), challenger deposit returned + bonus
    - *Dismissed*: challenger deposit burned, claim payments resume
    - *Timeout (no verdict)*: restrictions loosen gradually, payments resume with delay
@@ -56,6 +63,7 @@ Handles challenges to verified work claims.
 
 - Escalation to external arbitration (Kleros, Aragon Court)
 - Staking-based dispute mechanisms
+- Additional dispute procedures, provided they snapshot cleanly at dispute open
 
 ## Plan
 

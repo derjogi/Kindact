@@ -1,17 +1,25 @@
 ---
 status: planned
-created: '2026-04-03'
-tags: [implementation, core-loop, smart-contracts, token-economy]
+created: 2026-04-03
 priority: high
+tags:
+- implementation
+- core-loop
+- smart-contracts
+- token-economy
 depends_on:
-  - 003-cc-token-core
-  - 005-issue-lifecycle
-  - 007-voting-engine
+- 003-cc-token-core
+- 005-issue-lifecycle
+- 007-voting-engine
+- '016'
+- '017'
+created_at: 2026-04-05T10:28:37.053390177Z
+updated_at: 2026-04-05T10:28:37.053390177Z
 ---
 
 # 008 — Work Verification & Rewards
 
-On-chain claim→verify→mint flow. Implements the final steps of the core loop: doing the work, verifying it, and minting $CC rewards.
+On-chain claim→verify→mint flow with modular verification policies. Implements the final steps of the core loop: doing the work, verifying it under the issue's snapshotted implementation rules, and minting $CC rewards.
 
 ## Design
 
@@ -51,10 +59,10 @@ Off-chain assets (photos, videos, documents) content-addressed. Hashes stored wi
 
 ### Verification Flow
 
-1. Implementer submits report with evidence hashes
-2. **Verifiers** (rotated, selected from qualified community members) review off-chain evidence
-3. Verifier submits on-chain approval/rejection with rationale hash
-4. Multiple verifiers required for larger rewards (voter-scaled)
+1. Implementer submits report with evidence hashes and realized metrics data
+2. The issue's implementation snapshot determines which evidence types are required and which verification policy is active
+3. Verifiers and/or automated checks review the submitted evidence according to that policy
+4. Multiple verifiers may be required for larger rewards (voter-scaled)
 5. On approval → triggers `$CC` mint via `TokenCoreFacet` (003) mint hook
 
 ### Reward Caps
@@ -75,9 +83,10 @@ Milestones can trigger partial minting. Total across milestones must not exceed 
 
 ### Extension Points
 
-- Pluggable verification strategies
+- Pluggable verification evidence types and policy combinators
 - ValueFlows integration for structured reporting (future)
 - Dispute hooks (012)
+- Metrics realization reporting via 017-core-metrics-framework
 
 ## Plan
 
@@ -105,3 +114,4 @@ Milestones can trigger partial minting. Total across milestones must not exceed 
 - Voter-scaled caps are the primary Sybil resistance for reward gaming
 - Dispute resolution (012) can override verification decisions
 - RewardIntent locked amount from 005 is the absolute ceiling
+- Verification requirements must be snapshotted when implementation begins so they cannot be changed mid-claim.

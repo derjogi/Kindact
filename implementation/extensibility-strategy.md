@@ -12,6 +12,22 @@ Kindact is one global platform with one deployment, one shared data layer, and o
 
 The design challenge: **customizable experience without fragmenting the shared data layer.**
 
+## Recommended Execution Order
+
+The LeanSpec dependency graph now encodes the main blockers for this architecture. From within [implementation](file:///home/jonas/Documents/Governance/Own/Kindact/implementation), `lean-spec gantt` gives the live execution view. For humans, the recommended implementation order is:
+
+1. **Foundation layer** — [001](file:///home/jonas/Documents/Governance/Own/Kindact/implementation/specs/001-diamond-module-registry/README.md), [016](file:///home/jonas/Documents/Governance/Own/Kindact/implementation/specs/016-extensibility-foundation/README.md), [017](file:///home/jonas/Documents/Governance/Own/Kindact/implementation/specs/017-core-metrics-framework/README.md)
+2. **Shared primitives** — [004](file:///home/jonas/Documents/Governance/Own/Kindact/implementation/specs/004-content-anchoring/README.md), [002](file:///home/jonas/Documents/Governance/Own/Kindact/implementation/specs/002-identity-primitive/README.md), [003](file:///home/jonas/Documents/Governance/Own/Kindact/implementation/specs/003-cc-token-core/README.md)
+3. **Issue core** — [005](file:///home/jonas/Documents/Governance/Own/Kindact/implementation/specs/005-issue-lifecycle/README.md)
+4. **Decision and platform runtime** — [007](file:///home/jonas/Documents/Governance/Own/Kindact/implementation/specs/007-voting-engine/README.md) and [014](file:///home/jonas/Documents/Governance/Own/Kindact/implementation/specs/014-off-chain-backend/README.md) in parallel once their blockers are satisfied
+5. **Decision continuity and governance** — [009](file:///home/jonas/Documents/Governance/Own/Kindact/implementation/specs/009-delegation-conviction/README.md), [013](file:///home/jonas/Documents/Governance/Own/Kindact/implementation/specs/013-meta-governance/README.md)
+6. **Implementation and economic flows** — [008](file:///home/jonas/Documents/Governance/Own/Kindact/implementation/specs/008-work-verification-rewards/README.md), [010](file:///home/jonas/Documents/Governance/Own/Kindact/implementation/specs/010-reserve-exchange/README.md)
+7. **Disputes and downstream impact** — [012](file:///home/jonas/Documents/Governance/Own/Kindact/implementation/specs/012-dispute-resolution/README.md), [011](file:///home/jonas/Documents/Governance/Own/Kindact/implementation/specs/011-hypercerts-bridge/README.md)
+8. **Deliberation UI/runtime on top of backend foundations** — [006](file:///home/jonas/Documents/Governance/Own/Kindact/implementation/specs/006-deliberation-service/README.md)
+9. **Frontend integration** — [015](file:///home/jonas/Documents/Governance/Own/Kindact/implementation/specs/015-frontend/README.md)
+
+In short: define the protocol and metrics first, then the shared on-chain primitives, then the issue model, then the backend/runtime and decision system, and only then build the richer deliberation experience and full frontend.
+
 ---
 
 ## 1. What Is a "Community"?
@@ -48,6 +64,8 @@ Users can opt in to any additional lenses and mute or leave location-based subsc
 ### Shared Geographic Taxonomy
 
 Issues, user profiles, and lenses should reference the same canonical geographic taxonomy. In practice, that means the "Berlin" attached to a user profile, the "Berlin" attached to an issue, and the "Berlin" used in a lens selector should all resolve to the same location identifier rather than free-form strings. This keeps filtering, specificity, and eligibility logic consistent.
+
+Selector specificity should also be explicit beyond geography. Geographic precedence comes from the canonical location taxonomy. Topic precedence should come from a canonical topic taxonomy or another declared specificity model; free-form keywords and interest labels can help discovery, but should not determine conflict resolution by themselves.
 
 ---
 
@@ -176,6 +194,7 @@ Module {
 | `signal.input` | multi | prediction markets, expert panels |
 | `verification.evidence` | multi | photo, peer, third-party, on-chain |
 | `verification.policy` | **single** | "2-of-3 evidence types" or "auto + random audit" |
+| `dispute.policy` | **single** | default fraud-review process, future arbitration variants |
 | `metrics.dimension_pack` | multi | biodiversity, soil health, public health |
 | `assistive.ai` | multi | summarization, duplicates, translation |
 | `ui.theme` | single (user-overridable) | community branding |
@@ -234,9 +253,13 @@ To prevent governance gaming (changing the rules mid-process), the issue takes a
 |----------------|-----------------|
 | Decision opens | `decision.engine`, `decision.continuity`, `decision.modifier`, eligibility rules |
 | Implementation begins | `verification.policy`, `verification.evidence`, reward parameters |
-| Dispute opens | dispute resolution rules |
+| Dispute opens | `dispute.policy` |
 
 Deliberation surfaces and assistive modules remain flexible throughout — changing how people discuss is less dangerous than changing how decisions are made.
+
+Metrics also need explicit versioning across the lifecycle. At minimum the platform should distinguish between a current deliberation metrics bundle, a decision-time metrics snapshot used for gating, and realized outcomes bundles produced during implementation.
+
+Every gate evaluation should produce a canonical, auditable artifact recording the input metrics bundle, threshold version, verdict, and human-readable reasons. The gate should never devolve into a hidden backend judgment.
 
 ---
 
@@ -319,6 +342,8 @@ Module hooks:
 
 Module-specific data: stored in PostgreSQL using typed JSONB columns alongside core entities. Core entities remain strictly typed; modules get structured extension points, not arbitrary schema additions.
 
+If a validator normalizes input, that normalization must be explicit and auditable: the backend should create an audit record and return the transformed payload to the caller before final commit rather than mutating data invisibly.
+
 ### Frontend plugin slots
 
 Contribution-point model (similar to VS Code extensions):
@@ -400,7 +425,7 @@ LensOverlay {
   module_key: string              // e.g., "consensus-decision"
   mode: enum                      // enable | disable | configure
   params: json                    // module-specific configuration
-  specificity_score: number       // computed from selector narrowness
+  precedence_key: tuple           // derived from issue override + combined/geo/topic specificity + platform default fallback
 }
 
 ModuleCatalogEntry {
@@ -443,12 +468,12 @@ IssueProtocolBinding {
 
 ## 10. Relationship to Existing Specs
 
-This strategy is an **architectural overlay** that doesn't invalidate the existing 15 specs. Instead, it provides the framework in which they operate:
+This strategy is now reflected in the **17-spec** implementation set. In particular, [016 — Extensibility Foundation](file:///home/jonas/Documents/Governance/Own/Kindact/implementation/specs/016-extensibility-foundation/README.md) and [017 — Core Metrics Framework](file:///home/jonas/Documents/Governance/Own/Kindact/implementation/specs/017-core-metrics-framework/README.md) formalize the new architectural foundations.
+
+The strategy provides the framework in which the other specs operate:
 
 - **001 (Diamond Module Registry)** — already supports the on-chain facet model; extend `ModuleRegistryFacet` to include module catalog metadata
 - **005-009 (Issue → Deliberation → Voting → Verification → Delegation)** — these become the first modules in the catalog, with 005/007/008 plus the core metrics framework as core and 006/009 optional where appropriate
 - **013 (Meta-Governance)** — governs the module catalog approval process
 - **014 (Backend)** — implements the hook system and module resolution engine
 - **015 (Frontend)** — implements the plugin slot system
-
-A new spec should be written to formalize this extensibility architecture, sitting between 001 and the functional specs as a foundational concern.

@@ -91,3 +91,4 @@ Governance actions (voting, proposing) require `humanityScore >= threshold`. The
 - Off-chain proof generation service is a separate deployable; this spec covers the on-chain contract interface.
 - ZK circuit design is non-trivial — may start with a simpler commit-reveal scheme for the prototype, then upgrade to full ZKP.
 - Consider Semaphore, Worldcoin, or Anon Aadhaar circuits as references.
+- Optional location hints used for issue discovery are intentionally out of scope here; they should not be treated as humanity proofs or silent governance rights.
