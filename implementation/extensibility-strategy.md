@@ -8,7 +8,7 @@
 
 ## The Core Tension
 
-Kindact is one global platform with one deployment, one shared data layer, and one set of smart contracts. All issues, votes, tokens, and impact data are globally visible and interoperable. But different communities — a housing co-op in Berlin, a climate action group in Nairobi, a neighborhood in São Paulo — need different tools for their different contexts.
+Kindact is one global platform with one deployment, one shared data layer, and one set of smart contracts. All issues, votes, tokens, and impact data live in a globally shared, interoperable data layer. Raw data should be auditable and exportable across the platform, but not every detail needs to be prominently visible in every UI or to every viewer by default. Different communities — a housing co-op in Berlin, a climate action group in Nairobi, a neighborhood in São Paulo — still need different tools for their different contexts.
 
 The design challenge: **customizable experience without fragmenting the shared data layer.**
 
@@ -24,15 +24,15 @@ A lens is:
 
 | Component | Description |
 |-----------|-------------|
-| **Selector** | A filter predicate: geographic bounds, topic tags, scope level, interest keywords |
-| **Membership** | How users join: auto-enrolled by verified geolocation, opt-in by interest/follow, or hybrid |
+| **Selector** | A filter predicate: canonical location refs, topic tags, scope level, interest keywords |
+| **Subscription defaults** | How issues surface by default: optional location-based auto-subscribe, opt-in by interest/follow, or hybrid |
 | **Configuration overlay** | Which optional modules are enabled, with what parameters |
 | **Governance rule** | How that lens's configuration can be changed (lightweight — using the platform's own issue/vote mechanisms) |
 
 ### Examples
 
-- **"Berlin"** — geo-selector covering Berlin, auto-enrolled for verified residents, opt-in for others interested in Berlin issues
-- **"Kreuzberg housing"** — narrower geo + topic tag `housing`, auto-enrolled for Kreuzberg residents, configures a consensus deliberation module
+- **"Berlin"** — geo-selector covering Berlin, auto-subscribed for users who choose to share a Berlin location hint, opt-in for others interested in Berlin issues
+- **"Kreuzberg housing"** — narrower geo + topic tag `housing`, auto-subscribed for users who choose to share a Kreuzberg location hint, configures a consensus deliberation module
 - **"Global climate"** — topic tag `climate` + scope `global`, opt-in only, enables prediction markets and extended impact metrics
 
 ### Nesting and Overlap
@@ -41,7 +41,13 @@ Lenses are not formally hierarchical, but they have implicit specificity through
 
 ### Auto-enrollment
 
-Users are automatically enrolled in lenses that match their verified geolocation. They can opt in to any additional lenses. They can mute (but not fully leave) geo-lenses — this means they stop seeing those issues prominently but can't circumvent governance that applies to them geographically.
+Auto-enrollment should be understood as a **discovery default**, not as territorial authority. If a user chooses to share a coarse location hint — for example via profile settings, current IP location, or another voluntary signal — Kindact can auto-subscribe them to nearby lenses so relevant issues appear on their dashboard without extra setup.
+
+Users can opt in to any additional lenses and mute or leave location-based subscriptions at any time. Location signals should improve relevance and discovery, not create obligations or silently determine governance rights.
+
+### Shared Geographic Taxonomy
+
+Issues, user profiles, and lenses should reference the same canonical geographic taxonomy. In practice, that means the "Berlin" attached to a user profile, the "Berlin" attached to an issue, and the "Berlin" used in a lens selector should all resolve to the same location identifier rather than free-form strings. This keeps filtering, specificity, and eligibility logic consistent.
 
 ---
 
@@ -57,6 +63,7 @@ These define the shared data model and are never disableable. They're what makes
 | **Issue object & lifecycle states** (005) | The fundamental unit of the platform |
 | **Content anchoring** (004) | Tamper evidence for all content |
 | **Basic timeline/comments** | Minimum viable deliberation — every issue must be discussable |
+| **Core metrics framework & gating** | Every issue carries baseline metrics and cannot bypass net-impact checks |
 | **Approval voting** (007) | The default decision method; always available as fallback |
 | **$CC token & demurrage** (003) | Single shared economy |
 | **Implementation reports & basic verification** (008) | The reward loop requires verification |
@@ -78,13 +85,19 @@ These change how an issue is discussed, decided, verified, or analyzed. Communit
 - Randomized ranking algorithms (alternative sorting strategies)
 
 **Decision modules** — one binding engine per decision checkpoint:
-- Conviction voting (time-weighted)
 - Ranked-choice voting
 - Score voting
 - Consensus decision mode (iterative until objections addressed; falls back to approval if unresolved)
 - Quadratic voting (for resource allocation, not yes/no decisions)
 
 Note: approval voting is always-on core and serves as the universal fallback. These are alternatives a community can adopt for their issues.
+
+**Decision continuity modules** — how fluid decisions persist, stabilize, or become harder to reverse over time:
+- Conviction accumulation / reversal thresholds
+- Reconsideration windows
+- Other future continuity rules that shape reversibility without changing the underlying tally engine
+
+These can begin as optional modules and later be promoted to core through platform governance if they become fundamental to Kindact's operating model.
 
 **Participation modifiers** — additive if compatible:
 - Delegation / liquid democracy (per-topic)
@@ -108,11 +121,11 @@ Note: approval voting is always-on core and serves as the universal fallback. Th
 
 Communities configure a **verification policy** (e.g., "peer confirmation + photo evidence" or "third-party audit required for rewards > X $CC") rather than choosing a single method.
 
-**Metrics & impact dimension packs** — additive, extending a shared taxonomy:
-- Core axes (always present): social, planetary, economic cost, time, uncertainty
+**Metrics & impact dimension packs** — additive, extending a core baseline:
+- Core axes (always present and binding): social, planetary, economic cost, time, uncertainty
 - Community packs: biodiversity, soil health, housing quality, public health, accessibility, AI safety, education outcomes, etc.
 
-Important: dimension packs extend the shared taxonomy, they don't replace it. A farming community adds `soil_health` as a sub-dimension under `planetary`, not as an unrelated top-level metric. This keeps impact data comparable across communities.
+Important: dimension packs extend the shared taxonomy, they don't replace it. Every issue should support adding and adjusting metrics, but it must still preserve the baseline categories and remain bound by them. A farming community adds `soil_health` as a sub-dimension under `planetary`, not as an unrelated top-level metric. This keeps impact data comparable across communities while still allowing domain-specific nuance.
 
 ### Layer C: Assistive Modules
 
@@ -157,7 +170,8 @@ Module {
 | Slot | Multiplicity | Examples |
 |------|-------------|----------|
 | `deliberation.surface` | multi | threaded, pro/con graph, pol.is, consensus rounds |
-| `decision.engine` | **single** | approval (default), conviction, ranked-choice, consensus |
+| `decision.engine` | **single** | approval (default), ranked-choice, score, consensus |
+| `decision.continuity` | **single** | none (default), conviction accumulation |
 | `decision.modifier` | multi | delegation, competence gate, cooling-off |
 | `signal.input` | multi | prediction markets, expert panels |
 | `verification.evidence` | multi | photo, peer, third-party, on-chain |
@@ -170,8 +184,8 @@ Module {
 **Rule**: additive where data can coexist, exclusive where a binding result must be singular.
 
 - ✅ Threaded comments + pro/con graph + consensus rounds (all deliberation surfaces)
-- ✅ Conviction voting + delegation (decision engine + decision modifier)
-- ❌ Conviction voting + ranked-choice for the same binding decision (both single in `decision.engine`)
+- ✅ Approval voting + conviction accumulation + delegation (`decision.engine` + `decision.continuity` + `decision.modifier`)
+- ❌ Conviction accumulation + a conflicting continuity policy for the same issue phase (both single in `decision.continuity`)
 - ✅ Photo evidence + peer confirmation + automated checks (all verification evidence types)
 
 ---
@@ -184,7 +198,7 @@ This is the key architectural decision. **The issue carries its resolved module 
 
 When an issue is created, the platform:
 
-1. Reads the issue's scope vector (geo bounds, topic tags, scope level)
+1. Reads the issue's scope vector (location refs, topic tags, scope level)
 2. Finds all lenses whose selectors match
 3. Gathers all configuration overlays from matching lenses
 4. Resolves the active module set using precedence rules
@@ -212,13 +226,13 @@ The "Kreuzberg housing" lens enables consensus decision mode. A housing issue sc
 
 Conversely, a Berlin-wide transportation issue doesn't get consensus just because some suburb lens has it enabled — the suburb's selector doesn't match this issue's scope.
 
-### Freezing at phase boundaries
+### Procedural snapshots at phase boundaries
 
-To prevent governance gaming (changing the rules mid-process):
+To prevent governance gaming (changing the rules mid-process), the issue takes a **procedural snapshot** of the binding rules for that phase. This freezes the procedure, not necessarily the outcome: votes, delegations, and later reversals can still evolve according to the issue's active decision and continuity rules.
 
 | Phase boundary | What gets frozen |
 |----------------|-----------------|
-| Decision opens | `decision.engine`, `decision.modifier`, eligibility rules |
+| Decision opens | `decision.engine`, `decision.continuity`, `decision.modifier`, eligibility rules |
 | Implementation begins | `verification.policy`, `verification.evidence`, reward parameters |
 | Dispute opens | dispute resolution rules |
 
@@ -228,9 +242,11 @@ Deliberation surfaces and assistive modules remain flexible throughout — chang
 
 ## 5. Cross-Operability: The Read/Write Boundary
 
-### Read: everything visible everywhere
+### Read: globally available, not uniformly visible
 
-All issue data is globally readable regardless of the viewer's lens configuration. If community A uses consensus and community B doesn't:
+All issue data belongs to the shared global layer and should be available through canonical APIs/exports for audit, interoperability, and analysis, subject to the platform's privacy rules. That does **not** mean every detail has to be equally prominent in every UI or shown in raw form by default.
+
+If community A uses consensus and community B doesn't:
 
 - Community B members can **see** the consensus process on shared issues (rounds, objections, resolutions)
 - The module provides a **fallback renderer** — a read-only summary view for users whose lens doesn't include the module
@@ -254,7 +270,7 @@ Modules extend the core data model but must do so in a structured way:
 - Every module declares the data types it produces
 - Module-specific data is stored alongside core issue data (not in an opaque silo)
 - All module data has a canonical export format (for API consumers, analytics, archival)
-- Fallback rendering is mandatory — no module can create data that's invisible without it
+- Fallback rendering is mandatory — no module can create data that's unavailable without it
 
 ---
 
@@ -294,7 +310,7 @@ Domain events:
   issue.protocol_resolved
 
 Module hooks:
-  validators    — can reject or modify (e.g., "consensus module validates that objections were addressed before decision opens")
+  validators    — can reject or normalize module-specific input before it is committed; they must not silently change binding outcomes
   side_effects  — async reactions (e.g., "prediction market module opens a market when decision phase begins")
   read_models   — derived data views
   async_jobs    — background processing
@@ -371,8 +387,8 @@ Lens {
   id: string
   name: string
   description: string
-  selector: SelectorPredicate     // geo bounds, tags, scope, keywords
-  membership_mode: enum           // auto_geo | opt_in | hybrid
+  selector: SelectorPredicate     // location refs, tags, scope, keywords
+  subscription_mode: enum         // auto_location | opt_in | hybrid
   governance_policy: GovernanceRef // how config changes are decided
   created_by: address
   created_at: timestamp
@@ -407,7 +423,7 @@ IssueProtocolBinding {
   params: json
   source_lens_id: string          // which lens contributed this binding
   resolved_at: timestamp
-  frozen_at: timestamp | null     // set at phase boundaries
+  snapshotted_at: timestamp | null // set at phase boundaries
 }
 ```
 
@@ -430,7 +446,7 @@ IssueProtocolBinding {
 This strategy is an **architectural overlay** that doesn't invalidate the existing 15 specs. Instead, it provides the framework in which they operate:
 
 - **001 (Diamond Module Registry)** — already supports the on-chain facet model; extend `ModuleRegistryFacet` to include module catalog metadata
-- **005-009 (Issue → Deliberation → Voting → Verification → Delegation)** — these become the first modules in the catalog, with 005/007/008 as core and 006/009 as optional
+- **005-009 (Issue → Deliberation → Voting → Verification → Delegation)** — these become the first modules in the catalog, with 005/007/008 plus the core metrics framework as core and 006/009 optional where appropriate
 - **013 (Meta-Governance)** — governs the module catalog approval process
 - **014 (Backend)** — implements the hook system and module resolution engine
 - **015 (Frontend)** — implements the plugin slot system
