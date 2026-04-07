@@ -12,6 +12,34 @@
 
 > **Why?** Skipping discovery creates duplicate work. Manual file creation breaks LeanSpec tooling.
 
+## 📂 Sub-Project Scoping
+
+This workspace contains multiple sub-projects, each with its own `specs/` directory:
+
+- **`prototype/`** – Prototype application
+- **`simulation/`** – Economic simulation
+- **`implementation/`** – On-chain / smart-contract implementation
+- **`website/`** – Public website
+
+**Always run lean-spec from the sub-folder that is mainly affected by the change or investigation.** Each sub-project manages its own specs independently.
+
+| Working on… | Run lean-spec from |
+|---|---|
+| Simulation scenarios, parameters, agents | `simulation/` |
+| Smart contracts, on-chain modules | `implementation/` |
+| Prototype features, UI, core ledger | `prototype/` |
+| Website pages, content, design | `website/` |
+| Cross-cutting / project-wide concerns | root (`.`) |
+
+For **CLI**, `cd` into the sub-folder first:
+```bash
+cd simulation && lean-spec board
+```
+
+For **MCP tools**, pass the sub-folder path as the working directory / project context if supported.
+
+> **Rule of thumb:** If a task creates or modifies files primarily in one sub-folder, that sub-folder owns the spec. Only use the root for truly cross-cutting work.
+
 ## 🔧 How to Manage Specs
 
 ### Primary Method: MCP Tools (Recommended)
