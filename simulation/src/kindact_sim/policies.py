@@ -65,14 +65,13 @@ def agent_decisions(_params: dict, substep: int, sH: list, s: dict, **kwargs) ->
         access_fee_burn += fee
 
         # Any panicking agent (regardless of type) tries to cash out
+        # But only if exchange is open — nobody queues redemptions before bootstrap ends
         if agent.is_panicking and agent.agent_type != AgentType.PANICKER:
-            if agent.balance > fee:
+            if agent.balance > fee and phase != Phase.BOOTSTRAP:
                 desired = agent.balance - fee
-                redeem_amount = 0.0
-                if phase != Phase.BOOTSTRAP:
-                    redeem_amount = min(desired, daily_redeem_cap - redemptions)
-                    redeem_amount = max(0, redeem_amount)
                 desired_redemptions += desired
+                redeem_amount = min(desired, daily_redeem_cap - redemptions)
+                redeem_amount = max(0, redeem_amount)
                 redemptions += redeem_amount
                 agent_updates.append((agent.id, -fee - redeem_amount))
             else:
@@ -136,13 +135,11 @@ def agent_decisions(_params: dict, substep: int, sH: list, s: dict, **kwargs) ->
                 agent_updates.append((agent.id, -fee))
 
         elif agent.agent_type == AgentType.PANICKER:
-            if agent.is_panicking and agent.balance > 0:
+            if agent.is_panicking and agent.balance > 0 and phase != Phase.BOOTSTRAP:
                 desired = agent.balance
                 desired_redemptions += desired
-                redeem_amount = 0.0
-                if phase != Phase.BOOTSTRAP:
-                    redeem_amount = min(desired, daily_redeem_cap - redemptions)
-                    redeem_amount = max(0, redeem_amount)
+                redeem_amount = min(desired, daily_redeem_cap - redemptions)
+                redeem_amount = max(0, redeem_amount)
                 redemptions += redeem_amount
                 agent_updates.append((agent.id, -fee - redeem_amount))
             else:

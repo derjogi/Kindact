@@ -73,4 +73,5 @@ def build_genesis_state(n_users: int = 50, r_target: float = 1_000_000, seed: in
         'r_target': r_target,
         'total_burned': 0.0,
         'events_log': [],
+        '_policy_signals': {},
     }

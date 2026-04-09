@@ -73,7 +73,9 @@ def update_agents(_params, substep, sH, s, _input, **kwargs):
     evasion_pct = _params.get('_demurrage_evasion_pct', 0.0)
     agents = apply_demurrage(s['agents'], s['demurrage_rate'], evasion_pct=evasion_pct, rng=rng)
 
-    updates = {aid: delta for aid, delta in _input.get('agent_updates', [])}
+    # Policy signals are stored in state by the first PSUB block
+    signals = s.get('_policy_signals', {})
+    updates = {aid: delta for aid, delta in signals.get('agent_updates', [])}
     for a in agents:
         if a.id in updates:
             a.balance = max(0, a.balance + updates[a.id])
@@ -85,8 +87,8 @@ def update_agents(_params, substep, sH, s, _input, **kwargs):
     exchange_rate_trend = new_rate - old_rate
 
     # Compute redemption success rate from desired vs actual
-    desired = _input.get('desired_redemptions', 0)
-    actual = _input.get('redemptions', 0)
+    desired = signals.get('desired_redemptions', 0)
+    actual = signals.get('redemptions', 0)
     success_rate = None if desired == 0 else actual / desired
 
     for a in agents:
@@ -109,7 +111,7 @@ def update_agents(_params, substep, sH, s, _input, **kwargs):
         ))
 
     # Update activity_level based on confidence, earnings, and motivation
-    earned_this_step = _input.get('work_minting', 0)
+    earned_this_step = signals.get('work_minting', 0)
     has_earnings = earned_this_step > 0
     for a in agents:
         earned_signal = 0.3 if (has_earnings and a.agent_type in (AgentType.CONTRIBUTOR, AgentType.PANICKER)) else -0.1
@@ -131,7 +133,7 @@ def update_agents(_params, substep, sH, s, _input, **kwargs):
     # Their balance decays via demurrage but effectively leaves circulation
     agents = [a for a in agents if a.months_dormant < 3]
 
-    n_new = _input.get('new_agents_count', 0)
+    n_new = signals.get('new_agents_count', 0)
     if n_new > 0:
         max_id = max((a.id for a in agents), default=-1)
         agent_config = _params.get('_agent_config')
@@ -172,8 +174,9 @@ def update_hypercerts(_params, substep, sH, s, _input, **kwargs):
 
 
 def update_redemption_queue(_params, substep, sH, s, _input, **kwargs):
-    desired = _input.get('desired_redemptions', 0)
-    actual = _input.get('redemptions', 0)
+    signals = s.get('_policy_signals', {})
+    desired = signals.get('desired_redemptions', 0)
+    actual = signals.get('redemptions', 0)
     unfulfilled = max(0, desired - actual)
     queue = list(s['redemption_queue'])
     if unfulfilled > 0:
@@ -181,6 +184,11 @@ def update_redemption_queue(_params, substep, sH, s, _input, **kwargs):
     # Expire entries older than 3 months
     queue = [e for e in queue if s['timestep'] - e['timestep'] < 3]
     return ('redemption_queue', queue)
+
+
+def store_policy_signals(_params, substep, sH, s, _input, **kwargs):
+    """Store first-block policy signals so the second block can access them."""
+    return ('_policy_signals', dict(_input))
 
 
 def update_timestep(_params, substep, sH, s, _input, **kwargs):
@@ -254,13 +262,13 @@ def update_events_log(_params, substep, sH, s, _input, **kwargs):
     notable = []
     if new_phase != old_phase:
         notable.append(f'Phase transition: {old_phase.value} → {new_phase.value}')
-    if supply > 0 and reserve / supply < 0.05:
+    if new_phase != Phase.BOOTSTRAP and supply > 0 and reserve / supply < 0.05:
         notable.append(f'⚠️ Reserve floor hit (backing {reserve/supply:.1%} < 5%)')
     if _input.get('_confidence_shock_applied'):
         notable.append('🔴 Confidence shock (bank run event)')
     if _input.get('_whale_dump_applied'):
         notable.append('🐋 Whale dump event')
-    if desired_redemptions > 0 and redemptions < desired_redemptions * 0.5:
+    if new_phase != Phase.BOOTSTRAP and desired_redemptions > 0 and redemptions < desired_redemptions * 0.5:
         notable.append(f'⚠️ Redemption bottleneck: only {redemptions:.0f} of {desired_redemptions:.0f} desired fulfilled')
     if fraud_minting > work_minting * 0.1 and fraud_minting > 0:
         notable.append(f'🚨 Significant fraud: {fraud_minting:.0f} $CC fraudulently minted ({fraud_minting/max(1,work_minting):.0%} of work minting)')

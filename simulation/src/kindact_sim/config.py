@@ -8,7 +8,7 @@ from kindact_sim.mechanisms import (
     update_supply, update_reserve, update_exchange_rate,
     update_phase, update_total_minted, update_total_burned,
     update_agents, update_hypercerts, update_redemption_queue,
-    update_timestep, update_events_log,
+    update_timestep, update_events_log, store_policy_signals,
 )
 from kindact_sim.scenarios import SCENARIOS, ScenarioConfig
 from kindact_sim.agent_config import AgentConfig
@@ -41,6 +41,7 @@ def build_experiment(scenario_name: str, n_runs: int = 1, seed: int = 42,
                 'total_burned': update_total_burned,
                 'hypercert_portfolio': update_hypercerts,
                 'events_log': update_events_log,
+                '_policy_signals': store_policy_signals,
             },
         },
         {

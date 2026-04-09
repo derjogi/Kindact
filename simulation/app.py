@@ -293,10 +293,9 @@ if 'df' in st.session_state:
     # --- Detailed Event Log ---
     st.subheader("📋 Detailed Event Log")
     run_df = df[df['run'] == df['run'].iloc[0]] if 'run' in df.columns and df['run'].nunique() > 1 else df
-    all_events = []
-    for _, row in run_df.iterrows():
-        if isinstance(row.get('events_log'), list):
-            all_events.extend(row['events_log'])
+    # events_log is cumulative — only take the final row's log to avoid duplication
+    last_log = run_df.iloc[-1].get('events_log') if len(run_df) > 0 else None
+    all_events = list(last_log) if isinstance(last_log, list) else []
 
     if all_events:
         # Separate step summaries from legacy events
