@@ -214,6 +214,34 @@ def agent_decisions(_params: dict, substep: int, sH: list, s: dict, **kwargs) ->
 
     new_agents_count = max(0, int(rng.poisson(params['growth_rate'])))
 
+    # --- Collect per-agent-type stats for the event log ---
+    type_counts = {}
+    type_panicking = {}
+    type_confidence_sum = {}
+    type_confidence_count = {}
+    for agent in agents:
+        t = agent.agent_type.value
+        type_counts[t] = type_counts.get(t, 0) + 1
+        if agent.is_panicking:
+            type_panicking[t] = type_panicking.get(t, 0) + 1
+        type_confidence_sum[t] = type_confidence_sum.get(t, 0.0) + agent.confidence
+        type_confidence_count[t] = type_confidence_count.get(t, 0) + 1
+
+    n_panicking_total = sum(1 for a in agents if a.is_panicking)
+    n_dormant = sum(1 for a in agents if a.activity_level < 0.1)
+    confidences = [a.confidence for a in agents]
+    confidence_min = min(confidences) if confidences else 0.0
+    confidence_max = max(confidences) if confidences else 0.0
+
+    # Count hypercerts sold this timestep
+    hc_sold_this_step = sum(1 for h in portfolio if h.sold and h.sale_price > 0
+                           and h not in unsold)  # approximate: sold ones that were in unsold list
+    # Better: count based on fiat sales
+    hc_sold_count = 0
+    for h in portfolio:
+        if h.sold and h.sale_price > 0:
+            hc_sold_count += 1
+
     return {
         'work_minting': work_minting,
         'access_fee_burn': access_fee_burn,
@@ -224,4 +252,14 @@ def agent_decisions(_params: dict, substep: int, sH: list, s: dict, **kwargs) ->
         'fraud_minting': fraud_minting,
         'new_agents_count': new_agents_count,
         'agent_updates': agent_updates,
+        # Detailed stats for the event log
+        '_type_counts': type_counts,
+        '_type_panicking': type_panicking,
+        '_n_panicking_total': n_panicking_total,
+        '_n_dormant': n_dormant,
+        '_confidence_min': confidence_min,
+        '_confidence_max': confidence_max,
+        '_confidence_shock_applied': confidence_shock is not None,
+        '_whale_dump_applied': whale_dump is not None,
+        '_hc_sold_count': hc_sold_count,
     }

@@ -190,15 +190,84 @@ def update_timestep(_params, substep, sH, s, _input, **kwargs):
 def update_events_log(_params, substep, sH, s, _input, **kwargs):
     log = list(s['events_log'])
     t = s['timestep']
+
+    # --- Phase transition detection ---
     old_phase = s['phase']
-    new_phase = compute_phase(
-        s['total_minted'] + _input.get('work_minting', 0),
-        s['reserve_fiat'], s['r_target']
-    )
-    if new_phase != old_phase:
-        log.append({'timestep': t, 'event': f'Phase transition: {old_phase.value} -> {new_phase.value}'})
+    new_minted = s['total_minted'] + _input.get('work_minting', 0) + _input.get('fraud_minting', 0)
+    new_reserve = s['reserve_fiat'] + _input.get('reserve_purchases', 0) + _input.get('hypercert_fiat_sales', 0) - _input.get('redemptions', 0) * s['exchange_rate']
+    new_phase = compute_phase(new_minted, max(0, new_reserve), s['r_target'])
+
+    # --- Build detailed timestep summary ---
+    work_minting = _input.get('work_minting', 0)
+    fraud_minting = _input.get('fraud_minting', 0)
+    access_fee_burn = _input.get('access_fee_burn', 0)
+    redemptions = _input.get('redemptions', 0)
+    desired_redemptions = _input.get('desired_redemptions', 0)
+    reserve_purchases = _input.get('reserve_purchases', 0)
+    hypercert_fiat_sales = _input.get('hypercert_fiat_sales', 0)
+    new_agents_count = _input.get('new_agents_count', 0)
+
+    n_agents = len(s['agents'])
     supply = s['supply']
     reserve = s['reserve_fiat']
+
+    # Reserve change breakdown
+    reserve_delta = reserve_purchases + hypercert_fiat_sales - redemptions * s['exchange_rate']
+
+    entry = {
+        'timestep': t,
+        'event': 'step_summary',
+        'phase': new_phase.value,
+        # Population
+        'n_agents': n_agents,
+        'new_joined': new_agents_count,
+        'n_dormant': _input.get('_n_dormant', 0),
+        # Confidence
+        'avg_confidence': sum(a.confidence for a in s['agents']) / n_agents if n_agents > 0 else 0,
+        'confidence_min': _input.get('_confidence_min', 0),
+        'confidence_max': _input.get('_confidence_max', 0),
+        # Panic
+        'n_panicking': _input.get('_n_panicking_total', 0),
+        'panicking_by_type': _input.get('_type_panicking', {}),
+        # Monetary flows
+        'work_minting': round(work_minting, 2),
+        'fraud_minting': round(fraud_minting, 2),
+        'access_fee_burn': round(access_fee_burn, 2),
+        'redemptions': round(redemptions, 2),
+        'desired_redemptions': round(desired_redemptions, 2),
+        'unfulfilled_redemptions': round(max(0, desired_redemptions - redemptions), 2),
+        # Reserve
+        'reserve_before': round(reserve, 2),
+        'reserve_delta': round(reserve_delta, 2),
+        'reserve_in_purchases': round(reserve_purchases, 2),
+        'reserve_in_hypercerts': round(hypercert_fiat_sales, 2),
+        'reserve_out_redemptions': round(redemptions * s['exchange_rate'], 2),
+        # Supply
+        'supply_before': round(supply, 2),
+        # Hypercerts
+        'hc_sold_count': _input.get('_hc_sold_count', 0),
+        # Agent type breakdown
+        'agent_types': _input.get('_type_counts', {}),
+    }
+
+    # Notable events as separate entries
+    notable = []
+    if new_phase != old_phase:
+        notable.append(f'Phase transition: {old_phase.value} → {new_phase.value}')
     if supply > 0 and reserve / supply < 0.05:
-        log.append({'timestep': t, 'event': 'Reserve floor hit (backing < 5%)'})
+        notable.append(f'⚠️ Reserve floor hit (backing {reserve/supply:.1%} < 5%)')
+    if _input.get('_confidence_shock_applied'):
+        notable.append('🔴 Confidence shock (bank run event)')
+    if _input.get('_whale_dump_applied'):
+        notable.append('🐋 Whale dump event')
+    if desired_redemptions > 0 and redemptions < desired_redemptions * 0.5:
+        notable.append(f'⚠️ Redemption bottleneck: only {redemptions:.0f} of {desired_redemptions:.0f} desired fulfilled')
+    if fraud_minting > work_minting * 0.1 and fraud_minting > 0:
+        notable.append(f'🚨 Significant fraud: {fraud_minting:.0f} $CC fraudulently minted ({fraud_minting/max(1,work_minting):.0%} of work minting)')
+    if hypercert_fiat_sales > 0:
+        notable.append(f'💰 Hypercert sales: ${hypercert_fiat_sales:,.0f} ({_input.get("_hc_sold_count", 0)} sold)')
+
+    entry['notable_events'] = notable
+    log.append(entry)
+
     return ('events_log', log)

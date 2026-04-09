@@ -290,15 +290,86 @@ if 'df' in st.session_state:
             fig6.update_layout(height=350, margin=dict(t=30, b=30), yaxis_title="Queued $CC")
             st.plotly_chart(fig6, use_container_width=True)
 
-    # --- Event Log ---
-    st.subheader("Event Log")
+    # --- Detailed Event Log ---
+    st.subheader("📋 Detailed Event Log")
     run_df = df[df['run'] == df['run'].iloc[0]] if 'run' in df.columns and df['run'].nunique() > 1 else df
     all_events = []
     for _, row in run_df.iterrows():
         if isinstance(row.get('events_log'), list):
             all_events.extend(row['events_log'])
+
     if all_events:
-        st.dataframe(pd.DataFrame(all_events), use_container_width=True)
+        # Separate step summaries from legacy events
+        step_summaries = [e for e in all_events if e.get('event') == 'step_summary']
+
+        if step_summaries:
+            # Notable events banner
+            notable_events = []
+            for s_entry in step_summaries:
+                for note in s_entry.get('notable_events', []):
+                    notable_events.append({'Month': s_entry['timestep'], 'Event': note})
+            if notable_events:
+                st.markdown("#### ⚡ Notable Events")
+                st.dataframe(pd.DataFrame(notable_events), use_container_width=True, hide_index=True)
+
+            # Detailed per-timestep table
+            st.markdown("#### 📊 Per-Month Summary")
+            summary_rows = []
+            for s_entry in step_summaries:
+                panicking_detail = ', '.join(
+                    f"{t}: {c}" for t, c in s_entry.get('panicking_by_type', {}).items()
+                ) or '—'
+                type_breakdown = ', '.join(
+                    f"{t}: {c}" for t, c in s_entry.get('agent_types', {}).items()
+                )
+                summary_rows.append({
+                    'Month': s_entry['timestep'],
+                    'Phase': s_entry.get('phase', ''),
+                    'Agents': s_entry.get('n_agents', 0),
+                    '+Joined': s_entry.get('new_joined', 0),
+                    'Dormant': s_entry.get('n_dormant', 0),
+                    'Avg Conf': round(s_entry.get('avg_confidence', 0), 3),
+                    'Conf Range': f"{s_entry.get('confidence_min', 0):.2f}–{s_entry.get('confidence_max', 0):.2f}",
+                    'Panicking': s_entry.get('n_panicking', 0),
+                    'Panic Detail': panicking_detail,
+                    'Minted': f"{s_entry.get('work_minting', 0):,.0f}",
+                    'Fraud': f"{s_entry.get('fraud_minting', 0):,.0f}",
+                    'Burned': f"{s_entry.get('access_fee_burn', 0):,.0f}",
+                    'Redeemed': f"{s_entry.get('redemptions', 0):,.0f}",
+                    'Wanted→Got': f"{s_entry.get('desired_redemptions', 0):,.0f}→{s_entry.get('redemptions', 0):,.0f}",
+                    'Reserve Δ': f"{s_entry.get('reserve_delta', 0):+,.0f}",
+                    '  +Purchases': f"{s_entry.get('reserve_in_purchases', 0):,.0f}",
+                    '  +Hypercerts': f"{s_entry.get('reserve_in_hypercerts', 0):,.0f}",
+                    '  −Redemptions': f"{s_entry.get('reserve_out_redemptions', 0):,.0f}",
+                    'HC Sold': s_entry.get('hc_sold_count', 0),
+                })
+            summary_df = pd.DataFrame(summary_rows)
+            st.dataframe(summary_df, use_container_width=True, hide_index=True, height=400)
+
+            # Agent type breakdown over time
+            st.markdown("#### 🎭 Agent Type Breakdown")
+            type_rows = []
+            for s_entry in step_summaries:
+                row_data = {'Month': s_entry['timestep']}
+                row_data.update(s_entry.get('agent_types', {}))
+                type_rows.append(row_data)
+            if type_rows:
+                type_df = pd.DataFrame(type_rows).fillna(0)
+                # Plot as stacked area
+                agent_type_cols = [c for c in type_df.columns if c != 'Month']
+                if agent_type_cols:
+                    fig_types = go.Figure()
+                    for col in agent_type_cols:
+                        fig_types.add_trace(go.Scatter(
+                            x=type_df['Month'], y=type_df[col],
+                            name=col.replace('_', ' ').title(),
+                            stackgroup='one',
+                        ))
+                    fig_types.update_layout(height=350, margin=dict(t=30, b=30),
+                                           yaxis_title="Count", xaxis_title="Month")
+                    st.plotly_chart(fig_types, use_container_width=True)
+        else:
+            st.dataframe(pd.DataFrame(all_events), use_container_width=True)
     else:
         st.info("No events logged.")
 else:
