@@ -294,11 +294,11 @@ def test_desired_redemptions_tracked():
     """Policy output includes desired_redemptions separate from actual."""
     panicker = Agent(id=0, agent_type=AgentType.PANICKER, balance=50_000, confidence=0.1,
                      panic_threshold=0.2, is_panicking=True)
-    s = _make_state(phase=Phase.GROWTH, agents=[panicker], reserve=10_000)
+    s = _make_state(phase=Phase.GROWTH, agents=[panicker], reserve=100_000)
     params = {'reward_per_issue': 50.0, 'issues_per_user_month': 2.0, 'verification_quality': 0.9,
               'growth_rate': 0, 'hypercert_sale_prob': 0.0, 'hypercert_avg_price': 1000.0, 'rng': np.random.default_rng(42)}
     result = agent_decisions(params, 1, [], s)
-    # Panicker wants to redeem full balance (50k) but cap is 0.01*10k = 100
+    # Panicker wants to redeem full balance (50k) but cap is 0.01*100k = 1000
     assert result['desired_redemptions'] >= result['redemptions']
     assert result['desired_redemptions'] > result['redemptions']  # cap must be binding
 
@@ -307,21 +307,21 @@ def test_panicking_non_panicker_tracks_full_desired_redemptions():
     """Panicking contributors should record what they wanted to redeem, not only what the cap served."""
     contributor = Agent(id=0, agent_type=AgentType.CONTRIBUTOR, balance=5_000, confidence=0.1,
                         panic_threshold=0.2, is_panicking=True)
-    s = _make_state(phase=Phase.GROWTH, agents=[contributor], reserve=10_000)
+    s = _make_state(phase=Phase.GROWTH, agents=[contributor], reserve=100_000)
     params = {'reward_per_issue': 50.0, 'issues_per_user_month': 2.0, 'verification_quality': 0.9,
               'growth_rate': 0, 'hypercert_sale_prob': 0.0, 'hypercert_avg_price': 1000.0, 'rng': np.random.default_rng(42)}
     result = agent_decisions(params, 1, [], s)
-    # Contributor wants to redeem almost all 5k balance, but cap is only 100.
+    # Contributor wants to redeem almost all 5k balance, but cap is only 1000.
     assert result['desired_redemptions'] > result['redemptions']
 
 
-def test_panicker_still_registers_redemption_demand_during_bootstrap():
-    """Bootstrap can block redemption execution, but it should not hide redemption demand."""
+def test_panicker_does_not_request_redemptions_during_bootstrap():
+    """During bootstrap, agents know exchange is not open and don't queue redemption requests."""
     panicker = Agent(id=0, agent_type=AgentType.PANICKER, balance=500, confidence=0.1,
                      panic_threshold=0.2, is_panicking=True)
     s = _make_state(phase=Phase.BOOTSTRAP, agents=[panicker], reserve=0)
     params = {'reward_per_issue': 50.0, 'issues_per_user_month': 2.0, 'verification_quality': 0.9,
               'growth_rate': 0, 'hypercert_sale_prob': 0.0, 'hypercert_avg_price': 1000.0, 'rng': np.random.default_rng(42)}
     result = agent_decisions(params, 1, [], s)
-    assert result['desired_redemptions'] == 500
+    assert result['desired_redemptions'] == 0
     assert result['redemptions'] == 0

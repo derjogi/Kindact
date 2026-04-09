@@ -262,13 +262,14 @@ def update_events_log(_params, substep, sH, s, _input, **kwargs):
     notable = []
     if new_phase != old_phase:
         notable.append(f'Phase transition: {old_phase.value} → {new_phase.value}')
-    if new_phase != Phase.BOOTSTRAP and supply > 0 and reserve / supply < 0.05:
+    exchange_open = new_phase != Phase.BOOTSTRAP and reserve >= 100_000
+    if exchange_open and supply > 0 and reserve / supply < 0.05:
         notable.append(f'⚠️ Reserve floor hit (backing {reserve/supply:.1%} < 5%)')
     if _input.get('_confidence_shock_applied'):
         notable.append('🔴 Confidence shock (bank run event)')
     if _input.get('_whale_dump_applied'):
         notable.append('🐋 Whale dump event')
-    if new_phase != Phase.BOOTSTRAP and desired_redemptions > 0 and redemptions < desired_redemptions * 0.5:
+    if exchange_open and desired_redemptions > 0 and redemptions < desired_redemptions * 0.5:
         notable.append(f'⚠️ Redemption bottleneck: only {redemptions:.0f} of {desired_redemptions:.0f} desired fulfilled')
     if fraud_minting > work_minting * 0.1 and fraud_minting > 0:
         notable.append(f'🚨 Significant fraud: {fraud_minting:.0f} $CC fraudulently minted ({fraud_minting/max(1,work_minting):.0%} of work minting)')

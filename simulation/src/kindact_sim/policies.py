@@ -52,6 +52,7 @@ def agent_decisions(_params: dict, substep: int, sH: list, s: dict, **kwargs) ->
     fraud_minting = 0.0
     agent_updates: list[tuple[int, float]] = []
 
+    exchange_open = phase != Phase.BOOTSTRAP and reserve >= 100_000
     daily_redeem_cap = 0.01 * reserve
 
     for idx, agent in enumerate(agents):
@@ -65,9 +66,9 @@ def agent_decisions(_params: dict, substep: int, sH: list, s: dict, **kwargs) ->
         access_fee_burn += fee
 
         # Any panicking agent (regardless of type) tries to cash out
-        # But only if exchange is open — nobody queues redemptions before bootstrap ends
+        # But only if exchange is open (post-bootstrap + sufficient reserve)
         if agent.is_panicking and agent.agent_type != AgentType.PANICKER:
-            if agent.balance > fee and phase != Phase.BOOTSTRAP:
+            if agent.balance > fee and exchange_open:
                 desired = agent.balance - fee
                 desired_redemptions += desired
                 redeem_amount = min(desired, daily_redeem_cap - redemptions)
@@ -90,7 +91,7 @@ def agent_decisions(_params: dict, substep: int, sH: list, s: dict, **kwargs) ->
             # Trade income scales with merchant's willingness to accept $CC
             trade_income = rng.uniform(0, 20) * agent.acceptance_willingness
             redeem_amount = 0.0
-            if phase != Phase.BOOTSTRAP and reserve >= 100_000 and agent.balance > 0:
+            if exchange_open and agent.balance > 0:
                 redeem_frac = rng.uniform(0.1, 0.4)
                 desired = agent.balance * redeem_frac
                 desired_redemptions += desired
@@ -102,7 +103,7 @@ def agent_decisions(_params: dict, substep: int, sH: list, s: dict, **kwargs) ->
         elif agent.agent_type == AgentType.SPECULATOR:
             demurrage = s['demurrage_rate']
             reserve_readiness = min(1.0, (reserve / 100_000) ** 0.5) if reserve > 0 else 0.0
-            can_redeem = phase != Phase.BOOTSTRAP and reserve >= 100_000
+            can_redeem = exchange_open
             if agent.confidence > 0.6 and exchange_rate < 0.8:
                 expected_appreciation = (1.0 - exchange_rate)
                 if expected_appreciation > demurrage * 3:
@@ -135,7 +136,7 @@ def agent_decisions(_params: dict, substep: int, sH: list, s: dict, **kwargs) ->
                 agent_updates.append((agent.id, -fee))
 
         elif agent.agent_type == AgentType.PANICKER:
-            if agent.is_panicking and agent.balance > 0 and phase != Phase.BOOTSTRAP:
+            if agent.is_panicking and agent.balance > 0 and exchange_open:
                 desired = agent.balance
                 desired_redemptions += desired
                 redeem_amount = min(desired, daily_redeem_cap - redemptions)
@@ -150,7 +151,7 @@ def agent_decisions(_params: dict, substep: int, sH: list, s: dict, **kwargs) ->
 
     # Add whale dump redemption if event is active
     whale_redeem = params.get('_whale_redeem', 0)
-    if whale_redeem > 0 and phase != Phase.BOOTSTRAP:
+    if whale_redeem > 0 and exchange_open:
         desired_redemptions += whale_redeem
         redemptions += min(whale_redeem, daily_redeem_cap - redemptions)
 
@@ -172,7 +173,8 @@ def agent_decisions(_params: dict, substep: int, sH: list, s: dict, **kwargs) ->
     sold_count = sum(1 for h in portfolio if h.sold)
     network_scale = min(1.0, (n_agents / 500) ** 0.5)
     track_record = sold_count / (sold_count + 10)
-    platform_attractiveness = network_scale * track_record
+    # Baseline attractiveness so first sales can happen even with no track record
+    platform_attractiveness = network_scale * (0.01 + 0.99 * track_record)
 
     # Maturity-dependent price curve
     maturity_factor = min(1.0, (timestep / 24) ** 0.5) if timestep > 0 else 0.0
