@@ -52,7 +52,6 @@ Contract stores signed attestations (EIP-712) from the relevant off-chain eligib
 | voterWallet | address | Voter identity |
 | choice | enum | Approve / Reject / Abstain |
 | timestamp | uint48 | When cast or last changed |
-| eligibilityAttestation | bytes | Signed attestation from off-chain service |
 
 ### Tally
 

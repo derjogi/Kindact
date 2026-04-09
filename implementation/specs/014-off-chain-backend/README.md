@@ -16,7 +16,7 @@ created_at: 2026-04-05T10:28:37.249053051Z
 updated_at: 2026-04-05T10:28:53.944279978Z
 ---
 
-# 014 – Off-Chain Backend
+# 014 – Off-Chain Backend (Kindact AppView)
 
 ## Overview
 
@@ -28,9 +28,23 @@ The off-chain backend bridges smart contracts and frontend. It indexes on-chain 
 
 Listens to on-chain events from the Diamond, indexes into a read-optimized PostgreSQL database. Tracks: issues, votes, token balances, disputes, verifications, protocol snapshots, and module-facing metadata. Handles reorgs via confirmation depth and rollback logic. Libraries: viem (or ethers.js), alternatively a subgraph (The Graph) for declarative indexing.
 
-### API Layer
+### Database Schema
 
-REST or GraphQL API serving the frontend. Combines on-chain indexed data with off-chain content. Key endpoints:
+PostgreSQL schema indexing both on-chain and AT Proto data:
+
+**Core tables**: `issues` (on-chain state + indexed content), `users` (wallet + DID mapping, humanity score), `token_accounts` (demurrage-adjusted balances), `votes` (per-issue tallies), `work_packages`, `claims`, `disputes`, `delegations`.
+
+**AT Proto tables**: `deliberation_comments`, `deliberation_arguments`, `ai_summaries`, `work_reports`, `hypercert_records`.
+
+**Audit**: `ledger_events` — append-only event log with `actor`, `objectType`, `objectId`, `action`, `payloadHash`, `prevHash`, `eventHash` for tamper-evident history.
+
+### AT Proto Relay Subscription
+
+Subscribes to the AT Proto relay firehose, filters for Kindact lexicon records (`org.kindact.*`) and Hypercerts records (`org.hypercerts.*`), and indexes them into PostgreSQL. This is the primary ingestion path for off-chain user content — issues, deliberation arguments, work reports, profiles. The backend may run its own PDS or subscribe to external relays.
+
+### AppView API
+
+REST or GraphQL API serving the frontend. Combines on-chain indexed data with AT Proto record data. This is the Kindact AppView. Key endpoints:
 
 - Issues: list, detail, search
 - Lenses: list, detail, subscribe/mute, overlay configuration
@@ -58,9 +72,15 @@ Backend stores and serves the canonical location taxonomy shared by user profile
 - Location refs are canonical IDs, not arbitrary labels
 - Geography must not silently grant governance rights by itself
 
+**API contracts** (to be defined in detail during implementation):
+- Request/response types for each endpoint group
+- Pagination via cursor-based pagination
+- Error responses: structured `{ code, message, details }` format
+- Rate limiting: per-DID and per-wallet
+
 ### Content Storage
 
-IPFS integration (Pinata or web3.storage) for content-addressed blob storage. Manages pinning lifecycle, garbage collection, and retrieval. All content hashes anchored on-chain via ContentAnchoringFacet.
+AT Proto handles content storage via PDS repos. The backend no longer manages IPFS pinning directly — AT Proto PDS handles blob storage for user-created content. All content hashes are still anchored on-chain via ContentAnchoringFacet (004).
 
 ### AI Services
 
@@ -84,17 +104,18 @@ Redis-backed background jobs for: batch content anchoring, protocol binding reso
 ### Tech Stack
 
 - Runtime: Node.js / TypeScript (informed by prototype)
-- Database: PostgreSQL (indexed on-chain + off-chain data)
+- Database: PostgreSQL (indexed on-chain + AT Proto data)
 - Queue: Redis (BullMQ or similar)
-- Content: IPFS via pinning service
+- Content: AT Proto PDS subscription + relay firehose
 - Chain: viem for RPC, WebSocket for event streaming
+- AT Proto: `@atproto/api`, `@hypercerts-org/lexicon`
 
 ### Extension Points
 
 - Additional indexer modules per new Diamond facet
 - Module hook runtime with validators, side effects, read models, async jobs, and notification emitters
 - Pluggable AI providers
-- Pluggable storage backends (IPFS, Arweave, S3 fallback)
+- Alternative AppView operators using the same data sources
 
 Validators may reject or normalize module-specific input before commit, but they must not silently change binding outcomes, resolved protocol bindings, or snapshotted rules.
 
@@ -104,25 +125,26 @@ If input is normalized, the backend must emit an audit record and return the tra
 
 1. Scaffold project (Node.js/TypeScript, PostgreSQL, Redis)
 2. Implement chain indexer with reorg handling
-3. Implement API layer (REST/GraphQL)
-4. Implement content storage service (IPFS integration)
-5. Implement auth middleware (EIP-4361)
-6. Implement job queue (background tasks)
+3. Implement AT Proto relay subscription (firehose consumer, lexicon filtering)
+4. Implement AppView API (REST/GraphQL)
+5. Implement auth (EIP-4361 + AT Proto OAuth)
+6. Implement job queue (batch anchoring, background tasks)
 7. Implement AI service integration (provider registry)
-8. Integration tests against local chain + services
+8. Integration tests against local chain + AT Proto test PDS
 
 ## Test
 
 - Chain indexer: mock events, verify DB state, simulate reorgs
+- Relay subscription: mock firehose events, verify record indexing, handle malformed records
 - API: endpoint tests with seeded data, auth flow tests
-- Content storage: upload/retrieve roundtrip, pinning lifecycle
-- Auth: valid/invalid signature handling, identity status checks
+- Auth: valid/invalid signature handling, AT Proto OAuth flow, identity status checks
 - Job queue: job execution, retry, failure handling
 - AI services: provider switching, graceful degradation
 
 ## Notes
 
-- Prototype (Next.js/Prisma) provides reference patterns; this is a clean rebuild optimized for the Diamond architecture.
+- Prototype (Next.js/Prisma) provides reference patterns; this is a clean rebuild optimized for the Diamond + AT Proto architecture.
 - Indexer design should anticipate new facets being added to the Diamond without backend redeployment.
+- The non-authoritative design means data integrity is guaranteed by AT Proto's signed repo model, not by this backend.
 - AI provider registry should support hot-swapping providers without restart.
 - This spec is now the main off-chain owner of lenses, overlays, protocol bindings, canonical exports, and visibility/prominence rules.

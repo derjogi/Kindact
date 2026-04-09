@@ -29,11 +29,11 @@ Manages the implementation lifecycle after an issue reaches `Adopted` status.
 
 ### WorkPackage
 
-On-chain record linking to an adopted issue, defining scope of work.
+Defined and managed by 017-work-planning. This facet receives approved work packages and manages the verification and reward flow for individual milestones.
 
 ### Claim
 
-Implementer claims a work package.
+Implementer claims a milestone within an approved work package.
 
 | Field | Type | Description |
 |-------|------|-------------|
@@ -45,7 +45,7 @@ Implementer claims a work package.
 
 ### ImplementationReport
 
-Off-chain content anchored on-chain via 004:
+AT Proto records using Kindact lexicons (`org.kindact.work.report`), stored in the implementer's PDS repo and signed by their DID. The report hash anchored on-chain via 004 is the CID of the AT Proto record.
 
 - **What was done** — description of work performed
 - **Time spent** — hours/effort
@@ -55,7 +55,7 @@ Off-chain content anchored on-chain via 004:
 
 ### Evidence
 
-Off-chain assets (photos, videos, documents) content-addressed. Hashes stored with report on-chain.
+AT Proto blobs/attachments using `org.hypercerts.context.attachment` records, stored in the implementer's PDS repo. Hashes are still stored with the report on-chain, but content lives in AT Proto repos rather than standalone IPFS.
 
 ### Verification Flow
 

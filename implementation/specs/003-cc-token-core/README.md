@@ -106,8 +106,25 @@ Stored in a rolling array in `AppStorage`.
 - Edge: zero balances, max uint256, rounding errors, gas cost with many accounts.
 - Fuzz: random sequences of mint/transfer/burn/checkpoint with demurrage assertions.
 
+### Debt Ledger
+
+To support dispute clawbacks (012), the token maintains a separate **debt ledger** alongside ERC-20 balances:
+
+```
+struct DebtRecord {
+    int256  debtBalance;      // negative = owes tokens
+    uint64  incurredAt;
+}
+```
+
+- Debt is recorded when fraud clawback exceeds current balance (012).
+- Future earnings (mints) are automatically offset against debt before crediting the account.
+- Demurrage does **not** apply to debt — the obligation remains fixed.
+- Debt is separate from the ERC-20 `balanceOf` to maintain standard ERC-20 compatibility.
+
 ## Notes
 
 - The global decay index approach is gas-efficient (O(1) per read) but requires careful fixed-point math to avoid precision loss over long periods.
 - Reference: Circles UBI and Freicoin for demurrage implementation patterns.
 - Consider storing demurrage-adjusted `totalSupply` or computing it lazily.
+- Debt ledger is a non-standard extension; ERC-20 `balanceOf` always returns ≥ 0.

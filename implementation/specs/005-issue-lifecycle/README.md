@@ -27,6 +27,8 @@ On-chain state machine managing issue lifecycle within the Diamond.
 
 **States:** `Draft → Deliberating → VoteReady → Adopted → Implementing → Completed → Archived`
 
+Additionally, adopted issues can be **amended** or **reversed** (see below).
+
 **On-chain fields per issue:**
 
 | Field | Type | Description |
@@ -62,15 +64,17 @@ At `VoteReady`, `Implementing`, and dispute-open boundaries, the issue records p
 
 Full issue content (title, summary, description, tags, revisions, canonical location refs) stored content-addressed. Hash anchored on-chain via `ContentAnchorFacet` (004).
 
-### RewardIntent
+### RewardCeiling
 
-Locked at issue creation or before voting. Specifies maximum $CC mintable on completion. Funds held in contract until resolution.
+Set during issue creation or deliberation. Specifies the maximum $CC that can be minted on verified completion — this is an **authorized emission budget**, not escrowed funds. No tokens exist until work is verified and minted via 008. The ceiling is allocated across milestones by the approved work package (017).
 
 ### Events
 
-- `IssueCreated(uint256 id, address creator, bytes32 contentHash)`
-- `IssueStateChanged(uint256 id, Status from, Status to)`
-- `RewardLocked(uint256 id, uint256 amount)`
+- `IssueCreated(uint256 indexed id, address indexed creator, bytes32 contentHash)`
+- `IssueStateChanged(uint256 indexed id, Status from, Status to)`
+- `RewardCeilingSet(uint256 indexed id, uint256 amount)`
+- `SnapshotCreated(uint256 indexed id, uint16 version, bytes32 snapshotHash)`
+- `IssueAmended(uint256 indexed id, uint16 oldVersion, uint16 newVersion)`
 
 ### Extension Points
 
@@ -80,19 +84,26 @@ Locked at issue creation or before voting. Specifies maximum $CC mintable on com
 
 ## Plan
 
-1. Implement `IssueRegistryFacet` with storage and state enum
-2. Implement state transition logic with role/condition guards
-3. Implement reward locking mechanism
-4. Integrate with `ContentAnchorFacet` for content hash storage
-5. Tests for all valid state transitions
-6. Tests for rejected invalid transitions
+1. Implement `IssueRegistryFacet` with storage, state enum, and version tracking.
+2. Implement state transition logic with condition guards.
+3. Implement reward ceiling mechanism (authorized mint budget).
+4. Implement decision snapshot creation at adoption.
+5. Implement amendment and reversal flows (version increment, snapshot update).
+6. Integrate with `ContentAnchorFacet` (004) for content hash storage.
+7. Integrate with `MetricsBundleFacet` (016) for net-impact gate.
+8. Tests.
 
 ## Test
 
-- Unit: each state transition (valid + invalid)
-- Unit: reward locking and release
-- Integration: content hash anchoring via 004
-- Integration: state transition triggered by voting engine (007)
+- Unit: each state transition (valid + invalid).
+- Unit: reward ceiling set and enforced.
+- Unit: net-impact gate blocks VoteReady when metrics verdict is not positive.
+- Unit: decision snapshot created at adoption with correct data.
+- Unit: amendment flow — version increments, new snapshot created.
+- Unit: reversal — adopted issue returns to Deliberating, conviction resets.
+- Integration: content hash anchoring via 004.
+- Integration: state transition triggered by voting engine (007).
+- Integration: work package approval triggers Implementing via 017.
 
 ## Notes
 

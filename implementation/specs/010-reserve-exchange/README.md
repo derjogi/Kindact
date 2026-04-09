@@ -38,6 +38,31 @@ where b = R / S  (backing ratio)
 
 **Reserve minting**: buying $CC with fiat creates new tokens (secondary mint channel alongside work rewards).
 
+### On-Chain Data
+
+```solidity
+struct ReserveState {
+    Phase   phase;          // Bootstrap, Growth, Maturity
+    uint256 reserveBalance; // Total fiat-denominated reserve
+    uint256 rTarget;        // Target reserve for maturity
+    uint256 dailyRedeemed;  // Rolling 24h redemption total
+    uint48  dailyResetAt;   // Next daily cap reset timestamp
+}
+
+struct QueuedRedemption {
+    address redeemer;
+    uint256 ccAmount;
+    uint48  queuedAt;       // Subject to demurrage from this point
+    bool    fulfilled;
+}
+```
+
+### Fiat Oracle
+
+Fiat deposits are attested by a **multisig oracle** (M-of-N signers from platform operators + independent auditors). Each attestation includes deposit amount, source reference, and timestamp. The oracle can only _increase_ the reserve balance — decreases happen only through on-chain redemptions.
+
+**Open design question**: transition to a more decentralized oracle as the platform matures (e.g., Chainlink proof-of-reserves, ZK attestations of bank balances).
+
 ### Flow Controls (Bank Run Prevention)
 
 - **Daily redemption cap**: 1% of reserve per 24h rolling window

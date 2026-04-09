@@ -38,10 +38,31 @@ Handles challenges to verified work claims.
    - *Dismissed*: challenger deposit burned, claim payments resume
    - *Timeout (no verdict)*: restrictions loosen gradually, payments resume with delay
 
+### On-Chain Data
+
+```solidity
+struct Dispute {
+    uint256 disputeId;
+    uint256 claimId;        // The claim being disputed
+    address challenger;
+    uint256 deposit;        // $CC staked by challenger
+    bytes32 evidenceHash;   // Content-addressed challenge rationale
+    uint48  openedAt;
+    uint48  resolvedAt;     // 0 = pending
+    Outcome outcome;        // Pending, FraudConfirmed, Dismissed, Timeout
+    uint256 forFraud;       // Vote count: fraud confirmed
+    uint256 againstFraud;   // Vote count: dismissed
+}
+```
+
+The dispute binds to the issue's **snapshotted dispute rules** (from 005's procedural snapshot) — rules frozen at the time the issue entered the implementation phase apply, preventing mid-dispute rule changes.
+
 ### Clawback Mechanism
 
-- Contract can set **negative balance** on `TokenCoreFacet` — future earnings offset the debt
-- Confirmed fraud → on-chain restriction record, reduced platform privileges
+- On confirmed fraud, `TokenCoreFacet` (003) first seizes the perpetrator's current balance.
+- If current balance is insufficient, the remainder is recorded in the **debt ledger** (003) — future mint earnings are automatically offset against the debt.
+- Demurrage does not apply to debt (the obligation remains fixed).
+- Confirmed fraud → on-chain restriction record, reduced platform privileges.
 
 ### Anti-Abuse
 
@@ -88,5 +109,5 @@ Handles challenges to verified work claims.
 
 ## Notes
 
-- Negative balances require careful integration with demurrage (demurrage should not apply to negative balances)
-- Deposit amount should scale with claim size to prevent griefing on large claims
+- Debt is tracked in a separate ledger in 003 (not as negative ERC-20 balances) to maintain standard ERC-20 compatibility.
+- Deposit amount should scale with claim size to prevent griefing on large claims.

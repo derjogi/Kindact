@@ -1,7 +1,7 @@
 ---
 status: planned
 created: '2026-04-03'
-tags: [identity, skeleton, smart-contracts, zkp]
+tags: [identity, skeleton, smart-contracts, zkp, atproto]
 priority: critical
 depends_on:
   - 001-diamond-module-registry
@@ -57,6 +57,22 @@ Governance actions (voting, proposing) require `humanityScore >= threshold`. The
 - Attestation details remain with the provider; only the ZK proof result is recorded.
 - No PII, no plaintext credentials.
 
+### AT Protocol Identity Bridge
+
+Users hold two identities: an **AT Proto DID** (`did:plc` or `did:web`) for off-chain data and deliberation, and an **EVM wallet address** for on-chain governance and tokens. These are linked via the `app.certified.link.evm` lexicon from the Hypercerts/Certified ecosystem.
+
+**Linking flow:**
+
+1. User signs an EIP-712 typed-data message binding their AT Proto DID to their EVM wallet.
+2. The signed link record is stored in the user's AT Proto repo as an `app.certified.link.evm` record (cryptographic proof of wallet ownership).
+3. The on-chain `IdentityRegistryFacet` stores the reverse mapping (`wallet → AT Proto DID`) alongside the existing `IdentityRecord`.
+
+**What this enables:**
+
+- Deliberation records (signed by DID) can be linked to on-chain votes (signed by wallet) for accountability.
+- During anonymous deliberation phases, only the DID is visible — the wallet link is not exposed until the vote is finalized.
+- Either side of the link (AT Proto repo or on-chain registry) can be independently verified.
+
 ### Events
 
 - `IdentityVerified(address indexed wallet, uint8 humanityScore, uint32 providerMask)`
@@ -68,6 +84,7 @@ Governance actions (voting, proposing) require `humanityScore >= threshold`. The
 - New identity providers register via governance proposal.
 - Humanity threshold adjustable via governance.
 - Verifier contract upgradeable per provider (new proof systems).
+- AT Proto DID methods (`did:plc`, `did:web`) as identity anchors for off-chain deliberation records.
 
 ## Plan
 

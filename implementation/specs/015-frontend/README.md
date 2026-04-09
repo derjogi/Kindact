@@ -27,6 +27,7 @@ New frontend for Kindact, informed by prototype learnings. Wallet-first, React-b
 - Framework: Next.js (React, TypeScript)
 - Wallet: wagmi + RainbowKit (Optimism/Base L2 support)
 - Styling: Tailwind CSS (or similar utility-first framework)
+- AT Proto: `@atproto/api`, `@hypercerts-org/lexicon`
 - State: React Query for server state, zustand or context for local state
 
 ### Key Screens
@@ -43,11 +44,11 @@ Informed by prototype's 020-ui-desktop wireframes and 025-deliberation-ui-redesi
 
 ### Wallet-First Auth
 
-Sign-In with Ethereum (EIP-4361) via the backend auth middleware. No email/password flow. Wallet connection is the single entry point.
+Dual auth flow: EIP-4361 (Sign-In with Ethereum) for on-chain identity + AT Proto OAuth for data operations. Users link their EVM wallet to their AT Proto DID via `app.certified.link.evm`. The frontend handles both auth flows — wallet connection establishes on-chain identity, AT Proto OAuth authorizes reads/writes to the user's PDS. No email/password flow.
 
 ### Anonymization UX
 
-During deliberation phases, author identities are masked. UI clearly indicates anonymous mode with visual cues. Identity reveal only after voting concludes (per governance rules).
+During deliberation phases, author identities are masked. UI clearly indicates anonymous mode with visual cues and explains *why* identities are hidden (bias reduction). Since voting is fluid and ongoing (007), anonymization is tied to the **deliberation phase**, not vote conclusion — identities may remain masked as long as the issue is actively deliberated. Exact reveal rules are governance-configurable.
 
 ### Responsive Design
 

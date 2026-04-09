@@ -10,7 +10,8 @@ depends_on:
 - 015-frontend
 related:
 - 007-voting-engine
-- 009-delegation-conviction
+- 009-delegation
+- 029-decision-continuity
 created_at: 2026-04-07T23:16:33.365798212Z
 updated_at: 2026-04-07T23:16:33.365861936Z
 ---
