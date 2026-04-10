@@ -4,6 +4,8 @@ from plotly.subplots import make_subplots
 import pandas as pd
 import numpy as np
 import copy
+from pathlib import Path
+from datetime import datetime
 
 from kindact_sim.run import run_simulation
 from kindact_sim.scenarios import SCENARIOS
@@ -18,22 +20,26 @@ st.title("🌱 Kindact Economy Simulator")
 ALL_AGENT_TYPES = [t.value for t in AgentType]
 
 # --- Sidebar Controls ---
+_rp = st.session_state.pop('_restored_params', {})
+
 with st.sidebar:
     st.header("Scenario")
+    scenario_names = list(SCENARIOS.keys())
     scenario_name = st.selectbox(
         "Preset scenario",
-        options=list(SCENARIOS.keys()),
+        options=scenario_names,
+        index=scenario_names.index(_rp['scenario_name']) if _rp.get('scenario_name') in scenario_names else 0,
         format_func=lambda x: f"{x} — {SCENARIOS[x].description[:60]}...",
     )
 
     st.header("Parameters")
-    demurrage = st.slider("Demurrage rate (%/month)", 0.1, 5.0, 1.0, 0.1) / 100
-    reward = st.slider("Reward per issue ($CC)", 10, 200, 50, 10)
-    issues_rate = st.slider("Issues per user/month", 0.5, 5.0, 2.0, 0.5)
-    growth_rate = st.slider("New users/month (avg)", 0, 50, 15, 1)
-    verification_q = st.slider("Verification quality", 0.5, 1.0, 0.9, 0.05)
-    hypercert_prob = st.slider("Hypercert sale probability", 0.0, 0.5, 0.1, 0.01)
-    hypercert_price = st.slider("Avg Hypercert price ($)", 100, 5000, 1000, 100)
+    demurrage = st.slider("Demurrage rate (%/month)", 0.1, 5.0, _rp.get('demurrage', 1.0) * 100 if 'demurrage' in _rp else 1.0, 0.1) / 100
+    reward = st.slider("Reward per issue ($CC)", 10, 200, _rp.get('reward', 50), 10)
+    issues_rate = st.slider("Issues per user/month", 0.5, 5.0, _rp.get('issues_rate', 2.0), 0.5)
+    growth_rate = st.slider("New users/month (avg)", 0, 50, _rp.get('growth_rate', 15), 1)
+    verification_q = st.slider("Verification quality", 0.5, 1.0, _rp.get('verification_q', 0.9), 0.05)
+    hypercert_prob = st.slider("Hypercert sale probability", 0.0, 0.5, _rp.get('hypercert_prob', 0.1), 0.01)
+    hypercert_price = st.slider("Avg Hypercert price ($)", 100, 5000, _rp.get('hypercert_price', 1000), 100)
 
     # --- Agent Configuration ---
     st.header("Agent Population")
@@ -133,11 +139,73 @@ with st.sidebar:
             st.success(f"Saved to {path.name}")
 
     st.header("Simulation")
-    n_runs = st.slider("Monte Carlo runs", 1, 100, 1)
-    seed = st.number_input("Random seed", value=42, step=1)
-    timesteps = st.slider("Simulation horizon (months)", 12, 240, min(240, SCENARIOS[scenario_name].timesteps), 12)
+    n_runs = st.slider("Monte Carlo runs", 1, 100, _rp.get('n_runs', 1))
+    seed = st.number_input("Random seed", value=_rp.get('seed', 42), step=1)
+    timesteps = st.slider("Simulation horizon (months)", 12, 240, _rp.get('timesteps', min(240, SCENARIOS[scenario_name].timesteps)), 12)
 
     run_button = st.button("▶ Run Simulation", type="primary", use_container_width=True)
+
+    # --- Save / Load Results ---
+    st.header("Results Storage")
+    results_dir = Path(__file__).parent / "results"
+    results_dir.mkdir(exist_ok=True)
+
+    with st.expander("💾 Save / Load Results", expanded=False):
+        save_label = st.text_input("Result name", value=f"{scenario_name}_{datetime.now():%Y%m%d_%H%M}")
+        if st.button("💾 Save current results"):
+            if 'df' in st.session_state:
+                import pickle
+                bundle = {
+                    'df': st.session_state['df'],
+                    'params': {
+                        'scenario_name': scenario_name,
+                        'demurrage': demurrage,
+                        'reward': reward,
+                        'issues_rate': issues_rate,
+                        'growth_rate': growth_rate,
+                        'verification_q': verification_q,
+                        'hypercert_prob': hypercert_prob,
+                        'hypercert_price': hypercert_price,
+                        'n_runs': n_runs,
+                        'seed': seed,
+                        'timesteps': timesteps,
+                    },
+                    'agent_config': {
+                        'population_mix': st.session_state.get('agent_pop_mix', {}),
+                        'flux_schedule': st.session_state.get('agent_flux', []),
+                    },
+                }
+                path = results_dir / f"{save_label}.pkl"
+                with open(path, 'wb') as f:
+                    pickle.dump(bundle, f)
+                st.success(f"Saved to {path.name}")
+            else:
+                st.warning("No results to save — run a simulation first.")
+
+        saved_results = sorted(results_dir.glob("*.pkl"), key=lambda p: p.stat().st_mtime, reverse=True)
+        if saved_results:
+            selected_result = st.selectbox("Load saved result", options=saved_results, format_func=lambda p: p.stem)
+            if st.button("📂 Load"):
+                import pickle
+                with open(selected_result, 'rb') as f:
+                    bundle = pickle.load(f)
+                # Restore results
+                st.session_state['df'] = bundle['df']
+                st.session_state['n_runs'] = bundle.get('params', {}).get('n_runs', 1)
+                st.session_state['scenario_name'] = bundle.get('params', {}).get('scenario_name', '')
+                # Restore agent config
+                ac = bundle.get('agent_config', {})
+                if ac.get('population_mix'):
+                    st.session_state['agent_pop_mix'] = ac['population_mix']
+                    for atype in ALL_AGENT_TYPES:
+                        st.session_state[f"pop_{atype}"] = float(ac['population_mix'].get(atype, 0.0))
+                if ac.get('flux_schedule'):
+                    st.session_state['agent_flux'] = ac['flux_schedule']
+                # Restore sidebar params via query params workaround — store for next rerun
+                st.session_state['_restored_params'] = bundle.get('params', {})
+                st.rerun()
+        else:
+            st.info("No saved results yet.")
 
 
 def _run_custom(scenario_name: str, n_runs: int, seed: int,
