@@ -21,6 +21,13 @@ ALL_AGENT_TYPES = [t.value for t in AgentType]
 
 # --- Sidebar Controls ---
 _rp = st.session_state.pop('_restored_params', {})
+_rac = st.session_state.pop('_restored_agent_config', {})
+if _rac.get('population_mix'):
+    st.session_state['agent_pop_mix'] = _rac['population_mix']
+    for _atype in ALL_AGENT_TYPES:
+        st.session_state[f"pop_{_atype}"] = float(_rac['population_mix'].get(_atype, 0.0))
+if _rac.get('flux_schedule'):
+    st.session_state['agent_flux'] = _rac['flux_schedule']
 
 with st.sidebar:
     st.header("Scenario")
@@ -38,7 +45,15 @@ with st.sidebar:
     issues_rate = st.slider("Issues per user/month", 0.5, 5.0, _rp.get('issues_rate', 2.0), 0.5)
     growth_rate = st.slider("New users/month (avg)", 0, 50, _rp.get('growth_rate', 15), 1)
     verification_q = st.slider("Verification quality", 0.5, 1.0, _rp.get('verification_q', 0.9), 0.05)
-    hypercert_prob = st.slider("Hypercert sale probability", 0.0, 0.5, _rp.get('hypercert_prob', 0.1), 0.01)
+    hypercert_prob = st.slider(
+        "HC monthly demand",
+        0.1, 100.0,
+        _rp.get('hypercert_prob', 3.0),
+        0.1,
+        help="Expected hypercert sales per month at full platform attractiveness. "
+             "Actual sales = this × platform attractiveness (which ramps with network size and track record). "
+             "Low values (0.1–1): very rare sales. Medium (2–5): steady trickle. High (10–100): active market.",
+    )
     hypercert_price = st.slider("Avg Hypercert price ($)", 100, 5000, _rp.get('hypercert_price', 1000), 100)
 
     # --- Agent Configuration ---
@@ -193,16 +208,9 @@ with st.sidebar:
                 st.session_state['df'] = bundle['df']
                 st.session_state['n_runs'] = bundle.get('params', {}).get('n_runs', 1)
                 st.session_state['scenario_name'] = bundle.get('params', {}).get('scenario_name', '')
-                # Restore agent config
-                ac = bundle.get('agent_config', {})
-                if ac.get('population_mix'):
-                    st.session_state['agent_pop_mix'] = ac['population_mix']
-                    for atype in ALL_AGENT_TYPES:
-                        st.session_state[f"pop_{atype}"] = float(ac['population_mix'].get(atype, 0.0))
-                if ac.get('flux_schedule'):
-                    st.session_state['agent_flux'] = ac['flux_schedule']
-                # Restore sidebar params via query params workaround — store for next rerun
+                # Store for next rerun (applied before widgets render)
                 st.session_state['_restored_params'] = bundle.get('params', {})
+                st.session_state['_restored_agent_config'] = bundle.get('agent_config', {})
                 st.rerun()
         else:
             st.info("No saved results yet.")
@@ -211,7 +219,8 @@ with st.sidebar:
 def _run_custom(scenario_name: str, n_runs: int, seed: int,
                 demurrage_rate: float, param_overrides: dict,
                 agent_config: AgentConfig | None = None,
-                timesteps: int | None = None) -> pd.DataFrame:
+                timesteps: int | None = None,
+                progress_cb=None) -> pd.DataFrame:
     """Run simulation with custom parameter and state overrides."""
     custom_scenario = copy.deepcopy(SCENARIOS[scenario_name])
     custom_scenario.params.update(param_overrides)
@@ -233,7 +242,7 @@ def _run_custom(scenario_name: str, n_runs: int, seed: int,
     config_mod.build_genesis_state = _patched_genesis
     try:
         df = run_simulation('_custom', n_runs=n_runs, seed=seed, agent_config=agent_config,
-                            timesteps=timesteps)
+                            timesteps=timesteps, progress_cb=progress_cb)
     finally:
         config_mod.build_genesis_state = orig_fn
         SCENARIOS.pop('_custom', None)
@@ -257,10 +266,24 @@ if run_button:
         flux_schedule=st.session_state['agent_flux'],
     )
 
-    with st.spinner("Running simulation..."):
-        df = _run_custom(scenario_name, n_runs=n_runs, seed=int(seed),
-                         demurrage_rate=float(demurrage), param_overrides=param_overrides,
-                         agent_config=agent_config, timesteps=int(timesteps))
+    progress_bar = st.progress(0, text="Starting simulation...")
+    progress_state = {'steps_done': 0}
+    total_steps = int(timesteps) * n_runs
+
+    def _on_progress(timestep, total_timesteps):
+        progress_state['steps_done'] += 1
+        frac = min(progress_state['steps_done'] / total_steps, 1.0)
+        run_num = (progress_state['steps_done'] - 1) // total_timesteps + 1
+        if n_runs > 1:
+            progress_bar.progress(frac, text=f"Run {run_num}/{n_runs} — month {timestep}/{total_timesteps}")
+        else:
+            progress_bar.progress(frac, text=f"Month {timestep} / {total_timesteps}")
+
+    df = _run_custom(scenario_name, n_runs=n_runs, seed=int(seed),
+                     demurrage_rate=float(demurrage), param_overrides=param_overrides,
+                     agent_config=agent_config, timesteps=int(timesteps),
+                     progress_cb=_on_progress)
+    progress_bar.empty()
 
     st.session_state['df'] = df
     st.session_state['scenario_name'] = scenario_name

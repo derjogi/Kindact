@@ -19,6 +19,7 @@ def _make_state(phase=Phase.GROWTH, supply=200_000, reserve=50_000, exchange_rat
         'redemption_queue': [],
         'timestep': 12,
         'total_burned': 0.0,
+        'total_issues_created': 0,
         'events_log': [],
     }
 
@@ -195,10 +196,9 @@ def test_hypercert_sales_increase_with_maturity():
     s = _make_state(phase=Phase.GROWTH, agents=agents, reserve=100_000)
     s['hypercert_portfolio'] = sold_certs + unsold_certs
     params = {'reward_per_issue': 50.0, 'issues_per_user_month': 2.0, 'verification_quality': 0.9,
-              'growth_rate': 0, 'hypercert_sale_prob': 0.5, 'hypercert_avg_price': 1000.0, 'rng': np.random.default_rng(42)}
+              'growth_rate': 0, 'hypercert_sale_prob': 10.0, 'hypercert_avg_price': 1000.0, 'rng': np.random.default_rng(42)}
     result = agent_decisions(params, 1, [], s)
-    # 300 users, 20 sold → network_scale=0.77, track_record=20/30=0.67 → attractiveness≈0.52
-    # effective prob ≈ 0.26 on 50 unsold certs → should get some sales
+    # 300 users, 20 sold → high demand, should reliably get sales
     assert result['hypercert_fiat_sales'] > 0
 
 
@@ -212,7 +212,7 @@ def test_no_hypercert_sales_in_early_months():
     s['hypercert_portfolio'] = unsold_certs
     s['timestep'] = 2  # within no-sale period
     params = {'reward_per_issue': 50.0, 'issues_per_user_month': 2.0, 'verification_quality': 0.9,
-              'growth_rate': 0, 'hypercert_sale_prob': 0.5,
+              'growth_rate': 0, 'hypercert_sale_prob': 10.0,
               'hypercert_min_price': 100.0, 'hypercert_max_price': 2000.0,
               'hypercert_no_sale_months': 5,
               'rng': np.random.default_rng(42)}
@@ -235,7 +235,7 @@ def test_hypercert_prices_increase_with_maturity():
     s6['hypercert_portfolio'] = sold_certs + unsold
     s6['timestep'] = 6
     params = {'reward_per_issue': 50.0, 'issues_per_user_month': 2.0, 'verification_quality': 0.9,
-              'growth_rate': 0, 'hypercert_sale_prob': 0.5,
+              'growth_rate': 0, 'hypercert_sale_prob': 10.0,
               'hypercert_min_price': 100.0, 'hypercert_max_price': 2000.0,
               'hypercert_no_sale_months': 5,
               'rng': np.random.default_rng(42)}

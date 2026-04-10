@@ -1,4 +1,5 @@
 from kindact_sim.scenarios import SCENARIOS, apply_events, ScenarioConfig
+from kindact_sim.types import Phase
 
 
 def test_bootstrap_scenario_exists():
@@ -10,6 +11,7 @@ def test_bootstrap_scenario_exists():
 
 def test_bank_run_scenario_exists():
     assert 'bank_run' in SCENARIOS
+    assert len(SCENARIOS['bank_run'].conditional_events) == 1
 
 
 def test_all_scenarios_exist():
@@ -34,12 +36,35 @@ def test_apply_events_no_events():
     assert modified['reward_per_issue'] == 50.0
 
 
-def test_apply_events_bank_run():
+def test_apply_events_bank_run_on_exchange_open():
+    """Bank run fires as soon as exchange opens."""
     scenario = SCENARIOS['bank_run']
     base_params = {'reward_per_issue': 50.0, 'hypercert_sale_prob': 0.1}
-    modified = apply_events(scenario, base_params, timestep=18)
+    state = {'phase': Phase.GROWTH, 'reserve_fiat': 150_000}
+    modified = apply_events(scenario, base_params, timestep=10, state=state)
     assert '_confidence_shock' in modified
-    assert modified['_confidence_shock'] == 0.4
+    assert modified['_confidence_shock'] == 0.7
+
+
+def test_apply_events_bank_run_fallback_at_20():
+    """Bank run fires at month 20 even if exchange is still closed."""
+    scenario = SCENARIOS['bank_run']
+    base_params = {'reward_per_issue': 50.0, 'hypercert_sale_prob': 0.1}
+    state = {'phase': Phase.BOOTSTRAP, 'reserve_fiat': 0}
+    modified = apply_events(scenario, base_params, timestep=20, state=state)
+    assert '_confidence_shock' in modified
+    assert modified['_confidence_shock'] == 0.7
+
+
+def test_apply_events_bank_run_fires_only_once():
+    """Conditional event only fires once."""
+    scenario = SCENARIOS['bank_run']
+    base_params = {'reward_per_issue': 50.0, 'hypercert_sale_prob': 0.1}
+    state = {'phase': Phase.GROWTH, 'reserve_fiat': 150_000}
+    apply_events(scenario, base_params, timestep=10, state=state)
+    # Second call should not re-apply
+    modified2 = apply_events(scenario, base_params, timestep=11, state=state)
+    assert '_confidence_shock' not in modified2
 
 
 def test_apply_events_hypercert_crash():

@@ -90,12 +90,30 @@ def test_exchange_rate_trend_positive_raises_confidence():
 
 
 def test_redemption_success_rate_affects_confidence():
-    """When desired redemptions exceed actual (cap hit), confidence drops."""
+    """Partial redemption (rate-limited) is a small positive signal, not negative."""
     agent = Agent(id=0, agent_type=AgentType.CONTRIBUTOR, balance=100.0, confidence=0.6)
     # desired=10000 but only 1000 fulfilled → success_rate = 0.1
+    # Under new logic, any non-zero fulfillment is a positive signal
     signals = _make_input(
         new_agents_count=0, agent_updates=[],
         redemptions=1000, desired_redemptions=10000,
+    )
+    s = _make_state(
+        agents=[agent],
+        supply=200_000, reserve_fiat=50_000, exchange_rate=0.25,
+        r_target=1_000_000, _policy_signals=signals,
+    )
+    params = {'rng': np.random.default_rng(42)}
+    _, new_agents = update_agents(params, 1, [], s, {})
+    assert new_agents[0].confidence >= 0.6
+
+
+def test_zero_redemption_fulfillment_drops_confidence():
+    """When redemptions are desired but none fulfilled, confidence drops."""
+    agent = Agent(id=0, agent_type=AgentType.CONTRIBUTOR, balance=100.0, confidence=0.6)
+    signals = _make_input(
+        new_agents_count=0, agent_updates=[],
+        redemptions=0, desired_redemptions=10000,
     )
     s = _make_state(
         agents=[agent],
@@ -108,7 +126,7 @@ def test_redemption_success_rate_affects_confidence():
 
 
 def test_no_redemption_demand_is_not_treated_as_perfect_success():
-    """Absent redemption demand, confidence should not jump just because nobody tried to redeem."""
+    """Absent redemption demand, confidence should not jump significantly."""
     agent = Agent(id=0, agent_type=AgentType.CONTRIBUTOR, balance=100.0, confidence=0.5)
     signals = _make_input(
         new_agents_count=0, agent_updates=[],
@@ -121,7 +139,7 @@ def test_no_redemption_demand_is_not_treated_as_perfect_success():
     )
     params = {'rng': np.random.default_rng(42)}
     _, new_agents = update_agents(params, 1, [], s, {})
-    assert new_agents[0].confidence <= 0.5
+    assert new_agents[0].confidence < 0.52  # at most a tiny familiarity bump
 
 
 def test_acceptance_willingness_rises_with_exchange_rate():

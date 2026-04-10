@@ -62,6 +62,10 @@ def update_total_minted(_params, substep, sH, s, _input, **kwargs):
     return ('total_minted', s['total_minted'] + _input.get('work_minting', 0) + _input.get('fraud_minting', 0))
 
 
+def update_total_issues(_params, substep, sH, s, _input, **kwargs):
+    return ('total_issues_created', s['total_issues_created'] + _input.get('issues_created_count', 0))
+
+
 def update_total_burned(_params, substep, sH, s, _input, **kwargs):
     burned = _input.get('access_fee_burn', 0) + _input.get('redemptions', 0)
     demurrage_burn = s['supply'] * s['demurrage_rate']
@@ -81,10 +85,13 @@ def update_agents(_params, substep, sH, s, _input, **kwargs):
             a.balance = max(0, a.balance + updates[a.id])
         a.months_holding += 1
 
-    # Compute actual exchange rate trend from previous vs current state
+    # Compute relative exchange rate trend (percentage change)
     new_rate = compute_exchange_rate(s['reserve_fiat'], s['supply'], s['r_target'])
     old_rate = s['exchange_rate']
-    exchange_rate_trend = new_rate - old_rate
+    if old_rate > 0.001:
+        exchange_rate_trend = (new_rate - old_rate) / old_rate
+    else:
+        exchange_rate_trend = 0.0
 
     # Compute redemption success rate from desired vs actual
     desired = signals.get('desired_redemptions', 0)
@@ -160,7 +167,7 @@ def update_agents(_params, substep, sH, s, _input, **kwargs):
 
 def update_hypercerts(_params, substep, sH, s, _input, **kwargs):
     rng: np.random.Generator = _params.get('rng', np.random.default_rng())
-    portfolio = copy.deepcopy(s['hypercert_portfolio'])
+    portfolio = list(s['hypercert_portfolio'])
     work_minted = _input.get('work_minting', 0)
     n_new = int(work_minted / 100)
     max_id = max((h.id for h in portfolio), default=-1)
@@ -192,11 +199,15 @@ def store_policy_signals(_params, substep, sH, s, _input, **kwargs):
 
 
 def update_timestep(_params, substep, sH, s, _input, **kwargs):
-    return ('timestep', s['timestep'] + 1)
+    new_t = s['timestep'] + 1
+    cb = _params.get('_progress_cb')
+    if cb is not None:
+        cb(new_t, _params.get('_total_timesteps', new_t))
+    return ('timestep', new_t)
 
 
-def update_events_log(_params, substep, sH, s, _input, **kwargs):
-    log = list(s['events_log'])
+def _build_event_entry(_params, s, _input):
+    """Build the per-timestep event log entry (shared by mechanism and external collector)."""
     t = s['timestep']
 
     # --- Phase transition detection ---
@@ -254,6 +265,9 @@ def update_events_log(_params, substep, sH, s, _input, **kwargs):
         'supply_before': round(supply, 2),
         # Hypercerts
         'hc_sold_count': _input.get('_hc_sold_count', 0),
+        # Issue creation
+        'issues_created': _input.get('issues_created_count', 0),
+        'effective_issue_rate': _input.get('_effective_issue_rate', 0),
         # Agent type breakdown
         'agent_types': _input.get('_type_counts', {}),
     }
@@ -277,6 +291,11 @@ def update_events_log(_params, substep, sH, s, _input, **kwargs):
         notable.append(f'💰 Hypercert sales: ${hypercert_fiat_sales:,.0f} ({_input.get("_hc_sold_count", 0)} sold)')
 
     entry['notable_events'] = notable
-    log.append(entry)
+    return entry
 
-    return ('events_log', log)
+
+def update_events_log(_params, substep, sH, s, _input, **kwargs):
+    entry = _build_event_entry(_params, s, _input)
+    # Only store the current step's entry in cadCAD state (not the full history).
+    # The full log is reassembled from per-row entries in run_simulation().
+    return ('events_log', [entry])

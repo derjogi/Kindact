@@ -1,4 +1,4 @@
-from kindact_sim.types import Agent
+from kindact_sim.types import Agent, AgentType
 
 
 def update_confidence(
@@ -12,13 +12,32 @@ def update_confidence(
     w_holding = 0.1
     w_inertia = 0.2
 
-    trend_signal = max(-1.0, min(1.0, exchange_rate_trend * 5))
-    redemption_signal = 0.0 if redemption_success_rate is None else max(
-        -1.0, min(1.0, (redemption_success_rate - 0.5) * 2)
-    )
+    # 1. Trend signal: uses relative (%) change, ±50% saturates
+    trend_signal = max(-1.0, min(1.0, exchange_rate_trend * 2))
+
+    # 2. Redemption signal: any payout is positive, only total failure is negative
+    if redemption_success_rate is None:
+        redemption_signal = 0.0
+    elif redemption_success_rate == 0:
+        redemption_signal = -1.0
+    else:
+        redemption_signal = max(0.1, min(1.0, redemption_success_rate * 2))
+
+    # 3. Holding signal: familiarity grows over time, never penalizes.
+    #    Panickers gain less comfort from holding — they remain anxious.
     holding_progress = min(1.0, months_holding / 12.0)
-    holding_signal = (holding_progress - 0.5) * 2
-    inertia_signal = (agent.confidence - 0.5) * 2
+    if agent.agent_type == AgentType.PANICKER:
+        holding_signal = holding_progress * 0.3
+    else:
+        holding_signal = holding_progress
+
+    # 4. Inertia: mild mean-reversion toward a baseline.
+    #    Panickers revert toward a lower baseline (naturally anxious).
+    if agent.agent_type == AgentType.PANICKER:
+        baseline = 0.25
+    else:
+        baseline = 0.5
+    inertia_signal = (baseline - agent.confidence) * 2
 
     delta = (
         w_trend * trend_signal
