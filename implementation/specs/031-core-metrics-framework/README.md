@@ -13,7 +13,9 @@ related:
 
 ## Overview
 
-Define the shared, binding metrics framework used by every Kindact issue. Makes metrics a core platform primitive rather than an optional signal, while allowing communities to extend the shared taxonomy with domain-specific dimension packs. This spec defines the *framework and taxonomy*; spec 016 implements the on-chain gating and AT Proto storage.
+Define the shared, binding metrics framework used by every Kindact issue. Makes metrics a core platform primitive rather than an optional signal, while allowing communities to extend the shared taxonomy with domain-specific dimension packs.
+
+> **Relationship to [016](../016-impact-metrics/README.md)**: This spec defines the *what and why* (framework, taxonomy, lifecycle, canonical export). Spec 016 defines the *how* — on-chain `MetricsBundleFacet`, AT Proto storage of measurements/evaluations, and the net-impact gate that blocks `Deliberating → VoteReady` transitions. Read this spec first to understand the model, then 016 for enforcement details.
 
 ## Design
 

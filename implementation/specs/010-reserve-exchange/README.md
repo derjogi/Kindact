@@ -59,9 +59,33 @@ struct QueuedRedemption {
 
 ### Fiat Oracle
 
-Fiat deposits are attested by a **multisig oracle** (M-of-N signers from platform operators + independent auditors). Each attestation includes deposit amount, source reference, and timestamp. The oracle can only _increase_ the reserve balance — decreases happen only through on-chain redemptions.
+The reserve facet does not embed a specific oracle implementation. Instead, it defines a fixed interface that any registered oracle module must implement:
 
-**Open design question**: transition to a more decentralized oracle as the platform matures (e.g., Chainlink proof-of-reserves, ZK attestations of bank balances).
+```solidity
+interface IReserveOracle {
+    /// Push the latest fiat balance backing $CC, with a verifiable attestation.
+    function reportReserveBalance(
+        uint256 fiatAmountCents,
+        bytes calldata attestationProof,
+        uint64 observedAt
+    ) external;
+}
+```
+
+**Design constraints:**
+
+- Balance reporting MUST be **automated and high-frequency**. Manual signing loops (e.g., a human-operated multisig that re-signs the balance every few minutes) are not acceptable as the steady-state mechanism — they don't scale to the cadence the price curve and redemption flow require.
+- Every accepted update MUST carry an attestation chain back to the underlying bank balance source. Acceptable provider categories:
+  - **Decentralized oracle networks with proof-of-reserves adapters** (Chainlink PoR, Pyth, RedStone) connected to Open Banking APIs (e.g., apicentre.paymentsnz.co.nz, EU PSD2 endpoints, Plaid/TrueLayer with verifiable response signing).
+  - **zkTLS / TLSNotary attestations** of HTTPS responses from the bank's balance endpoint, verified on-chain.
+  - **Bank-signed attestations**, where the bank itself publishes signed balance statements that the contract verifies cryptographically.
+- Multiple oracle modules MAY be registered; the facet may require N-of-M agreement (or median-of-M) before accepting a balance update. This provides defense in depth without putting humans in the read loop.
+- Oracle modules are **registered, replaced, and removed via meta-governance (013)** without modifying the reserve facet itself.
+- The facet does not impose a fixed update cadence. Each consumer (pricing, redemption) reads the most recent attested value and accounts for `observedAt` age in its own staleness checks.
+
+**Bootstrap-only multisig role.** A platform multisig MAY be used to *configure* the initial registered oracle module(s) (and to gate emergency reserve corrections subject to a timelock per 013), but it MUST NOT be the source of routine balance updates themselves. Routine reads always flow through `IReserveOracle` implementations driven by automated attestations.
+
+**Why no manual multisig path for routine reads.** The confidence-curve price `E_t = b_t + (1 - b_t)(R_t / R_{target})^2` reacts to changes in the reserve balance. Live deposits, redemptions, and external transfers all change `R_t`. A human-signed update loop would either (a) introduce stale pricing windows long enough to be arbitraged, or (b) require operators on-call 24/7 to co-sign — neither is acceptable.
 
 ### Flow Controls (Bank Run Prevention)
 
@@ -109,4 +133,4 @@ Fiat deposits are attested by a **multisig oracle** (M-of-N signers from platfor
 ## Notes
 
 - Fixed-point math library needed for on-chain curve computation (use PRBMath or similar)
-- Fiat oracle must be tamper-resistant — multisig attestation of deposits
+- Fiat oracle is a pluggable module conforming to `IReserveOracle`; no manual multisig in the steady-state read loop (see Fiat Oracle section)

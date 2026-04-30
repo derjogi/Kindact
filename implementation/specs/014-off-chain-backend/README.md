@@ -12,6 +12,7 @@ depends_on:
 - '005'
 - '016'
 - '017'
+- 030-extensibility-foundation
 created_at: 2026-04-05T10:28:37.249053051Z
 updated_at: 2026-04-05T10:28:53.944279978Z
 ---

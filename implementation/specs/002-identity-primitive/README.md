@@ -32,14 +32,23 @@ Mapping: `wallet → IdentityRecord` in AppStorage.
 
 ### Humanity Providers
 
-Initial providers:
+Kindact relies on **multiple existing third-party humanity providers**, not a single one. The platform does **not** ship a manual-review fallback or an in-house attestation committee. Initial intended set:
 
-| Bit | Provider | Score Weight |
-|-----|----------|-------------|
-| 0 | Gitcoin Passport | configurable |
-| 1 | BrightID | configurable |
+| Bit | Provider | Notes |
+|-----|----------|-------|
+| 0 | Gitcoin Passport | Composite score; broad coverage in Web3-active regions |
+| 1 | BrightID | Social-graph based; strong in non-wallet regions |
+| 2 | Proof of Humanity | Video + vouching; strong identity assurance |
+| 3 | Anon Aadhaar | ZK proof of Indian Aadhaar; high coverage in India |
+| 4 | Worldcoin / World ID | Iris-based; broad geographic reach |
 
-New providers are added via a **ProviderRegistry** (governance-gated). Each provider has an ID, a verifier contract address, and a score weight. `providerMask` records which providers have attested for a given wallet.
+Score weights are governance-configurable per provider. Users may stack attestations from multiple providers — `providerMask` records which providers have attested for a given wallet, and the aggregate `humanityScore` reflects the sum of weighted contributions.
+
+**Rationale**: relying on a portfolio of independent providers spreads exclusion risk across orthogonal failure modes (no wallet → BrightID/Worldcoin; no smartphone → vouching networks; no government ID → Gitcoin Passport stacks). No single provider becomes a chokepoint, and Kindact does not need to operate a subjective review process.
+
+**Residual exclusion is acknowledged.** A small number of users will be excluded by *every* provider (no internet access, isolated populations, etc.). This residual is tracked as a v2 concern; v1 ships with the multi-provider stack and the platform commits to revisiting if real-world exclusion data warrants a remedy.
+
+New providers are added via a **ProviderRegistry** (governance-gated). Each provider has an ID, a verifier contract address, and a score weight. `providerMask` is a bitmask up to 32 providers wide.
 
 ### ZKP Verification
 

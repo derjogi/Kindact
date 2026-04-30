@@ -11,6 +11,7 @@ depends_on:
 - 004-content-anchoring
 - '016'
 - '017'
+- 030-extensibility-foundation
 created_at: 2026-04-05T10:28:36.928106682Z
 updated_at: 2026-04-05T10:28:36.928106682Z
 ---

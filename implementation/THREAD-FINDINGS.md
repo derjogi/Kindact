@@ -1,6 +1,10 @@
 # Kindact — Design Decisions & Details from Past Threads
 
 > **Purpose**: Collated from ~12 Amp threads (Mar–Apr 2026). Contains design decisions, data models, architecture patterns, and identified gaps that have been discussed but may not yet be reflected in the current lean-specs.
+>
+> **Last updated 2026-04-30 (later)**: All 7 outstanding open design questions resolved through brainstorming pass. Decisions merged into specs 002, 008, 009, 010, 011. See [Section 6](#6-outstanding-gaps--open-questions).
+>
+> **Earlier 2026-04-30**: Spec restructuring resolved naming conflicts. New specs created: 028 (Tag Registry), 029 (Decision Continuity), 030 (Extensibility Foundation), 031 (Core Metrics Framework). 009 trimmed to delegation only. Cross-references added between 016 ↔ 031; dependency frontmatter audited for 005 and 014.
 
 ---
 
@@ -36,15 +40,15 @@ At phase boundaries, issues freeze their procedural rules to prevent "mid-game" 
 Snapshots freeze *procedure*, not *outcome* — votes and reversals can still evolve.
 
 ### Dependency Execution Order (Updated)
-1. **Foundation**: 001 (Diamond), Extensibility Foundation, Core Metrics Framework
-2. **Primitives**: 004 (Content Anchoring), 002 (Identity), 003 ($CC Token)
-3. **Issue Core**: 005 (Lifecycle)
+1. **Foundation**: 001 (Diamond), 030 (Extensibility Foundation), 031 (Core Metrics Framework)
+2. **Primitives**: 004 (Content Anchoring), 002 (Identity), 003 ($CC Token), 028 (Tag Registry)
+3. **Issue Core**: 005 (Lifecycle), 016 (Impact Metrics)
 4. **Runtime/Decision**: 007 (Voting), 014 (Backend)
-5. **Governance**: 009 (Delegation), 013 (Meta-Governance)
-6. **Economics**: 008 (Work Verification), 010 (Reserve Exchange)
+5. **Governance**: 009 (Delegation), 029 (Decision Continuity), 013 (Meta-Governance)
+6. **Economics**: 008 (Work Verification), 017 (Work Planning), 010 (Reserve Exchange)
 7. **Impact/Disputes**: 012 (Disputes), 011 (Hypercerts)
 8. **Deliberation**: 006
-9. **Frontend**: 015
+9. **Frontend**: 015, 018-027 (UI specs)
 
 ---
 
@@ -127,7 +131,7 @@ When an issue is created, matching lens overlays resolve into a single authorita
 - **AT Proto DID bridging** via `app.certified.link.evm` — discussed in architecture thread, may not be in spec yet
 - On-chain record: `walletAddress`, `humanityScore` (0-100), `providerMask` (bitmask)
 - External integration with Gitcoin Passport is API-based (score submitted, not fetched)
-- **Open**: Manual review fallback for users excluded by Gitcoin Passport
+- ✅ **Resolved**: multi-provider portfolio (Gitcoin Passport, BrightID, Proof of Humanity, Anon Aadhaar, Worldcoin). No manual-review fallback. Residual exclusion is a v2 concern.
 
 ### 003 — $CC Token Core
 - **Demurrage formula**: `effectiveBalance(account) = rawBalance * (currentDecayIndex / balanceDecayIndex)`
@@ -238,10 +242,10 @@ Vote counts are **hidden** from all users except the vote author (prevents popul
 - Flow: create AT Proto records → submit AT-URI + CID on-chain
 - **ValueFlows vocabulary** for reports: `work` (labor), `consume` (materials), `produce` (outputs)
 - Modular verification via `verification.evidence` and `verification.policy` slots
-- **Verifier selection**: Rotated from qualified community members; multiple verifiers for larger rewards
-- **Open**: Verifier selection/rotation algorithm is TBD
-- **Open**: Holdback percentage for verified-but-not-finalized rewards
-- **Open**: Default reward threshold for multiple verifiers
+- ✅ **Resolved — Verifier model**: volunteer-based, never assigned. Eligibility filtered by hard exclusions (self-claim, recent same-implementer, dispute-confirmed bad-history, delegation-graph proximity, failed-dispute cooldown).
+- ✅ **Resolved — Verifier rewards**: default = platform fees on the issue (community-tunable per 013).
+- ✅ **Resolved — Holdback**: 70/30 default (30% deferred to dispute-window close). Tunable + tierable via 013.
+- ✅ **Resolved — Multi-verifier threshold**: voter-scaled tiers — 1 (<20), 3 (20–100), 5 (>100). Tunable.
 
 #### API Surface (from prototype)
 ```
@@ -286,7 +290,7 @@ struct Delegation {
 #### Security Gaps Identified
 - No gas analysis for transitive resolution
 - Eligibility bypass: only terminal delegate needs to pass eligibility quiz
-- Governance dimensions (topics vs. scope vs. tags) collapsed into single tag system
+- ✅ **Resolved — Governance dimensions**: topic and scope delegation now coexist via a `dimension` field. Geographic delegation has its own resolution rules (specificity-by-containment) and shares multi-rule machinery. Hard prerequisite on 030.
 
 ### 010 — Reserve Exchange
 #### Confidence Curve
@@ -308,8 +312,10 @@ Where `b_t` is backing ratio (`R_t / S_t`).
 - Buy premium: 3% fee on fiat-to-$CC
 
 #### Fiat Oracle
-- Multisig attestation of deposits from Stripe/bank transfers
-- **Gap**: No detailed oracle security design
+- ✅ **Resolved**: `IReserveOracle` interface; pluggable, automated providers only. No manual multisig in the steady-state read loop.
+- Acceptable providers: oracle networks with Open Banking PoR adapters (Chainlink, Pyth, RedStone), zkTLS/TLSNotary attestations, bank-signed attestations.
+- Multiple providers may be registered for N-of-M agreement. Registration via 013.
+- Multisig limited to bootstrap configuration and timelocked emergency overrides.
 
 ### 011 — Hypercerts Bridge
 #### AT Protocol Shift
@@ -317,10 +323,9 @@ Where `b_t` is backing ratio (`R_t / S_t`).
 - Uses `org.hypercerts.claim.activity` for impact records
 - On-chain `HypercertsBridgeFacet` anchors AT-URI + CID, manages funding/settlement
 
-#### Ownership Model Conflict
-- AT Proto: records owned by creators
-- Kindact design: Hypercerts "held by platform" to back reserve
-- **Open**: Custodial model, platform-managed wallets, or Kindact-as-creator?
+#### Ownership Model
+- ✅ **Resolved**: **Kindact-as-creator** with contributor attribution. Platform DID signs every `org.hypercerts.claim.activity`. Contributors compensated entirely in $CC at verification time; no revenue share on hypercert sales.
+- Required mitigations (in 011): contributor portability via `org.kindact.work.report`; platform-DID key management as 013 concern; lexicon conformance check before implementation; full evidence-chain references on every hypercert.
 
 #### Revenue Model
 - Fiat purchases → Reserve Exchange (010)
@@ -446,52 +451,50 @@ model TokenAccount {
 
 ---
 
-## 5. Additional Specs Discussed
+## 5. Additional Specs Discussed — Now Created ✅
 
-### Tag Registry (from delegation thread — specs 016-020 in that numbering)
-Five sub-specs were designed for tag-based delegation but **may conflict with current spec numbering** (016-017 are now Impact Metrics and Work Planning):
+### Tag Registry (from delegation thread)
+Five sub-specs were originally designed for tag-based delegation. After review, they were restructured into **3 cohesive specs** rather than 5 fragmented ones:
 
-| Sub-spec | Content |
-|----------|---------|
-| Tag Registry | Tag struct, slug normalization, frozen snapshots at VoteReady |
-| Delegation Rules | Rule struct with tagSet matching |
-| Multi-Tag Resolution | Specificity-ranked algorithm |
-| Transitive Delegation | BFS resolution, tally integration |
-| Conviction / Decision Stability | Linear conviction, reversal process |
-
-**Action needed**: Merge this content into spec 009 or create sub-specs under it.
+| Original sub-spec | Where it lives now |
+|-------------------|---------------------|
+| Tag Registry | ✅ **028-tag-registry** (preserved as standalone — tags are a cross-cutting primitive) |
+| Delegation Rules | ✅ Merged into **009-delegation** |
+| Multi-Tag Resolution | ✅ Merged into **009-delegation** |
+| Transitive Delegation | ✅ Merged into **009-delegation** |
+| Conviction / Decision Stability | ✅ **029-decision-continuity** (separated — orthogonal to delegation) |
 
 ### Extensibility Foundation & Core Metrics Framework
-Discussed as new foundation specs but **may overlap with existing 016 (Impact Metrics)**. Define:
-- Lenses, canonical geography, module slots, protocol binding, snapshots
-- Baseline dimensions (social, planetary, economic cost, time, uncertainty)
+Both have been created as standalone foundation specs:
 
-**Action needed**: Determine if these should be standalone specs or folded into 013/016.
+- ✅ **030-extensibility-foundation**: lenses, canonical geography, module slots, protocol binding, procedural snapshots
+- ✅ **031-core-metrics-framework**: baseline dimensions, dimension packs, metrics lifecycle, canonical export format
+
+Note: 031 has intentional overlap with **016-impact-metrics** — 031 defines the *what/why* (framework, taxonomy), 016 defines the *how* (on-chain facet, AT Proto storage).
 
 ---
 
 ## 6. Outstanding Gaps & Open Questions
 
-> **Updated 2026-04-22**: Specs 006, 009, 010, 011, 012, 014 updated with thread content. Items marked ✅ have been merged into specs.
+> **Updated 2026-04-30**: Restructuring complete. Specs 006, 009, 010, 011, 012, 014 enriched with thread content. Specs 028, 029, 030, 031 created. Items marked ✅ have been addressed.
 
-### Unresolved Design Questions
-1. **Verifier selection algorithm** (008) — mechanism for rotating qualified community verifiers is TBD
-2. ✅ **Fiat oracle security** (010) — multisig oracle design added; decentralization path noted as open question
-3. ✅ **Hypercert ownership model** (011) — three options documented in spec; decision still needed
-4. ✅ **Delegation eligibility bypass** (009) — documented as security consideration
-5. ✅ **Governance dimensions** (009) — documented as security consideration (future work)
-6. **Holdback percentage** (008) — for verified-but-not-finalized rewards
-7. **Multiple verifier threshold** (008) — reward level requiring >1 verifier
-
-### Specs Updated with Thread Content (2026-04-22)
+### Specs Updated with Thread Content
 | Spec | What was merged |
 |------|-----------------|
 | 006 | Data models (Comment, ArgumentNode, AISummary), spotlight algorithm, issue-scoped aliases, universal source panel, quote-commenting |
-| 009 | Multi-tag resolution algorithm, transitive BFS resolution, conviction cap, reversal process, security considerations |
+| 009 | Multi-tag resolution algorithm, transitive BFS resolution, security considerations (conviction moved to 029) |
 | 010 | ReserveState + QueuedRedemption structs, fiat oracle design |
 | 011 | HypercertAnchor struct, ownership model options, marketplace details |
 | 012 | Dispute struct, procedural snapshot binding |
 | 014 | Database schema, API contract outline |
+
+### Specs Created from Prior Thread Designs
+| Spec | Source |
+|------|--------|
+| 028-tag-registry | Delegation thread (originally proposed at 016) |
+| 029-decision-continuity | Delegation thread (originally proposed at 020 as conviction-voting) |
+| 030-extensibility-foundation | Extensibility strategy thread (originally proposed at 016) |
+| 031-core-metrics-framework | Extensibility strategy thread (originally proposed at 017) |
 
 ### Already Merged in Prior Threads (found in current specs)
 | Spec | Already present |
@@ -502,9 +505,39 @@ Discussed as new foundation specs but **may overlap with existing 016 (Impact Me
 | 007 | Fluid voting, eligibility via 002 ✅ |
 | 008 | AT Proto work reports, evidence via `org.hypercerts.context.attachment` ✅ |
 
-### Still Missing — Not in Any Spec
-- **Tag Registry**: Required by 009's multi-tag delegation design. Five sub-specs were designed in the delegation thread but not created as lean-specs (numbering conflict with 016/017).
-- **Extensibility Foundation**: Lenses, module slots, protocol binding, procedural snapshots — referenced by 005, 007, 008, 014, 015 but no dedicated spec exists.
-- **Verifier selection algorithm** (008): Rotation mechanism TBD.
-- **Holdback percentage** and **multi-verifier threshold** (008): Open design questions.
-- **Hypercert ownership model decision** (011): Three options documented but no decision made.
+### Resolved — Decisions Locked In ✅
+
+All 7 previously-open design questions were resolved on 2026-04-30 in a dedicated brainstorming pass and merged into the affected specs.
+
+1. ✅ **Verifier model** (008) — **volunteer-based, not assigned.** Any humanity-verified user MAY opt in to verify a claim. The protocol filters eligibility via hard exclusions (self-claim, recent same-implementer cooldown, dispute-confirmed bad-verification history, presence in implementer's delegation graph, failed-dispute cooldown) plus soft signals surfaced in UI. *Merged into 008.*
+2. ✅ **Holdback** (008) — **70% released on verification, 30% held back** until dispute window closes. Tunable per 013, may be community-tiered (e.g., 50/30/15 by reward size). Frozen at Implementing entry. *Merged into 008.*
+3. ✅ **Multi-verifier threshold** (008) — **voter-scaled tiers**: 1 verifier (< 20 voters), 3 (20–100), 5 (> 100). Governance-tunable. *Merged into 008.*
+4. ✅ **Hypercert ownership** (011) — **Kindact-as-creator with contributor attribution.** Platform DID signs every `org.hypercerts.claim.activity`; contributors are attributed but do not own the record. Compensation is in $CC at verification time, no revenue share on hypercert sales. Spec captures four required mitigations: portability via the contributor's `org.kindact.work.report`, platform-DID key management as a 013 concern, lexicon conformance check, and full evidence-chain references on every hypercert. *Merged into 011.*
+5. ✅ **Identity fallback** (002) — **multi-provider portfolio**, no manual review. Initial set: Gitcoin Passport, BrightID, Proof of Humanity, Anon Aadhaar, Worldcoin/World ID. Stackable; weights governance-configurable. Residual exclusion acknowledged as v2 concern. *Merged into 002.*
+6. ✅ **Fiat oracle** (010) — **interface-only design (`IReserveOracle`); no manual multisig in the steady-state read loop.** Acceptable providers: decentralized oracle networks with Open Banking PoR adapters (Chainlink, Pyth, RedStone), zkTLS/TLSNotary attestations, bank-signed attestations. Multiple oracles can be registered for N-of-M. Pluggable via 013. Multisig role limited to bootstrap configuration and timelocked emergency overrides. *Merged into 010.*
+7. ✅ **Geographic-scope delegation** (009) — **promoted from "deferred" to v1**, with hard prerequisite on 030 canonical-geography lock. Variable-precision H3/S2 location commitments stored in user's PDS. Self-declared and flagged in v1 (verified-location providers tracked as v2). Boundary data sourced from OSM, HydroSHEDS, lens overlays. Scope-match resolution by hierarchical specificity, no fuzzy "closest scope" fallback. Coexists with topic-tag delegation via a `dimension` field; multi-dimensional ambiguity → no delegation. 009 now declares 030 as a dependency. *Merged into 009.*
+
+### Spec Update Map (this round)
+
+| Spec | What was merged |
+|------|-----------------|
+| 002 | Multi-provider stack (5 providers); removed manual-review fallback question |
+| 008 | Volunteer verifier model + exclusions; verifier-reward source (platform fees); voter-scaled verifier-count tiers; 30% holdback default with tiering; updated Plan, Test, Notes |
+| 009 | Geographic-scope delegation (full v1 design); `DelegationDimension` enum; multi-dimensional resolution; new dependency on 030 |
+| 010 | `IReserveOracle` interface; provider categories; bootstrap-only multisig role; rationale for no manual loop |
+| 011 | Kindact-as-creator decision + four required mitigations (portability, key mgmt, lexicon conformance, evidence chain) |
+
+### Issues with the Spec Set Itself
+
+1. ✅ **Overlap between 016 and 031** — Both specs now carry an explicit cross-reference banner explaining the split: 031 = framework/taxonomy (*what/why*), 016 = on-chain implementation (*how*).
+2. **UI specs (018-027) are densely numbered** — leaves no room between core protocol specs (001-017) and foundation specs (028-031). If new core specs are needed, they'll have to go at 032+. *Decision: accept this; the UI specs were created as a contiguous block on purpose.*
+3. ✅ **Spec 005 (Issue Lifecycle)** — now declares `030-extensibility-foundation` as a dependency in frontmatter.
+4. ✅ **Spec 014 (Backend)** — now declares `030-extensibility-foundation` as a dependency in frontmatter.
+
+### Recommended Next Actions
+- ✅ All 7 open design questions resolved.
+- **Pre-implementation verification**: confirm `org.hypercerts.claim.contribution` lexicon allows creator DID ≠ contributor DID(s) (per 011 mitigation #3) before hypercerts implementation begins.
+- **030 canonical-geography lock** is now on the critical path for 009's geographic-scope delegation. Treat 030 progress as a v1 blocker, not a foundation-only concern.
+- **013 meta-governance scope expansion**: 013 now owns several governance-tunable parameters from this round (verifier exclusion windows, holdback %/tiers, verifier reward source mix, oracle provider registration, humanity-provider weights, platform DID key rotation). Audit 013 to confirm its parameter registry can host these.
+- Update lean-spec status to `in-progress` for any spec being actively designed.
+- Implementation kickoff is no longer blocked by open design decisions.

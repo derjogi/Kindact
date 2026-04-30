@@ -6,6 +6,8 @@ priority: high
 depends_on:
   - 004-content-anchoring
   - 014-off-chain-backend
+related:
+  - 031-core-metrics-framework
 ---
 
 # 016 — Impact Assessment & Metrics
@@ -13,6 +15,8 @@ depends_on:
 ## Overview
 
 Mandatory impact assessment framework that gates issues before voting. Every issue must demonstrate net-positive projected impact across baseline dimensions before proceeding to decision. Combines AI estimation, expert input, and community review.
+
+> **Relationship to [031](../031-core-metrics-framework/README.md)**: This spec is the *implementation* layer — on-chain `MetricsBundleFacet`, AT Proto storage, net-impact gate enforcement. Spec 031 defines the *framework* — taxonomy, lifecycle, canonical export format. Read 031 first to understand the conceptual model, then this spec for how it's enforced.
 
 ## Design
 

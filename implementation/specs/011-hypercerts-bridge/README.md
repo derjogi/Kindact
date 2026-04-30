@@ -55,12 +55,35 @@ struct HypercertAnchor {
 
 ### Ownership Model
 
-**Open design question**: AT Protocol records are owned by their creators. Kindact's design holds Hypercerts as platform assets to back the reserve. Options under consideration:
-1. Kindact DID as creator account (platform creates the records)
-2. Custodial model with contributor attribution
-3. Contributor-owned records with platform licensing rights
+**Decision**: **Kindact-as-creator with contributor attribution.** The platform DID creates and signs every `org.hypercerts.claim.activity` record. Hypercerts are platform assets that back the reserve and are sold on the marketplace; contributors are *attributed* in the record but do **not** own the hypercert. Contributors are compensated entirely in $CC at verification time (via 008). No revenue share on hypercert sales accrues to contributors — the $CC reward is the contribution payment, in full.
 
-The chosen model must reconcile AT Proto record ownership with on-chain settlement authority.
+This model trades AT Proto's "creator owns the record" default for a clean custody and settlement story. It avoids fiduciary/custodial entanglements, keeps marketplace operations simple (one signer), and matches the platform-as-impact-aggregator role.
+
+#### Implications and required mitigations
+
+The decision creates four operational concerns that must be addressed elsewhere in the design:
+
+**1. Contributor portability lives in the work report, not the hypercert.**
+Because the hypercert is signed by the platform DID, it stays in the platform's repo. If a contributor migrates PDS — or if Kindact is sunset — they cannot take the hypercert with them. The portable, contributor-owned record of their work is the `org.kindact.work.report` (008), which is signed by the contributor's DID and lives in their own PDS. Every hypercert MUST embed an AT-URI reference to the underlying work report so that the contributor's signed record remains the canonical proof of who did the work. Spec 008 owns the work-report lexicon and its persistence guarantees.
+
+**2. Platform DID key management is a meta-governance concern.**
+A single DID signs every hypercert; loss or compromise is catastrophic. The platform DID MUST be a `did:plc` controlled by a multisig of rotation keys, with rotation governed by 013-meta-governance. Specific operational requirements (rotation cadence, signer set, recovery procedure) are deferred to 013 but tracked as a hard dependency.
+
+**3. Lexicon conformance must be verified.**
+The `org.hypercerts.claim.contribution` schema separates the record creator from the named contributors. This split is what makes platform-as-creator viable. Before locking the marketplace and bridge facets, the implementation team must confirm against the live `@hypercerts-org/lexicon` package that:
+   - the schema permits creator DID ≠ contributor DID(s);
+   - the schema accepts contributor identification by `app.certified.link.evm` or by raw DID;
+   - cross-platform marketplaces (Hypercerts.org, etc.) accept platform-signed activity records.
+If any of these fails, the design must be revisited.
+
+**4. Buyers must be able to audit the full evidence chain.**
+Platform-signed claims are weaker than contributor-signed claims unless the underlying evidence is verifiable. Every hypercert anchored on-chain MUST include references to:
+   - the contributor-signed `org.kindact.work.report` (proof of who claims the work);
+   - the verifier signatures (proof of independent verification per 008);
+   - the on-chain verification transaction (proof of platform-finalized verdict);
+   - the issue's `verificationSnapshotHash` (proof of the rules under which the work was judged).
+
+This evidence chain is what gives a Kindact-issued hypercert credibility despite the single-creator signature.
 
 ### Marketplace
 
