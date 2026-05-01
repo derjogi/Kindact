@@ -10,7 +10,7 @@ tags:
 depends_on:
 - 008-work-verification-rewards
 - 010-reserve-exchange
-- '017'
+- 031-core-metrics-framework
 created_at: 2026-04-05T10:28:37.131239513Z
 updated_at: 2026-04-05T10:28:37.131239513Z
 ---
@@ -100,7 +100,7 @@ This evidence chain is what gives a Kindact-issued hypercert credibility despite
 
 - Uses Hypercerts protocol SDK for minting (ERC-1155 compatible)
 - Impact metadata stored on IPFS, hash recorded on-chain
-- Impact metadata must reference the canonical metrics bundle defined by 017-core-metrics-framework so baseline dimensions remain comparable across issue types
+- Impact metadata must reference the canonical metrics bundle defined by 031-core-metrics-framework so baseline dimensions remain comparable across issue types
 
 ### Events
 

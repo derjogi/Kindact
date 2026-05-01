@@ -10,6 +10,7 @@ depends_on:
 - 015-frontend
 related:
 - 013-meta-governance
+- 034-information-architecture
 created_at: 2026-04-07T23:16:33.819506640Z
 updated_at: 2026-04-07T23:16:33.819553905Z
 ---

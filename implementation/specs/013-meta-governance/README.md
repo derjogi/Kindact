@@ -9,7 +9,7 @@ tags:
 depends_on:
 - 001-diamond-module-registry
 - 007-voting-engine
-- '016'
+- 030-extensibility-foundation
 created_at: 2026-04-05T10:28:37.209443370Z
 updated_at: 2026-04-05T10:28:37.209443370Z
 ---
@@ -68,7 +68,16 @@ Adding/removing facets (modules) requires meta-governance approval — prevents 
 
 Meta-governance also approves the global module catalog entries that affect trust, money, rights, or finality and can promote mature optional modules into core platform behavior.
 
-Lens-level overlay choices remain outside this spec; 016-extensibility-foundation owns the distinction between platform governance and lens governance.
+Approval is per **versioned module id** (`<namespace>/<key>@<semver>`, see 030). A new version of an already-approved module is treated as a new catalog entry and must be approved separately. Existing issues continue running the version pinned in their protocol binding; meta-governance approval of a new version only affects bindings resolved after the approval takes effect (plus its timelock).
+
+Each catalog entry stores the manifest hash (off-chain manifest) and, for on-chain modules, the corresponding `ModuleRegistry` record (001). Approval flow:
+
+1. Propose: submit module id + manifest hash (+ facet bytecode for on-chain modules).
+2. Vote: normal-tier vote unless the module is being promoted to `core` (constitutional tier).
+3. Timelock: 48h (normal) / 7d (constitutional / `core` promotion).
+4. Activate: catalog entry becomes available for lens overlays.
+
+Lens-level overlay choices remain outside this spec; 030-extensibility-foundation owns the distinction between platform governance and lens governance.
 
 ### Timelock
 

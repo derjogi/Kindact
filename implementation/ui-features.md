@@ -159,7 +159,7 @@
 
 ## 9. Lens & Community Configuration
 
-**Spec**: 015i-ui-lens-config, relates to 016-extensibility-foundation
+**Spec**: 015i-ui-lens-config, relates to 030-extensibility-foundation
 
 - Lens browser — discover available lenses by geography, topic, interest
 - Lens creation — define selector (location refs, tags, scope, keywords), subscription mode, governance rules

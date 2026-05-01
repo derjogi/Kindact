@@ -8,7 +8,7 @@
 
 ## 1. Overview
 
-Kindact is an **open-source, modular, voluntary governance and coordination platform** that lets anyone identify a problem, deliberate on solutions with bias-reduced tools, decide collectively, implement the agreed-upon work, and be **economically rewarded** when that work is verified.
+Kindact is an **open-source, modular, voluntary governance and coordination platform** that lets anyone identify a problem, deliberate on solutions with bias-reducing tools, decide collectively, implement the agreed-upon work, and be **economically rewarded** when that work is verified.
 
 It is a *parallel* layer of governance — it does not replace governments or laws. It is an **incentive layer**, not an enforcement layer. Real-world rules, permits, and physical constraints still apply.
 

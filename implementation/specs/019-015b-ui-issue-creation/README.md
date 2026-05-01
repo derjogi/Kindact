@@ -10,7 +10,7 @@ depends_on:
 - 015-frontend
 related:
 - 005-issue-lifecycle
-- 017-core-metrics-framework
+- 031-core-metrics-framework
 created_at: 2026-04-07T23:16:33.232787938Z
 updated_at: 2026-04-07T23:16:33.232839469Z
 ---

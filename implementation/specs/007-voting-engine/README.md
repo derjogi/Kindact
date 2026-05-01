@@ -9,8 +9,8 @@ tags:
 depends_on:
 - 002-identity-primitive
 - 005-issue-lifecycle
-- '016'
-- '017'
+- 030-extensibility-foundation
+- 031-core-metrics-framework
 created_at: 2026-04-05T10:28:37.006531858Z
 updated_at: 2026-04-05T10:28:37.006531858Z
 ---
@@ -74,10 +74,11 @@ When all three criteria are satisfied, triggers issue state transition to `Adopt
 
 ### Extension Points
 
-- Pluggable voting modes via new facets (future: quadratic, ranked choice)
-- Delegation hooks (009)
-- Decision continuity hooks such as conviction accumulation or reconsideration windows (009)
-- Metrics gate integration with 017-core-metrics-framework before decision opening
+- Approval voting is the default core decision engine, registered as `kindact/approval-voting@1.0.0` in the catalog (per 030, slot `decision.engine`, maturity `core`).
+- Alternative voting modes ship as separate modules and separate facets — e.g. `kindact/ranked-choice@1.0.0`, `kindact/quadratic-voting@0.x.y`. The issue's procedural snapshot pins the exact versioned id so a version bump never affects an in-flight vote.
+- Delegation hooks (009).
+- Decision continuity hooks such as conviction accumulation or reconsideration windows (009).
+- Metrics gate integration with 031-core-metrics-framework before decision opening.
 
 ## Plan
 

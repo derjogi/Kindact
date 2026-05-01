@@ -9,9 +9,8 @@ tags:
 depends_on:
 - 001-diamond-module-registry
 - 004-content-anchoring
-- '016'
-- '017'
 - 030-extensibility-foundation
+- 031-core-metrics-framework
 created_at: 2026-04-05T10:28:36.928106682Z
 updated_at: 2026-04-05T10:28:36.928106682Z
 ---
@@ -40,8 +39,8 @@ Additionally, adopted issues can be **amended** or **reversed** (see below).
 | scopeVectorHash | bytes32 | Canonical scope vector: location refs, topic tags, scope level |
 | rewardAmount | uint256 | Locked $CC mintable on completion |
 | contentHash | bytes32 | Points to off-chain body via 004 |
-| protocolBindingHash | bytes32 | Resolved issue protocol binding from 016 |
-| metricsBundleHash | bytes32 | Canonical baseline metrics bundle from 017 |
+| protocolBindingHash | bytes32 | Canonical hash of the resolved issue protocol binding (see 030). Computed over the binding's canonical JSON form (sorted keys, multi-slot entries ordered by pinned module id `<namespace>/<key>@<semver>`). Written at issue creation; immutable thereafter. Two AppViews indexing the same chain MUST resolve to this same hash — any divergence is detectable without trusting either operator. |
+| metricsBundleHash | bytes32 | Canonical baseline metrics bundle from 031 |
 | decisionSnapshotHash | bytes32 | Null until decision opens |
 | implementationSnapshotHash | bytes32 | Null until implementation begins |
 | disputeSnapshotHash | bytes32 | Null until dispute opens |
@@ -59,7 +58,7 @@ Transitions enforced by contract — only specific roles/conditions trigger each
 - `Implementing → Completed` — work verified and rewards minted (008)
 - `Completed → Archived` — time-based or manual
 
-At `VoteReady`, `Implementing`, and dispute-open boundaries, the issue records procedural snapshots defined by 016-extensibility-foundation.
+At `VoteReady`, `Implementing`, and dispute-open boundaries, the issue records procedural snapshots defined by 030-extensibility-foundation. Snapshots pin fully versioned module ids (`<namespace>/<key>@<semver>`) so that publishing a newer version of a module never retroactively changes an in-flight issue's procedure.
 
 ### Off-chain Content
 
@@ -80,8 +79,8 @@ Set during issue creation or deliberation. Specifies the maximum $CC that can be
 ### Extension Points
 
 - Additional metadata fields and derived views via module hooks
-- Issue protocol binding, overlay resolution, and procedural snapshots are delegated to 016-extensibility-foundation
-- Metrics gating and canonical metric bundles are delegated to 017-core-metrics-framework
+- Issue protocol binding, overlay resolution, and procedural snapshots are delegated to 030-extensibility-foundation
+- Metrics gating and canonical metric bundles are delegated to 031-core-metrics-framework
 
 ## Plan
 
@@ -99,7 +98,8 @@ Set during issue creation or deliberation. Specifies the maximum $CC that can be
 - Unit: each state transition (valid + invalid).
 - Unit: reward ceiling set and enforced.
 - Unit: net-impact gate blocks VoteReady when metrics verdict is not positive.
-- Unit: decision snapshot created at adoption with correct data.
+- Unit: decision snapshot created at adoption with correct data; snapshot pins fully versioned module ids.
+- Unit: `protocolBindingHash` is deterministic — same binding JSON → same bytes32 hash on independent runs.
 - Unit: amendment flow — version increments, new snapshot created.
 - Unit: reversal — adopted issue returns to Deliberating, conviction resets.
 - Integration: content hash anchoring via 004.

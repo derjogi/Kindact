@@ -9,8 +9,8 @@ tags:
 depends_on:
 - 004-content-anchoring
 - 005-issue-lifecycle
-- '014'
-- '016'
+- 014-off-chain-backend
+- 030-extensibility-foundation
 created_at: 2026-04-05T10:28:36.965643605Z
 updated_at: 2026-04-05T10:28:36.965643605Z
 ---
@@ -121,11 +121,12 @@ Users can migrate their PDS and retain all deliberation history. Records follow 
 
 ### Extension Points
 
-- Pluggable deliberation surfaces keyed to issue protocol binding
-- Pluggable ranking algorithms
-- Pluggable AI providers
-- Additional deliberation modes (future: fishbowl, Delphi)
-- Independent AppViews with custom indexing strategies
+- Pluggable deliberation surfaces keyed to issue protocol binding. Each surface is a module with a versioned id (e.g. `kindact/threaded-comments@1.0.0`, `kindact/kialo-arguments@1.0.0`) registered into the `deliberation.surface` slot per 030.
+- Surfaces are invoked through the capability `ctx` (014); deliberation-surface modules typically declare `permissions: ["issues.read", "moduleData.readOwn", "moduleData.writeOwn", "events.subscribe"]`.
+- Pluggable ranking algorithms (also modules: `kindact/randomized-ranking@1.0.0`, etc.).
+- Pluggable AI providers.
+- Additional deliberation modes (future: fishbowl, Delphi).
+- Independent AppViews with custom indexing strategies.
 
 ## Plan
 

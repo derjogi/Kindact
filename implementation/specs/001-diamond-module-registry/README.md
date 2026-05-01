@@ -26,7 +26,7 @@ The EIP-2535 Diamond proxy is the system skeleton. All on-chain Kindact function
 | **DiamondCutFacet** | Add / replace / remove facets. Guarded by `MODULE_MANAGER` or governance. |
 | **DiamondLoupeFacet** | Introspection: `facets()`, `facetAddresses()`, `facetFunctionSelectors()`, `facetAddress(selector)`. |
 | **AccessControlFacet** | Role-based access adapted from OpenZeppelin's `AccessControl` for diamond storage. Roles: `ADMIN`, `MODULE_MANAGER`, `GOVERNANCE`. |
-| **ModuleRegistryFacet** | Maps `moduleId (bytes32)` → `ModuleRecord(facetAddress, version, dependencies[], status, manifestHash, slot, multiplicity, maturity)`. Tracks approved on-chain modules that affect trust, money, rights, or finality. |
+| **ModuleRegistryFacet** | Maps `moduleId (bytes32 = keccak256("<namespace>/<key>"))` → `ModuleRecord(facetAddress, version, dependencies[], status, manifestHash, slot, multiplicity, maturity)`. The `moduleId` is the namespaced module key (without the version suffix); `version` is the on-chain semver triple `(major, minor, patch)`. `manifestHash` pins the off-chain manifest (see 030). Tracks approved on-chain modules that affect trust, money, rights, or finality. |
 
 ### AppStorage
 
@@ -48,7 +48,7 @@ Single `AppStorage` struct stored at a diamond-storage slot (`keccak256("kindact
 
 ### Extension Points
 
-Any new on-chain module deploys a facet contract and registers via `DiamondCutFacet`. The `ModuleRegistry` records enough metadata for ordering, compatibility, and auditability, while the richer global module catalog stays off-chain per 016-extensibility-foundation.
+Any new on-chain module deploys a facet contract and registers via `DiamondCutFacet`. The `ModuleRegistry` records enough metadata for ordering, compatibility, and auditability, while the richer global module catalog stays off-chain per 030-extensibility-foundation.
 
 ## Plan
 

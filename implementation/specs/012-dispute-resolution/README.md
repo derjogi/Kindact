@@ -9,7 +9,7 @@ tags:
 depends_on:
 - 003-cc-token-core
 - 008-work-verification-rewards
-- '016'
+- 030-extensibility-foundation
 created_at: 2026-04-05T10:28:37.168826256Z
 updated_at: 2026-04-05T10:28:37.168826256Z
 ---
@@ -82,9 +82,10 @@ The dispute binds to the issue's **snapshotted dispute rules** (from 005's proce
 
 ### Extension Points
 
-- Escalation to external arbitration (Kleros, Aragon Court)
-- Staking-based dispute mechanisms
-- Additional dispute procedures, provided they snapshot cleanly at dispute open
+- The default dispute procedure is shipped as `kindact/default-dispute@1.0.0` in slot `dispute.policy` per 030. The issue's dispute snapshot pins the exact versioned id so a procedure change never affects a dispute that is already open.
+- Escalation to external arbitration (Kleros, Aragon Court) — would ship as separate modules in the same slot.
+- Staking-based dispute mechanisms.
+- Additional dispute procedures, provided they snapshot cleanly at dispute open.
 
 ## Plan
 

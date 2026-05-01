@@ -10,6 +10,8 @@ depends_on:
 - 015-frontend
 related:
 - 008-work-verification-rewards
+- 035-governance-data-visualization
+- 039-empty-loading-error-states
 created_at: 2026-04-07T23:16:33.435416386Z
 updated_at: 2026-04-07T23:16:33.435481467Z
 ---

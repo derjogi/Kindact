@@ -11,8 +11,8 @@ depends_on:
 - 003-cc-token-core
 - 005-issue-lifecycle
 - 007-voting-engine
-- '016'
-- '017'
+- 030-extensibility-foundation
+- 031-core-metrics-framework
 created_at: 2026-04-05T10:28:37.053390177Z
 updated_at: 2026-04-05T10:28:37.053390177Z
 ---
@@ -130,10 +130,10 @@ Milestones can trigger partial minting. Total across milestones must not exceed 
 
 ### Extension Points
 
-- Pluggable verification evidence types and policy combinators
-- ValueFlows integration for structured reporting (future)
-- Dispute hooks (012)
-- Metrics realization reporting via 017-core-metrics-framework
+- Pluggable verification evidence types and policy combinators registered as modules in slots `verification.evidence` (multi) and `verification.policy` (single) per 030. Examples: `kindact/photo-evidence@1.0.0`, `kindact/peer-confirmation@1.0.0`, `kindact/threshold-policy@1.0.0`. The implementation-phase snapshot pins fully versioned module ids so a policy update never changes the rules under a running claim.
+- ValueFlows integration for structured reporting (future).
+- Dispute hooks (012).
+- Metrics realization reporting via 031-core-metrics-framework.
 
 ## Plan
 

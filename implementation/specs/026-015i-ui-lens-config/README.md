@@ -10,7 +10,9 @@ tags:
 depends_on:
 - 015-frontend
 related:
-- 016-extensibility-foundation
+- 030-extensibility-foundation
+- 032-design-system-foundations
+- 034-information-architecture
 created_at: 2026-04-07T23:16:33.754795577Z
 updated_at: 2026-04-07T23:16:33.754902955Z
 ---

@@ -7,9 +7,14 @@ tags:
 - ux
 depends_on:
 - 014-off-chain-backend
-- '006'
-- '016'
-- '017'
+- 006-deliberation-service
+- 030-extensibility-foundation
+- 031-core-metrics-framework
+related:
+- 032-design-system-foundations
+- 033-component-library
+- 034-information-architecture
+- 038-accessibility-and-responsive
 created_at: 2026-04-05T10:28:37.332555954Z
 updated_at: 2026-04-05T10:28:37.332555954Z
 ---
@@ -64,11 +69,27 @@ Desktop-first layout, mobile-friendly. Prototype had separate mobile spec (021);
 - A viewer's current lens must never suppress an issue's active protocol binding
 - Baseline metrics and the gate decision should be visible as first-class issue context, not hidden as a secondary panel
 
+### Plugin Slot Contracts
+
+Frontend extension is mediated by **typed slot contracts**, not by handing modules raw React/DOM access. Every slot the shell exposes declares:
+
+- A typed `props` interface — exactly what the shell will hand into a contributed component (e.g. `{ issueId, phase, binding }`).
+- A typed `events` interface — what the module can emit back to the shell (e.g. `onVoteCast`, `onArgumentAdded`, `onFallbackRequested`).
+- A typed `capabilities` surface — the analogue of the backend `ctx`: any API/data access a module needs from the shell (e.g. `shell.api.issues.read`, `shell.notify.toast`).
+
+Modules contribute components that conform to that contract; they do not import the shell's store, router, or fetch layer directly. v1 modules technically run inside the same bundle and could reach outside the contract — doing so is grounds for code-review rejection. In v2 the same component can be served from an iframe / Web Worker because the slot interface is already a typed message contract.
+
+Slot identities follow the same `<namespace>/<key>` convention as modules (e.g. `kindact/issue.deliberation.tabs`). Contributed components are registered into slots from each module's `manifest.json`, not by ad-hoc imports.
+
+### Fallback Renderers
+
+Every module data type that can appear in a slot MUST ship a fallback renderer (a minimal read-only view) keyed in its manifest under `read_fallback`. The shell uses the fallback when no full module UI is registered for the current viewer. This guarantees a viewer's lens never silently suppresses an issue's active protocol binding.
+
 ### Extension Points
 
 - Theme system for community branding
 - Community-customizable layouts
-- Plugin slots for module-specific UIs and fallback renderers driven by issue protocol binding
+- Plugin slots (typed contracts above) for module-specific UIs and fallback renderers driven by issue protocol binding
 - Canonical location pickers and lens discovery surfaces backed by shared geography refs
 
 ## Plan
@@ -90,6 +111,8 @@ Desktop-first layout, mobile-friendly. Prototype had separate mobile spec (021);
 - Anonymization: identities masked during deliberation, revealed after
 - Responsive: key screens render correctly at desktop/tablet/mobile breakpoints
 - Accessibility: keyboard navigation, screen reader basics
+- Slot contracts: a module component registered against a slot receives only the declared `props` / `capabilities` and emits only the declared `events`
+- Fallback renderers: when no full module UI is registered, the module's `read_fallback` view is shown and renders without errors
 
 ## Notes
 

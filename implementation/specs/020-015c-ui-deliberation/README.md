@@ -10,7 +10,10 @@ depends_on:
 - 015-frontend
 related:
 - 006-deliberation-service
-- 017-core-metrics-framework
+- 031-core-metrics-framework
+- 035-governance-data-visualization
+- 036-anonymization-visual-language
+- 037-motion-and-feedback
 created_at: 2026-04-07T23:16:33.294274586Z
 updated_at: 2026-04-07T23:16:33.294324885Z
 ---

@@ -9,7 +9,10 @@ tags:
 depends_on:
 - 015-frontend
 related:
-- 016-extensibility-foundation
+- 030-extensibility-foundation
+- 034-information-architecture
+- 035-governance-data-visualization
+- 039-empty-loading-error-states
 created_at: 2026-04-07T23:16:33.158820722Z
 updated_at: 2026-04-07T23:22:02.202074861Z
 ---

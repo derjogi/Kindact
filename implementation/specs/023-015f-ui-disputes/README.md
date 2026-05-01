@@ -10,6 +10,7 @@ depends_on:
 - 015-frontend
 related:
 - 012-dispute-resolution
+- 039-empty-loading-error-states
 created_at: 2026-04-07T23:16:33.511557878Z
 updated_at: 2026-04-07T23:16:33.511740082Z
 ---

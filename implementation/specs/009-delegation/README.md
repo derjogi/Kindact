@@ -151,9 +151,10 @@ The "ambiguous → no delegation" default is conservative: a delegator who creat
 
 ### Extension Points
 
-- Weighted delegation (partial weight splitting)
-- Topic taxonomy evolution via meta-governance (013)
-- Verified-location providers for stronger geographic Sybil resistance (postal-code mailers, resident-attestation networks, government-ID proofs) — v2
+- Delegation is a module in slot `decision.modifier` per 030, shipped as `kindact/liquid-delegation@1.0.0`. The issue's decision-phase snapshot pins the exact versioned id so a delegation-logic upgrade never silently changes an active decision phase.
+- Weighted delegation (partial weight splitting) — would ship as a separate module version or sibling module.
+- Topic taxonomy evolution via meta-governance (013).
+- Verified-location providers for stronger geographic Sybil resistance (postal-code mailers, resident-attestation networks, government-ID proofs) — v2.
 
 ## Plan
 

@@ -12,6 +12,10 @@ related:
 - 007-voting-engine
 - 009-delegation
 - 029-decision-continuity
+- 035-governance-data-visualization
+- 036-anonymization-visual-language
+- 037-motion-and-feedback
+- 039-empty-loading-error-states
 created_at: 2026-04-07T23:16:33.365798212Z
 updated_at: 2026-04-07T23:16:33.365861936Z
 ---

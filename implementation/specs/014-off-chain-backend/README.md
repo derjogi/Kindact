@@ -9,10 +9,9 @@ tags:
 depends_on:
 - 001-diamond-module-registry
 - 004-content-anchoring
-- '005'
-- '016'
-- '017'
+- 005-issue-lifecycle
 - 030-extensibility-foundation
+- 031-core-metrics-framework
 created_at: 2026-04-05T10:28:37.249053051Z
 updated_at: 2026-04-05T10:28:53.944279978Z
 ---
@@ -45,7 +44,11 @@ Subscribes to the AT Proto relay firehose, filters for Kindact lexicon records (
 
 ### AppView API
 
-REST or GraphQL API serving the frontend. Combines on-chain indexed data with AT Proto record data. This is the Kindact AppView. Key endpoints:
+REST or GraphQL API serving the frontend. Combines on-chain indexed data with AT Proto record data. This is the Kindact AppView.
+
+**The API is a published, versioned contract**, not "whatever endpoints the v1 backend happens to expose". The OpenAPI / GraphQL schema is checked into the repo under `implementation/api-spec/` and treated as the authoritative interface between any AppView and any frontend. The v1 backend is one implementation of this spec; v2 may host alternative AppViews against the same chain + AT Proto data without reverse-engineering this backend.
+
+Key endpoints:
 
 - Issues: list, detail, search
 - Lenses: list, detail, subscribe/mute, overlay configuration
@@ -58,12 +61,53 @@ REST or GraphQL API serving the frontend. Combines on-chain indexed data with AT
 
 ### Extensibility Runtime
 
-The backend owns the global off-chain module catalog and the issue protocol resolution engine described in 016-extensibility-foundation.
+The backend owns the global off-chain module catalog and the issue protocol resolution engine described in 030-extensibility-foundation.
 
-- Resolve matching lens overlays into `IssueProtocolBinding`
-- Persist procedural snapshots when issue phases open
+- Resolve matching lens overlays into `IssueProtocolBinding`, with each entry pinned to a versioned module id (`<namespace>/<key>@<semver>`)
+- Compute the canonical-JSON hash of the binding and submit it as `protocolBindingHash` on the on-chain issue record at creation
+- Persist procedural snapshots when issue phases open (snapshots also pin fully versioned module ids)
 - Serve module manifests and fallback renderer metadata to clients
 - Keep raw data available even when a UI only presents a summarized view
+
+#### Manifests as Data
+
+Module manifests are JSON/YAML files (`manifest.json`) committed next to each module's code. At build time the backend reads every manifest in the monorepo and registers it into the **module catalog table**. Module code is only invoked through hooks if a manifest is registered for the exact module id; manifestless code is unreachable by the runtime.
+
+The manifest schema is fixed (see 030 — `id`, `slot`, `multiplicity`, `depends_on`, `incompatible_with`, `produces`, `read_fallback`, `maturity`, `permissions`, `migrations`). v1 loads manifests at build time; v2 will load them dynamically from a content-addressed registry. The loader changes; the manifest contract does not.
+
+#### Capability-Based Hook APIs
+
+Every hook invocation receives a typed **`ctx`** object whose surface is determined by the module's manifest `permissions`. Ambient access (raw DB, raw chain client, raw notifier) is forbidden inside module code by convention.
+
+Initial capability set for v1:
+
+| Capability | Provides |
+|------------|----------|
+| `issues.read` | `ctx.issues.readById(id)`, scoped read access to core issue data |
+| `moduleData.readOwn` | `ctx.moduleData.read(entityType, entityId)` scoped to this module's namespace |
+| `moduleData.writeOwn` | `ctx.moduleData.write(entityType, entityId, payload)` scoped to this module's namespace |
+| `notify.emit` | `ctx.notify.emit(channel, body)` for module-specific notification types declared in the manifest |
+| `events.subscribe` | `ctx.events.on(eventName, handler)` for the domain events listed above |
+
+A module declaring only `issues.read` cannot see other modules' data, cannot write anywhere, and cannot send notifications. v1 wires `ctx` from real implementations; nothing physically prevents a module from reaching ambient state, but doing so is grounds for code-review rejection. In v2 the same `ctx` is replaced with a sandbox proxy.
+
+#### Module-Scoped Storage
+
+Module-specific off-chain state lives in a single `module_data` table:
+
+```
+module_data (
+  module_namespace text,
+  module_key text,
+  entity_type text,    -- e.g. "issue", "claim", "comment"
+  entity_id text,
+  payload jsonb,
+  updated_at timestamptz,
+  primary key (module_namespace, module_key, entity_type, entity_id)
+)
+```
+
+Core entities remain strictly typed in their own tables; modules never extend or alter them. The `moduleData.writeOwn` capability rejects writes whose `(module_namespace, module_key)` does not match the calling module's manifest id.
 
 ### Geographic Taxonomy
 
@@ -114,9 +158,9 @@ Redis-backed background jobs for: batch content anchoring, protocol binding reso
 ### Extension Points
 
 - Additional indexer modules per new Diamond facet
-- Module hook runtime with validators, side effects, read models, async jobs, and notification emitters
+- Module hook runtime with validators, side effects, read models, async jobs, and notification emitters — invoked via the capability-based `ctx` surface defined above
 - Pluggable AI providers
-- Alternative AppView operators using the same data sources
+- Alternative AppView operators using the same data sources (chain events + AT Proto firehose) and the published API spec
 
 Validators may reject or normalize module-specific input before commit, but they must not silently change binding outcomes, resolved protocol bindings, or snapshotted rules.
 
@@ -125,19 +169,28 @@ If input is normalized, the backend must emit an audit record and return the tra
 ## Plan
 
 1. Scaffold project (Node.js/TypeScript, PostgreSQL, Redis)
-2. Implement chain indexer with reorg handling
-3. Implement AT Proto relay subscription (firehose consumer, lexicon filtering)
-4. Implement AppView API (REST/GraphQL)
-5. Implement auth (EIP-4361 + AT Proto OAuth)
-6. Implement job queue (batch anchoring, background tasks)
-7. Implement AI service integration (provider registry)
-8. Integration tests against local chain + AT Proto test PDS
+2. Check the published API spec (`implementation/api-spec/`) into the repo and wire CI to fail on drift between code and spec
+3. Implement chain indexer with reorg handling
+4. Implement AT Proto relay subscription (firehose consumer, lexicon filtering)
+5. Implement protocol-binding resolver and canonical-JSON hashing (writes `protocolBindingHash` on issue creation)
+6. Implement module catalog table + build-time manifest loader
+7. Implement `module_data` table and the capability-based `ctx` runtime
+8. Implement AppView API (REST/GraphQL) against the published spec
+9. Implement auth (EIP-4361 + AT Proto OAuth)
+10. Implement job queue (batch anchoring, background tasks)
+11. Implement AI service integration (provider registry)
+12. Integration tests against local chain + AT Proto test PDS
 
 ## Test
 
 - Chain indexer: mock events, verify DB state, simulate reorgs
 - Relay subscription: mock firehose events, verify record indexing, handle malformed records
 - API: endpoint tests with seeded data, auth flow tests
+- API: conformance test — every endpoint in the published API spec is implemented; no endpoint exists outside the spec
+- Protocol-binding resolver: deterministic canonical-JSON output for a given (issue scope, lens overlay set, catalog version)
+- Catalog: a module whose manifest is missing is rejected at build time
+- Capability ctx: a hook receives only the capabilities declared in its manifest; calling an undeclared capability raises a clear runtime error
+- `moduleData.writeOwn` rejects writes whose namespace/key does not match the calling module
 - Auth: valid/invalid signature handling, AT Proto OAuth flow, identity status checks
 - Job queue: job execution, retry, failure handling
 - AI services: provider switching, graceful degradation

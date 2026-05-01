@@ -16,7 +16,7 @@ The design challenge: **customizable experience without fragmenting the shared d
 
 The LeanSpec dependency graph now encodes the main blockers for this architecture. From within [implementation](file:///home/jonas/Documents/Governance/Own/Kindact/implementation), `lean-spec gantt` gives the live execution view. For humans, the recommended implementation order is:
 
-1. **Foundation layer** — [001](file:///home/jonas/Documents/Governance/Own/Kindact/implementation/specs/001-diamond-module-registry/README.md), [016](file:///home/jonas/Documents/Governance/Own/Kindact/implementation/specs/016-extensibility-foundation/README.md), [017](file:///home/jonas/Documents/Governance/Own/Kindact/implementation/specs/017-core-metrics-framework/README.md)
+1. **Foundation layer** — [001](file:///home/jonas/Documents/Governance/Own/Kindact/implementation/specs/001-diamond-module-registry/README.md), [030](file:///home/jonas/Documents/Governance/Own/Kindact/implementation/specs/030-extensibility-foundation/README.md), [031](file:///home/jonas/Documents/Governance/Own/Kindact/implementation/specs/031-core-metrics-framework/README.md)
 2. **Shared primitives** — [004](file:///home/jonas/Documents/Governance/Own/Kindact/implementation/specs/004-content-anchoring/README.md), [002](file:///home/jonas/Documents/Governance/Own/Kindact/implementation/specs/002-identity-primitive/README.md), [003](file:///home/jonas/Documents/Governance/Own/Kindact/implementation/specs/003-cc-token-core/README.md)
 3. **Issue core** — [005](file:///home/jonas/Documents/Governance/Own/Kindact/implementation/specs/005-issue-lifecycle/README.md)
 4. **Decision and platform runtime** — [007](file:///home/jonas/Documents/Governance/Own/Kindact/implementation/specs/007-voting-engine/README.md) and [014](file:///home/jonas/Documents/Governance/Own/Kindact/implementation/specs/014-off-chain-backend/README.md) in parallel once their blockers are satisfied
@@ -172,16 +172,22 @@ Each module declares:
 
 ```
 Module {
-  key                  // unique identifier
+  id                   // "<namespace>/<key>@<semver>" — fully versioned, namespaced
   slot                 // where it fits in the issue lifecycle
   multiplicity         // "single" (exclusive) or "multi" (stackable)
-  depends_on           // other modules it requires
+  depends_on           // other modules required ("<namespace>/<key>" or pinned id)
   incompatible_with    // modules it can't coexist with
   produces             // data types it creates (for fallback rendering)
   read_fallback        // how to display its data to users without the module
   maturity             // experimental | beta | stable | core
+  permissions          // capabilities required from the runtime ctx
+  migrations           // how state from older major versions maps forward (or "none")
 }
 ```
+
+The manifest is data, not code: every module ships a `manifest.json` next to its source, and the runtime refuses to invoke a module whose manifest is not registered. The `kindact/` namespace is reserved for first-party modules; v2 admits additional namespaces (DIDs, third-party publishers).
+
+Issue protocol bindings and procedural snapshots pin **fully versioned** ids: bumping a module version never retroactively affects an issue already in flight.
 
 ### Slot model
 
@@ -315,7 +321,7 @@ On-chain modules require full meta-governance approval + security audit before d
 
 ### Backend hooks
 
-Event-driven hook system in the Node.js backend:
+Event-driven hook system in the Node.js backend. Hooks are invoked through a **capability-based `ctx`** object — modules never get ambient access to the database, chain client, or notifier; they receive only the capabilities their manifest's `permissions` field declares.
 
 ```
 Domain events:
@@ -332,15 +338,24 @@ Domain events:
   dispute.opened
   issue.protocol_resolved
 
-Module hooks:
+Module hooks (signature: (event, ctx) => …):
   validators    — can reject or normalize module-specific input before it is committed; they must not silently change binding outcomes
   side_effects  — async reactions (e.g., "prediction market module opens a market when decision phase begins")
   read_models   — derived data views
   async_jobs    — background processing
   notifications — module-specific notification types
+
+Initial capabilities surfaced by ctx (declared in module manifest):
+  issues.read           — read access to core issue data
+  moduleData.readOwn    — read this module's own scoped storage
+  moduleData.writeOwn   — write this module's own scoped storage
+  notify.emit           — emit declared notification channels
+  events.subscribe      — subscribe to listed domain events
 ```
 
-Module-specific data: stored in PostgreSQL using typed JSONB columns alongside core entities. Core entities remain strictly typed; modules get structured extension points, not arbitrary schema additions.
+Module-specific data lives in a dedicated `module_data` table keyed by `(module_namespace, module_key, entity_type, entity_id)`. Modules never write into core tables; the `moduleData.writeOwn` capability rejects writes outside the caller's namespace. Core entities remain strictly typed; modules get a structured extension point, not arbitrary schema additions.
+
+In v1 the capability `ctx` is enforced by convention (modules ship as first-party code; ambient access is grounds for code-review rejection). In v2 the same `ctx` is replaced by a sandbox proxy that bridges into an iframe / Worker / WASM runtime. Modules continue to compile against the same surface — sandboxing is a runtime swap, not a rewrite.
 
 If a validator normalizes input, that normalization must be explicit and auditable: the backend should create an audit record and return the transformed payload to the caller before final commit rather than mutating data invisibly.
 
@@ -360,9 +375,15 @@ Contribution-point model (similar to VS Code extensions):
 | `dashboard.cards` | User dashboard | Module-specific dashboard widgets |
 | `lens.settings` | Lens configuration | Module enable/disable toggles with previews |
 
-The shell app owns routing, auth, layout, and permissions. Modules provide React components registered to specific slots.
+The shell app owns routing, auth, layout, and permissions. Modules provide React components registered to specific slots via their `manifest.json`, never via ad-hoc imports.
 
-For now, modules are **first-party code in a monorepo** — deployed as part of the single global build, activated by feature flags keyed to the issue's protocol binding. This avoids the complexity of dynamic module loading, sandboxing, or third-party code execution while the platform is young.
+Each slot is a **typed contract**:
+
+- `props` — what the shell hands the contributed component (e.g. `{ issueId, phase, binding }`)
+- `events` — what the module emits back to the shell (e.g. `onVoteCast`)
+- `capabilities` — the frontend analogue of backend `ctx`; module components access shell APIs (e.g. `shell.api.issues.read`, `shell.notify.toast`) only through this surface, never via direct store/router/fetch imports
+
+For now, modules are **first-party code in a monorepo** — deployed as part of the single global build, activated by feature flags keyed to the issue's protocol binding. This avoids the complexity of dynamic module loading, sandboxing, or third-party code execution while the platform is young. The typed slot contract is the surface that survives the v2 transition: the same component can later be served from an iframe / Worker because the wire is already a typed message contract.
 
 ---
 
@@ -409,47 +430,58 @@ Modules can be promoted or deprecated through platform governance.
 
 ```
 Lens {
-  id: string
-  name: string
+  id: string                      // e.g. "lens:kreuzberg-housing"
+  name: string                    // first-creator wins the name slot
   description: string
+  owner_did: string               // AT Proto DID; lens content signed by this DID
+  controller_address: string?     // optional EVM address for on-chain governance actions
+  forked_from: string?            // source lens id if forked
   selector: SelectorPredicate     // location refs, tags, scope, keywords
   subscription_mode: enum         // auto_location | opt_in | hybrid
   governance_policy: GovernanceRef // how config changes are decided
-  created_by: address
   created_at: timestamp
 }
 
 LensOverlay {
   lens_id: string
   slot: string                    // e.g., "decision.engine"
-  module_key: string              // e.g., "consensus-decision"
+  module_id: string               // "<namespace>/<key>@<semver>" — fully versioned
   mode: enum                      // enable | disable | configure
   params: json                    // module-specific configuration
   precedence_key: tuple           // derived from issue override + combined/geo/topic specificity + platform default fallback
 }
 
 ModuleCatalogEntry {
-  key: string
+  id: string                      // "<namespace>/<key>@<semver>"
   name: string
   slot: string
   multiplicity: enum              // single | multi
-  depends_on: string[]
+  depends_on: string[]            // "<namespace>/<key>" or pinned ids
   incompatible_with: string[]
   produces: string[]              // data type keys
+  permissions: string[]           // declared capabilities for the runtime ctx
+  migrations: enum | object       // "none" or migration descriptor
   maturity: enum                  // experimental | beta | stable | core
   fallback_renderer: ComponentRef
-  manifest_hash: bytes32          // for on-chain modules
+  manifest_hash: bytes32          // content hash of the manifest.json
 }
 
 IssueProtocolBinding {
   issue_id: string
   slot: string
-  module_key: string
+  module_id: string               // fully versioned pin
   params: json
   source_lens_id: string          // which lens contributed this binding
   resolved_at: timestamp
   snapshotted_at: timestamp | null // set at phase boundaries
 }
+
+// On the on-chain issue record (005):
+//   protocolBindingHash: bytes32  // canonical-JSON hash of the resolved binding,
+//                                  // written at issue creation, immutable thereafter
+
+// Module-scoped off-chain storage (014):
+//   module_data(module_namespace, module_key, entity_type, entity_id, payload)
 ```
 
 ---
@@ -468,7 +500,7 @@ IssueProtocolBinding {
 
 ## 10. Relationship to Existing Specs
 
-This strategy is now reflected in the **17-spec** implementation set. In particular, [016 — Extensibility Foundation](file:///home/jonas/Documents/Governance/Own/Kindact/implementation/specs/016-extensibility-foundation/README.md) and [017 — Core Metrics Framework](file:///home/jonas/Documents/Governance/Own/Kindact/implementation/specs/017-core-metrics-framework/README.md) formalize the new architectural foundations.
+This strategy is reflected in the implementation set. In particular, [030 — Extensibility Foundation](file:///home/jonas/Documents/Governance/Own/Kindact/implementation/specs/030-extensibility-foundation/README.md) and [031 — Core Metrics Framework](file:///home/jonas/Documents/Governance/Own/Kindact/implementation/specs/031-core-metrics-framework/README.md) formalize the architectural foundations.
 
 The strategy provides the framework in which the other specs operate:
 
