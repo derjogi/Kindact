@@ -1,0 +1,13 @@
+[workspace]
+members = [
+    "types",
+    "zomes/kindact-base",
+    "dnas/global-registry/zomes/registry",
+    "dnas/manhattan-windturbine/zomes/wind_turbine",
+]
+resolver = "2"
+
+[profile.release]
+opt-level = "z"
+lto = true
+panic = "abort"

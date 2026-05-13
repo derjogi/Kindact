@@ -36,3 +36,7 @@ npm-debug.log*
 __pycache__/
 *.pyc
 *.so.node
+
+# Rust
+target/
+prototype-holochain/target/
