@@ -1,8 +1,0 @@
-cadCAD>=0.5.3
-streamlit>=1.30
-plotly>=5.18
-numpy>=1.26
-pandas>=2.1
-
-[dev]
-pytest>=7.4
