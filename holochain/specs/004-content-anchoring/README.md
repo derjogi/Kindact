@@ -1,5 +1,5 @@
 ---
-status: planned
+status: in-progress
 created: '2026-05-12'
 tags: [infrastructure, smart-contracts, holochain, dht]
 priority: critical

@@ -1,0 +1,17 @@
+---
+manifest_version: "1"
+name: kindact-prototype
+description: Kindact Holochain Prototype
+roles:
+  - name: global_registry
+    provisioning:
+      strategy: create
+      deferred: false
+    dna:
+      bundled: ./dnas/global-registry/dna.yaml
+  - name: wind_turbine
+    provisioning:
+      strategy: create
+      deferred: false
+    dna:
+      bundled: ./dnas/manhattan-windturbine/dna.yaml
