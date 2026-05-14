@@ -1,0 +1,234 @@
+It (Kindact) sounds like you are using your Harmonica App for something more than just meetings (which are crucial) but for governance and decision making within a community. I really love it. I've read up to step 4, and I wanted to paste some links of things that you probably already have seen, given what I read, but just in case you haven't I'll link here. 
+
+https://nathanschneider.info/books/governable-spaces/
+https://communityrule.info/
+
+Decision theaters have computational models, but imagine one with ABM and AI - purpose is to create conversation and test ideas
+⁠economics⁠
+⁠GrowGood⁠
+
+Just above step 4, you wonder if you are being elitist by giving preference to experts or educated. There is something to be said for sortion or citizen assemblies. I believe in such a framework there are expert deliberating bodies for those who volunteer, or recruit. And then there are also the non-experts or RANDOM citizen - people who might have been non-interested. But through election they become interested. This is a bit like in Australia there is compulsory voting which forces more people to become knowledgeable.  Just a thought as another optional feature.
+https://www.sortitionfoundation.org/ 
+Harmonica | AI-powered Facilitation
+Harmonica acts as a virtual facilitator by talking to your team, event guests or discussion participants 1:1 and using LLM to synthesize their responses. It's an alternative to forms and saves both you and participants time, builds healthy habits and reduces friction.
+Harmonica | AI-powered Facilitation
+Writings and rehearsals by Nathan Schneider
+Nathan
+Governable Spaces: Democratic Design for Online Life
+CommunityRule
+A governance toolkit for great communities
+Leanne — 15:10
+@jonas I think sometimes your text  is conflating the voting  tokens with the reward tokens, or perhaps I don't understand how the voting takes place - with tokens? Perhaps I didn't read it properly. 
+
+At step 4 you start with the reward token. I think this Token side needs a lot of work - I've put your text into a google doc for my many comments. I know I'm being critical without offering answers - apologies - there are answers, I'm just not giving you any. It is woth the exercise to think up some  clear economic value to your $CC community token - what makes it demanded/acceptable.  There are lots of ways your can make it so. None here except maybe platform membership - but that alone works if total rewards (issuance) for the year will equal total membership fees (burns/sinks). But if that was true, you would likely have a lemons problem - 2nd hand car market, only bad actors join.
+
+ It seems your assumption is that the token is automatically of economic value. Like the rationale often given to today's money - nobody knows why a piece of paper has value - it just does... trust maybe?. No. But there is one answer - a Chartalist would say that the only reason we are able to trust or value fiat  is because of government taxes that are unavoidable (enforced with jail time) force demand. 
+
+ I want you to show me a reason why your $CC would have value. Create a demand side for your currency.
+
+https://docs.google.com/document/d/1pZHiKsaYVJtsTvQFSENjb9oK8n7sEhIY6jMt-wdBAl8/edit?usp=sharing
+Google Docs
+Jonas - A New Paradigm for Governance and Collective Action
+Step 4: Implement — Execution and Verification Once a decision is made, someone needs to execute it. Kindact’s implementation phase is where words become actions. Proof of Implementation Kindact operates on a fundamental principle: tokens are exclusively minted when community-approved work is ver...
+Image
+@jonas  Forgot to look at your more detailed doc. I'll look at that nexttime.
+jonas — 15:24
+@Leanne the full doc (blog post) + a bit more detailed economic example is in the google doc you linked above, you can leave comments and suggestions there 🙂 
+Thanks for your feedback so far, am just reading it now 🙂
+Thanks, that Decision Theater would be an amazing and important part of the project; that's basically what the metrics are for: To asses and only allow those decisions that are in all likelihood positive; and for that we'll need to know what happens if (exactly what Decision Theater seems it's supposed to do)
+jonas — 15:32
+Also yes, Citizens Assemblies 👍️ I don't explicitly name them in the text, but that is definitely one of the modules that could be used. (I'm listing https://talktothe.city/ in the Ecosystem part at the bottom, they're bringing citizen assemblies online)
+Talk to the City
+Talk to the City
+Talk to the City helps large groups of people coordinate by understanding each other better, faster, and in more depth.
+Talk to the city
+(And there are others that do similar, all good options! I don't necessarily know which one will be the best working combination, something that the community can help to figure out!)
+Just a quick clarification: 
+1-person-1-vote (I'll add that somewhere more clear), so tokens are separate from votes. (Although that could also change; I'm not opposed to having some sort of token-based voting, but they're quite tricky to avoid some unintended downsides (i.e. whales dictating everything)) 
+Yeah, I'd really love you to read the second tab on https://docs.google.com/document/d/1jzrd82rlj0QP-YijoKttI25eAMqHSJ-CPRFLgQpT3HI/edit?usp=sharing with more details of the token system. Feel free to leave comments in the text etc 🙂
+Google Docs
+Kindact 2.0
+A New Paradigm for Governance and Collective Action A novel systemic platform that could reshape how we solve problems together Introduction: A System Built for the Challenges We Actually Face Democracies were designed for a world that no longer exists. The institutions we inherited (representa...
+Image
+Leanne — 15:50
+@jonas  Your assumption that tokens are valuable just because they are minted as a point of  recognition of a costly service is not enough to make this token valuable. The token maybe a record of the service having been performed, but it is not tied to the service in any other way. The service is done, and yet the token remains, its value is independent of the service's value.
+
+This fallacy of money's value being the same as the energy that went into its creation is the same fallacy as @Dr. Brian 's Proof-of-Plant.   This thesis by Ben Hunt of what makes money valuable is wrong: "There's no there there when it comes to money. It's all narrative. It's only narrative" says Ben...But then he contradicts himself later by saying that money is due to the cost of its production. 
+
+ IMO both statements are completely false.  The idea that bitcoin is valuable because of its cost of production - that energy went into its creation, is false. That logic would infer that bitcoin was of negative value.  It is valuable despite its cost of production. Energy is not the determination of Bitcoin's value, it is only the determination of its scarcity. Nor is the Proof-of-plant going to give economic value to a token, even if its existence is dependent on the proof positive creation of a plant. As bhunt, a commenter says at the bottom - "The tokens have absolutely zero claim on anything. They are purely a representation of the growth of an apple tree." 
+Epsilon Theory
+Epsilon Theory - Epsilon Theory
+Page description
+jonas — 15:53
+Does it make a difference if we just slightly change the perspective and instead of looking at it as proof of impact (or proof of plant), but instead see it as a reputation token that is also an economic token?
+Leanne — 15:53
+YES! reputation token is fine.
+You are confirming that something was supplied.
+jonas — 15:53
+I guess that bursts a bit what 'reputation' is usually about though, because reputation isn't (supposed to be) tradeable...
+Leanne — 15:54
+It can be tradeable if there is a demand for that token.
+This is like a trade credit - which is a token. You can make demand for the token, if you impose some more architecture into your system.
+jonas — 15:56
+But I guess the meaning of it as a reputation token would soon vanish, because ... person A plants a tree, then swaps tokens with B; now B has the reputation (through A and proven by provenance, but not immediate obvious without investigation), while A doesn't.
+In some way I'm fine with that because in the end B enabled A to plant the trees (A (maybe) only did it so that he could then buy something from B); but it doesn't feel like reputation once it's been traded.
+Leanne — 15:58
+You can't do that
+You want to impose reciprocity
+that is the architecture that you need.
+jonas — 16:00
+I don't follow... both not what I can't do, and ... where do I want to impose reciprocity?
+And coming back to the initial (main?) source of value: Platform fees. ASSUMING the platform utility is good enough to be of some definitive value to individuals (and given there are other sinks big enough to remove excess tokens to counter too much inflation), would that alone possibly be enough, most likely enough, or most likely NOT enough to give the token value?
+Will it depend (at all?) on how much perceived value users associate with having access to the platform?
+I'm hoping that platform access will be a big driver; but I might also be in my own world with this right now because of course I'm a fanboy of it 🕺 
+Leanne — 16:11
+Look at slide 8.  This is same as a mutual credit. Tokens or medium of exchange (mud) are issued by the shepherd, wheat might be the validated Proof of Plant.  The token is backed by  goats.  What we need is for the issuer (the shepherd) to sell goats and destroy his credit.
+Google Docs
+M.U.D Money Under Deconstruction
+M.U.D Money Under Deconstruction Know Mud, Know Lotus By Leanne Ussher No Mud, No Lotus - anti consumerism? Schumacher - Small is Beautiful Lotus is nirvana money
+Image
+jonas — 16:11
+And that'd also relate to Lemons: I am not quite sure how that dynamic would happen that the market (platform) would basically be full of bad actors, but I would think that people would mainly join because they genuinely either 
+want to do something good,
+find the platform useful
+want to make money
+a mix of these
+
+If I understand correctly, the lemons problem happens mainly if those that just want to make (extract) money are in the majority (or at least the perception exists that there are only those on the platform). However, those would only be on the platform while the token has enough value, and while that is the case others would also be there. Even if at some point the tokens DON'T have much value, there might still be people who join because they genuinely want to do something good or find utility. 
+
+Is this wrong, or am I maybe a bit naive? 🤷 
+Leanne — 16:12
+This then creates a demand for the token - everyone knows that they can redeem their token for goats.
+jonas — 16:17
+Does the shepherd promise 3 goats for (a) mud? I.e. when he buys grain, is it like him saying 'here's a token that represents 3 goats, please give me the equivalent grain' ?
+Leanne — 16:17
+This is the same as a mutual credit. When someone spends and goes into debt they issue a token. It is backed by their promise to take back their accounts payable or trade debt or token.  These tokens can circulate around town and will be trusted to the extent that the issuer is gauranteeing that this token can be redeemed for their services.   Problem with this design is that some services are not valued by anyone. So you really need to back the token with something that everyone values like electricity. And preferably something with a declining marginal cost, so that there is no problem encouraging the supplier of electricity to be the currency issuer and redeemer. the electricity company could be coporate owned and its service is not for profit, but to gaurantee the stability of the currency.
+Leanne — 16:18
+It is an IOU, and there is no double spend.
+The shepherd encrypts it with his seal.
+And everyone knows that seal is redeemable in goats.
+The contract is immutable due to the envelope 
+jonas — 16:21
+I don't think that's quite what I'm doing though, which might be the problem (?)
+I guess in my scenario the 'issuer' would be the one who's planting the initial trees. They will try to spend their tokens, either (at a later point) just for market value, or (initially) as "hey, this is enough to pay half a year of platform fees; AND btw I did something really good with it so don't you want to support me, I'm a good guy?". The destroyer is the platform (fees + taxes)
+(Or is the platform the issuer as well?)
+Leanne — 16:24
+What if nobody wants your trees? Are you not incentivized to provide something as cheaply as possible to get tokens. A produce no body wants, and yet you get tokens. Or you get tokens if the committee decides trees are valuable. But in reality - no body wants to pay for trees.
+In my scenario we have supply and demand - not just supply of something that nobody wants.
+That is voted on as valuable - and yet still noone wants to pay for it
+jonas — 16:25
+The latter - I get tokens only if the community decides "Yeah, planting trees is good, and we'd like whoever does that to get a reward of xxx"
+Leanne — 16:25
+You have to close the circuilt, right at the beginning.
+Leanne — 16:26
+Who pays?
+What is sacrified?
+There is no sacrifice
+hence there is no demand
+jonas — 16:26
+I sacrifice my time/labour?
+Leanne — 16:27
+Yeh you do. Just like the bitcoin is using up encrypted energy ... for nothing.
+Your sacrifice is a reduction in total welfare
+It costs you to supply. Who is willing to pay due to their demand?
+In Economics - this would be a supply function by itself
+jonas — 16:28
+Sooo... are you saying that planting trees is not "valueable"? 🤔
+Even though the community specifically said it is valuable?
+Leanne — 16:29
+If the community doesn't want to pay, then they are worthless
+jonas — 16:29
+Why?
+Leanne — 16:29
+You should be telling me why the community values them
+tell me what the community would be willing to give up in order to have these trees.
+Once you tell me that - then we can validate your parking ticket - and give your hard work a return.
+jonas — 16:31
+Because it makes all their lifes better, they prefer walking along a street with trees than one without trees. They prefer to breath clean air rather than bad air.
+But yes, you're right, at the same time nobody wants to pay for it, because it's the commons, and why would I pay for something that everybody should pay for? 
+So... maybe that's how to make a shoe out of it: 
+Everybody who's part of the $CC economy is paying for it through taxation.
+Leanne — 16:32
+They have to be willing to pay. A common pool resource is not paid for becuase no-one wants to be the sucker who pays and others free ride. But that is not to say that people don't want to pay. they just don't want to be the sucker
+You make everyone pay a little bit, and everyone is happy to pay.
+jonas — 16:33
+Yeah, and in this system nobody is the sucker, because it's always equally paid (relative to your share of the whole)
+Leanne — 16:34
+That little bit they pay in sacrificing their service is what the tree grower gets. He gets a currency that gaurantees that he can redeem it for something real - not the trees - but the goods and services that is the equivalent trade.
+Leanne — 16:35
+What is "this" system. You mean the tax system. YES - that is chartalism.
+But there are other ways - just like the shepherd
+Or an electricity company.
+jonas — 16:37
+[they can redeem it for] the goods and services that is the equivalent trade.
+What do you mean by this? Could you elaborate a bit? 
+Leanne — 16:37
+Just as in a mutual credit - credits and debits cancel each other out.
+jonas — 16:39
+I mean the whole 'platform'  - which in this aspect yes is mainly the tax system + issuance on planting (community approved) goods/services
+Btw, I am also thinking about having a backing (goats) for it at some point; but it needs to be bootstrapped before that can happen I think 😉
+Like, a treasury with at least some amount of other pegged currencies I guess. Don't fully understand yet though when exactly that would be necessary and how much it can help prevent shocks etc; but I think once (if) the currency gains some uptake & value, it would use some of the taxes / platform fees to buy USD or gold or whatever.
+jonas — 16:47
+How far of would Kindact be from an electricity company? 
+(Is an electricity company similar to an Internet company? --> is that similar to a software company like google, that provide email/docs/browser/etc ? -->  is that similar to a platform that provides intelligence services? --> Is that similar to a platform that provides coordination services?) 
+I guess maybe hard to say because the utility of it hasn't been established / proven yet.
+I should stop asking you questions and instead incorporate what we figured out so far into the document 😉
+Leanne — 16:53
+It doesn't have to be a tax that is imposed and inescapable. Let's say there was a community maker space, and it was the only issuer of tokens, and its resource  was ONLY redeemable in $CC. So you can't access it with fiat. Maybe it was a shop that was run by Julie Roberts, and certain people in town would pay anything to have access to that maker space just to spend some time with her.   So now take this maker space and make it be the validator or all the tree projects  and the other community projects in town. It is the sole issuer of $CC that are said to be equal to NZD  1:1 (just so that there is a standard that everyone understands.  The maker space is a community service and serves the town. It is not operating to maximize profit in NZD.
+
+The committee decides to have a meeting and they put a production order out for trees to be planted in the main street. Everyone who plants a tree gets paid $CC 50 and another $CC 50 for those trees that are still healhty and thriving in 1 year's time. 
+
+The maker space has the monopoly on currency issuance (so it gets to set the supply) it is the one that issues the tokens to each person. 
+
+But we can't stop here. Just by issuing $CC does not make these tokens valuable, it is only a record recognizing that someone planted a tree. There needs to be a demand for these $CC, or in other words the people in town need to be willing to trade their goods and services in their shops, or their labour for these $CC which are intrinsically worthless - they are just digital images. No body is  their right mind is going to do that - unless they treat it like a hot potato. At somepoint when the music stop someone is left holding the bag - worthless digital images on their phone. CRAP.
+In order to avoid the musical chair scenario - where whoever is left holding the token loses - the makerspace at the same time that they issue the tokens, also schedule 5 future private sessions with Julia Roberts to go over the 3D printing module in the maker space with a promise to print something that she will sign. 
+The maker space puts a value on this offer equal to the amount of currency which it issued.
+Everyone in town knows that somebody (this has to be true not just hearsay) would be willing to redeem their tokens for that offer. So while Betsy planted a tree, and got paid in $CC 50, and does not like Julie Roberts, it doesn't matter because she knows that someone does. So she can spend her tokens at the supermarket. the supermarket may not like julia robersts, but they know that someone does, so they are willing to accept. and so on....
+the token is issued with a real backing.
+The maker space burns the tokens when they get them.
+jonas — 17:00
+The makerspace can also just ask everyone to pay them $CC 10 per entry, right? (Say, one free entry, but the second entry every month is paid; and whenever you're in the makerspace, you can take part in activities that would earn you $CC. That's also Chartalism, right?
+Leanne — 17:02
+True - but you need to ensure there is demand for this maker space. It doesn't have to be everyone - but it does have to be someone. The same with taxes. Not everyone has to pay taxes, but someone has to.
+And so you can't have it that nobody wants to pay taxes - so you have to impose this in the case of taxes.
+jonas — 17:03
+Yeah. The makerspace is popular, and everyone knows that George ALWAYS goes there, and it's famous amongst kids as well. 😉
+Leanne — 17:03
+But if the maker space is not populare, and it dissappears. then you are in trouble.
+And so the Maker Space has to honor reciprocity
+jonas — 17:04
+Although... maybe that's a bit different because George and the kids would always earn enough $CC in the makerspace to pay for their own entries - but what we'd want is them wanting to BUY $CC from Leanne...
+Leanne — 17:04
+The Maker space has to gaurantee that it will accept worthless $CC, for valuable services.
+The maker space can't be mercantile, and be max profit.
+It has to serve the community. So in order for it to be sustainable you want it to give away a service for nothing. You need it to be a club that some people will pay with $CC to get into.  And they will even buy $CC with fiat to get in.
+jonas — 17:06
+Ok. Now, how is the makerspace NOT the same as Kindact? (I feel it's basically the same? Kindact is also producing things (the Julia Roberts signed machine) that the community wants). 
+Leanne — 17:06
+Because it comes after issuance.
+This service arrives to BURN the currency. NOT to ISSUE the currency
+It is a service that a market wants. There is no dilemma in lack of julie roberst signatures.
+It is not a common pool resource that has free riders. It is a private good, it is rivalrous and excludable. It is valuable.
+It if operated as a for profit business, it would make money
+And it wouldn't want to accept your $CC.
+jonas — 17:09
+Is this a riquirement? To be rivalrous and excludable?
+Leanne — 17:10
+That is the definition of a private good. It just needs to be excludable.
+So it needs to be a private good or a club good
+jonas — 17:10
+What about common goods?
+Leanne — 17:10
+https://en.wikipedia.org/wiki/Common-pool_resource
+Common-pool resource
+In economics, a common-pool resource (CPR) is a type of good consisting of a natural or human-made resource system (e.g. an irrigation system or fishing grounds), whose size or characteristics makes it costly, but not impossible, to exclude potential beneficiaries from obtaining benefits from its use. Unlike pure public goods, common pool resour...
+Common-pool resource
+jonas — 17:11
+I provide a service that cleans the air - that would not work?
+Leanne — 17:11
+Image
+Leanne — 17:11
+That would not work.
+Not for the backing. But it can be the good you want to encourage
+you pay tokens for those who create clean air - but you back the tokens with something that would be valuable in a market place.
+An App - is valuable in a market place, and it has declining marginal cost. So it could be produced for profit and for backing.

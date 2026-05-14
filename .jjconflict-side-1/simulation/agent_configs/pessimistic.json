@@ -1,0 +1,35 @@
+{
+  "name": "pessimistic",
+  "population_mix": {
+    "contributor": 0.20,
+    "merchant": 0.10,
+    "speculator": 0.20,
+    "impact_buyer": 0.02,
+    "fraudster": 0.08,
+    "panicker": 0.40
+  },
+  "flux_schedule": [
+    {
+      "month": 0,
+      "weights": {
+        "contributor": 0.20,
+        "merchant": 0.10,
+        "speculator": 0.25,
+        "impact_buyer": 0.02,
+        "fraudster": 0.08,
+        "panicker": 0.35
+      }
+    },
+    {
+      "month": 18,
+      "weights": {
+        "contributor": 0.10,
+        "merchant": 0.05,
+        "speculator": 0.15,
+        "impact_buyer": 0.00,
+        "fraudster": 0.10,
+        "panicker": 0.60
+      }
+    }
+  ]
+}
