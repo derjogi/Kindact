@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Implementation Report | Kindact</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,600;0,700;1,400&amp;family=Inter:wght@400;500;600&amp;family=Work+Sans:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-bright": "#fafaf5",
+                    "on-secondary": "#f9faeb",
+                    "surface-container-lowest": "#ffffff",
+                    "inverse-surface": "#0d0f0c",
+                    "on-primary-container": "#51534a",
+                    "on-secondary-fixed-variant": "#5a5d52",
+                    "surface-container-low": "#f3f4ee",
+                    "secondary-container": "#e2e4d5",
+                    "surface-container-high": "#e5eae0",
+                    "primary": "#5d5f56",
+                    "surface-tint": "#5d5f56",
+                    "tertiary-fixed-dim": "#8252ec",
+                    "primary-container": "#e3e3d7",
+                    "secondary-fixed": "#e2e4d5",
+                    "primary-fixed": "#e3e3d7",
+                    "error-container": "#fe8b70",
+                    "on-primary-fixed": "#3e4038",
+                    "surface-container": "#ecefe7",
+                    "surface-container-highest": "#dee4da",
+                    "on-tertiary-container": "#000000",
+                    "on-primary": "#f8f9ec",
+                    "background": "#fafaf5",
+                    "on-background": "#2e342d",
+                    "on-error-container": "#742410",
+                    "tertiary-dim": "#622bcb",
+                    "secondary-fixed-dim": "#d4d5c7",
+                    "surface-variant": "#dee4da",
+                    "tertiary-container": "#8f60fa",
+                    "surface-dim": "#d5dcd0",
+                    "primary-fixed-dim": "#d4d5ca",
+                    "tertiary": "#6e3bd8",
+                    "inverse-on-surface": "#9c9d99",
+                    "surface": "#fafaf5",
+                    "on-surface": "#2e342d",
+                    "secondary": "#5e6055",
+                    "on-primary-fixed-variant": "#5a5c53",
+                    "error-dim": "#5c1202",
+                    "inverse-primary": "#f1f2e5",
+                    "tertiary-fixed": "#8f60fa",
+                    "on-tertiary": "#fdf7ff",
+                    "outline-variant": "#aeb4aa",
+                    "error": "#9e422c",
+                    "on-tertiary-fixed-variant": "#fdf6ff",
+                    "on-secondary-container": "#515348",
+                    "on-secondary-fixed": "#3e4036",
+                    "on-surface-variant": "#5b6159",
+                    "on-tertiary-fixed": "#ffffff",
+                    "secondary-dim": "#525449",
+                    "primary-dim": "#51534a",
+                    "on-error": "#fff7f6",
+                    "outline": "#767c74"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "fontFamily": {
+                    "headline": ["Newsreader"],
+                    "body": ["Inter"],
+                    "label": ["Work Sans"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, .serif-heading { font-family: 'Newsreader', serif; }
+        .label-text { font-family: 'Work Sans', sans-serif; }
+    </style>
+</head>
+<body class="bg-surface-dim text-on-background min-h-screen flex flex-col md:flex-row overflow-hidden">
+<!-- SideNavBar (Shared Component) -->
+<aside class="hidden md:flex h-screen w-64 border-r-0 bg-[#fafaf5] dark:bg-[#2e342d] flex-col py-4 px-3 space-y-2 shrink-0">
+<div class="mb-8 px-2">
+<h2 class="font-['Newsreader'] font-semibold text-[#51534A] text-xl">The Civic Archive</h2>
+<p class="font-['Inter'] text-sm tracking-tight text-[#5b6159] dark:text-[#d5dcd0]/70">Governance Hub</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-[#5b6159] dark:text-[#d5dcd0]/70 hover:bg-[#d5dcd0]/30 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span class="font-['Inter'] text-sm tracking-tight">Delegation</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-[#5b6159] dark:text-[#d5dcd0]/70 hover:bg-[#d5dcd0]/30 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-['Inter'] text-sm tracking-tight">Profile</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-[#5b6159] dark:text-[#d5dcd0]/70 hover:bg-[#d5dcd0]/30 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+<span class="font-['Inter'] text-sm tracking-tight">Help</span>
+</a>
+</nav>
+<div class="pt-4 border-t border-[#d5dcd0] dark:border-[#5b6159]">
+<a class="flex items-center gap-3 px-3 py-2 text-[#5b6159] dark:text-[#d5dcd0]/70 hover:bg-[#d5dcd0]/30 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-['Inter'] text-sm tracking-tight">Settings</span>
+</a>
+</div>
+</aside>
+<main class="flex-1 flex flex-col h-screen overflow-y-auto">
+<!-- TopNavBar (Shared Component) -->
+<header class="fixed top-0 w-full z-50 bg-[#fafaf5]/80 dark:bg-[#2e342d]/80 backdrop-blur-xl shadow-sm dark:shadow-none flex justify-between items-center px-6 h-16 max-w-full mx-auto md:relative">
+<div class="flex items-center gap-8">
+<span class="font-['Newsreader'] font-bold text-2xl text-[#51534A] dark:text-[#fafaf5]">Kindact</span>
+<nav class="hidden md:flex items-center gap-6">
+<a class="font-['Newsreader'] italic text-lg text-[#5b6159] dark:text-[#d5dcd0]/60 hover:text-[#51534A] transition-colors" href="#">Issues</a>
+<a class="font-['Newsreader'] italic text-lg text-[#51534A] dark:text-[#fafaf5] border-b-2 border-[#51534A] pb-1" href="#">Create</a>
+<a class="font-['Newsreader'] italic text-lg text-[#5b6159] dark:text-[#d5dcd0]/60 hover:text-[#51534A] transition-colors" href="#">Activity</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden lg:flex items-center px-3 py-1 bg-surface-container-low rounded-full">
+<span class="label-text text-xs text-on-surface-variant font-medium tracking-widest uppercase">$2,450 CC</span>
+</div>
+<button class="material-symbols-outlined text-[#5d5f56] dark:text-[#d5dcd0]" data-icon="notifications">notifications</button>
+<div class="w-8 h-8 rounded-full overflow-hidden bg-primary-container">
+<img class="w-full h-full object-cover" data-alt="Close up portrait of a professional individual with soft studio lighting and a neutral background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCX5dkDg2yKDMbhzcU8dNIlA7T_tQHOK44eSc43E9qHVU_hstDQLS4rzutV7gW2vnMUEKpbbV0dGu3m_LEzJu8eECZzqpeM_zXwu2oxrPTJBvv1ISNxUjm0EikZGvxhTLzZLEtIpuNenoOf2YEr4UFjosVQOcFeT-MT1xiGbT64TQmASIi6C6pWTxmx9SHrbhYV_yAGH1WAAzE1I2ZeLDizCGs5yHv17GHIiDX_f3eBy_gUptOTBRhkf76WqdLN7_CO_QOlsqvDzws"/>
+</div>
+</div>
+</header>
+<!-- Form Content Canvas -->
+<div class="flex-1 p-6 md:p-12 max-w-5xl mx-auto w-full pt-24 md:pt-12">
+<!-- Page Header / Breadcrumbs -->
+<div class="mb-12">
+<span class="label-text text-xs uppercase tracking-widest text-on-surface-variant">Project Execution Phase</span>
+<h1 class="text-4xl md:text-5xl font-bold mt-2 text-on-surface">Implementation Report</h1>
+<p class="text-xl italic font-['Newsreader'] text-primary mt-4 max-w-2xl leading-relaxed">
+                    Submit verified progress for audit. All reported metrics and media will be etched into the immutable project ledger.
+                </p>
+</div>
+<!-- Main Form Card (Level 1: The Desk) -->
+<section class="bg-surface rounded-xl overflow-hidden mb-12">
+<form class="space-y-12 p-8 md:p-12">
+<!-- Section 1: Classification -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+<div class="md:col-span-1">
+<h3 class="serif-heading text-2xl font-semibold">Report Type</h3>
+<p class="label-text text-sm text-on-surface-variant mt-2">Classify the scope of this update.</p>
+</div>
+<div class="md:col-span-2 flex flex-wrap gap-4">
+<label class="flex items-center gap-3 px-6 py-4 rounded-lg bg-surface-container-low cursor-pointer hover:bg-surface-container-high transition-colors flex-1 min-w-[200px]">
+<input checked="" class="text-primary focus:ring-primary border-outline" name="report_type" type="radio" value="partial"/>
+<div>
+<span class="block font-medium">Partial/Milestone</span>
+<span class="text-xs text-on-surface-variant">Ongoing phase update</span>
+</div>
+</label>
+<label class="flex items-center gap-3 px-6 py-4 rounded-lg bg-surface-container-low cursor-pointer hover:bg-surface-container-high transition-colors flex-1 min-w-[200px]">
+<input class="text-primary focus:ring-primary border-outline" name="report_type" type="radio" value="final"/>
+<div>
+<span class="block font-medium">Final Report</span>
+<span class="text-xs text-on-surface-variant">Completion of implementation</span>
+</div>
+</label>
+</div>
+</div>
+<!-- Section 2: Narrative -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+<div class="md:col-span-1">
+<h3 class="serif-heading text-2xl font-semibold">What was done</h3>
+<p class="label-text text-sm text-on-surface-variant mt-2">Detail the actions taken during this period.</p>
+</div>
+<div class="md:col-span-2">
+<textarea class="w-full bg-surface-container-low border-b-2 border-primary focus:ring-0 focus:border-on-surface px-4 py-3 min-h-[200px] text-lg font-['Inter'] leading-relaxed placeholder:text-on-surface-variant/40" placeholder="Describe the physical work, community engagement, or logistical milestones achieved..."></textarea>
+</div>
+</div>
+<!-- Section 3: Resource Tracking (Bento Grid Style) -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+<div class="md:col-span-1">
+<h3 class="serif-heading text-2xl font-semibold">Resource Tracking</h3>
+<p class="label-text text-sm text-on-surface-variant mt-2">Audit-ready quantitative data.</p>
+</div>
+<div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
+<!-- Labor Card -->
+<div class="p-6 bg-surface-container-low rounded-lg space-y-4">
+<div class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="label-text text-sm font-semibold tracking-wider uppercase">Labor</span>
+</div>
+<div class="space-y-3">
+<div class="flex flex-col">
+<label class="label-text text-xs mb-1">Total Person-Hours</label>
+<input class="bg-surface-container-highest border-0 border-b border-outline focus:border-primary text-lg px-2 py-1" placeholder="0" type="number"/>
+</div>
+<div class="flex flex-col">
+<label class="label-text text-xs mb-1">Team Count</label>
+<input class="bg-surface-container-highest border-0 border-b border-outline focus:border-primary text-lg px-2 py-1" placeholder="0" type="number"/>
+</div>
+</div>
+</div>
+<!-- Materials Card -->
+<div class="p-6 bg-surface-container-low rounded-lg space-y-4">
+<div class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+<span class="label-text text-sm font-semibold tracking-wider uppercase">Materials</span>
+</div>
+<div class="space-y-3">
+<div class="flex flex-col">
+<label class="label-text text-xs mb-1">Items / Quantities</label>
+<textarea class="bg-surface-container-highest border-0 border-b border-outline focus:border-primary text-sm px-2 py-1 h-20" placeholder="e.g. 50kg Cement, 12 Solar Panels"></textarea>
+</div>
+</div>
+</div>
+<!-- Outputs Card -->
+<div class="sm:col-span-2 p-6 bg-surface-container-low rounded-lg space-y-4">
+<div class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined" data-icon="auto_awesome">auto_awesome</span>
+<span class="label-text text-sm font-semibold tracking-wider uppercase">Tangible Outputs</span>
+</div>
+<input class="w-full bg-surface-container-highest border-0 border-b border-outline focus:border-primary text-sm px-2 py-1" placeholder="e.g. 500m Road Paved, 3 Water Purifiers Installed" type="text"/>
+</div>
+</div>
+</div>
+<!-- Section 4: Evidence (The Document Layer) -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+<div class="md:col-span-1">
+<h3 class="serif-heading text-2xl font-semibold">Evidence Upload</h3>
+<p class="label-text text-sm text-on-surface-variant mt-2">Visual proof for verification.</p>
+</div>
+<div class="md:col-span-2 space-y-6">
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<!-- Photo Slot 1 -->
+<div class="aspect-video bg-surface-container-low rounded-lg overflow-hidden flex flex-col group relative">
+<img class="w-full h-full object-cover" data-alt="High angle view of a modern construction site with concrete foundations and specialized building equipment under bright daylight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCKyxP5Z65RnNyGi8WuW_0kXsWeiOV_RrQqlG1bA_R78yDuFfMz4uRqI8mJUL9ehWpvdp-P-iBTTPlg5_9Den1rzfIpdRE4rpH-Jpjeu6Pyh3vAs72Pb7eI1fQX0YgwNTO9_TyXbW1gEACDpzmYzxWBqxnJTNdGMjAG2O7owm3N2l_SPWmzQjMh6vmWFoR1JpDM9Qctawv8VOzZYd9OWmg9FEFGlJTiiRId0O1LjPzCYezdC9PZnndHiptNRdqlc8m3mgNMzxQrVQU"/>
+<div class="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/80 to-transparent">
+<input class="w-full bg-transparent border-0 border-b border-white/30 focus:border-white text-xs text-white placeholder:text-white/50 px-0" placeholder="Add caption..." type="text"/>
+</div>
+<button class="absolute top-2 right-2 bg-white/20 hover:bg-white/40 p-1 rounded-full backdrop-blur-sm transition-colors">
+<span class="material-symbols-outlined text-white text-sm" data-icon="close">close</span>
+</button>
+</div>
+<!-- Upload Trigger -->
+<div class="aspect-video border-2 border-dashed border-outline-variant bg-surface-container-low/50 rounded-lg flex flex-col items-center justify-center gap-3 cursor-pointer hover:bg-surface-container-low transition-colors group">
+<div class="p-3 rounded-full bg-primary-container text-primary group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined" data-icon="add_photo_alternate">add_photo_alternate</span>
+</div>
+<div class="text-center">
+<span class="label-text text-sm font-medium">Upload Media</span>
+<span class="block label-text text-[10px] text-on-surface-variant uppercase">JPG, PNG, MP4 up to 50MB</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footnote / Immutable Warning -->
+<div class="pt-8 border-t border-surface-container-highest">
+<div class="flex items-start gap-3 text-on-surface-variant bg-surface-container-low p-4 rounded-lg">
+<span class="material-symbols-outlined text-primary" data-icon="verified_user">verified_user</span>
+<p class="text-sm font-medium">
+<span class="font-bold">Note:</span> All evidence is immutable and content-addressed for auditability. Once submitted, this data becomes a permanent part of the decentralised civic archive.
+                            </p>
+</div>
+</div>
+<!-- Submission Actions -->
+<div class="flex flex-col sm:flex-row justify-end gap-4 pt-6">
+<button class="px-8 py-3 label-text font-medium text-primary hover:bg-primary-container/20 transition-colors" type="button">Save as Draft</button>
+<button class="px-10 py-3 bg-primary text-on-primary rounded-md font-semibold tracking-wide hover:brightness-110 transition-all shadow-sm" type="submit">Submit Implementation Report</button>
+</div>
+</form>
+</section>
+</div>
+<!-- Footer Decoration / Detail -->
+<footer class="mt-auto p-8 text-center text-on-surface-variant/40 label-text text-[10px] tracking-widest uppercase">
+            Protocol: Kindact Proof-of-Work v2.4 // The Civic Archive // 2024
+        </footer>
+</main>
+<!-- Mobile BottomNavBar (Shared Component) -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 bg-surface-bright/90 backdrop-blur-xl border-t-0 shadow-[0_-4px_12px_rgba(0,0,0,0.05)] flex justify-around items-center h-16 z-50">
+<button class="flex flex-col items-center gap-1 text-[#5b6159]">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span class="text-[10px] label-text">Wallet</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-[#51534A]">
+<span class="material-symbols-outlined font-bold" data-icon="create_new_folder" style="font-variation-settings: 'FILL' 1;">create_new_folder</span>
+<span class="text-[10px] label-text font-bold">Create</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-[#5b6159]">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="text-[10px] label-text">Profile</span>
+</button>
+</nav>
+</body></html>

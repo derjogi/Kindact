@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Issues - Kindact</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,600;0,700;1,400&amp;family=Inter:wght@400;500;600&amp;family=Work+Sans:wght@400;500&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-bright": "#fafaf5",
+                    "on-secondary": "#f9faeb",
+                    "surface-container-lowest": "#ffffff",
+                    "inverse-surface": "#0d0f0c",
+                    "on-primary-container": "#51534a",
+                    "on-secondary-fixed-variant": "#5a5d52",
+                    "surface-container-low": "#f3f4ee",
+                    "secondary-container": "#e2e4d5",
+                    "surface-container-high": "#e5eae0",
+                    "primary": "#5d5f56",
+                    "surface-tint": "#5d5f56",
+                    "tertiary-fixed-dim": "#8252ec",
+                    "primary-container": "#e3e3d7",
+                    "secondary-fixed": "#e2e4d5",
+                    "primary-fixed": "#e3e3d7",
+                    "error-container": "#fe8b70",
+                    "on-primary-fixed": "#3e4038",
+                    "surface-container": "#ecefe7",
+                    "surface-container-highest": "#dee4da",
+                    "on-tertiary-container": "#000000",
+                    "on-primary": "#f8f9ec",
+                    "background": "#fafaf5",
+                    "on-background": "#2e342d",
+                    "on-error-container": "#742410",
+                    "tertiary-dim": "#622bcb",
+                    "secondary-fixed-dim": "#d4d5c7",
+                    "surface-variant": "#dee4da",
+                    "tertiary-container": "#8f60fa",
+                    "surface-dim": "#d5dcd0",
+                    "primary-fixed-dim": "#d4d5ca",
+                    "tertiary": "#6e3bd8",
+                    "inverse-on-surface": "#9c9d99",
+                    "surface": "#fafaf5",
+                    "on-surface": "#2e342d",
+                    "secondary": "#5e6055",
+                    "on-primary-fixed-variant": "#5a5c53",
+                    "error-dim": "#5c1202",
+                    "inverse-primary": "#f1f2e5",
+                    "tertiary-fixed": "#8f60fa",
+                    "on-tertiary": "#fdf7ff",
+                    "outline-variant": "#aeb4aa",
+                    "error": "#9e422c",
+                    "on-tertiary-fixed-variant": "#fdf6ff",
+                    "on-secondary-container": "#515348",
+                    "on-secondary-fixed": "#3e4036",
+                    "on-surface-variant": "#5b6159",
+                    "on-tertiary-fixed": "#ffffff",
+                    "secondary-dim": "#525449",
+                    "primary-dim": "#51534a",
+                    "on-error": "#fff7f6",
+                    "outline": "#767c74"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "fontFamily": {
+                    "headline": ["Newsreader"],
+                    "body": ["Inter"],
+                    "label": ["Work Sans"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        .font-newsreader { font-family: 'Newsreader', serif; }
+        .font-work { font-family: 'Work Sans', sans-serif; }
+    </style>
+</head>
+<body class="bg-surface-bright text-on-surface">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 bg-[#fafaf5]/80 backdrop-blur-xl shadow-sm">
+<div class="flex justify-between items-center px-6 h-16 w-full max-w-full mx-auto">
+<div class="flex items-center gap-8">
+<span class="font-headline font-bold text-2xl text-[#51534A]">Kindact</span>
+<nav class="hidden md:flex space-x-6">
+<a class="font-headline italic text-lg text-[#51534A] border-b-2 border-[#51534A] pb-1 transition-colors" href="#">Issues</a>
+<a class="font-headline italic text-lg text-[#5b6159] hover:text-[#51534A] transition-colors" href="#">Create</a>
+<a class="font-headline italic text-lg text-[#5b6159] hover:text-[#51534A] transition-colors" href="#">Activity</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden md:flex items-center px-3 py-1 bg-surface-container rounded-full text-on-primary-container font-label text-sm font-medium">
+                    $2,450 CC
+                </div>
+<button class="material-symbols-outlined text-on-surface-variant p-2 hover:bg-surface-container rounded-full transition-colors" data-icon="notifications">notifications</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant">
+<img alt="User avatar" data-alt="Close-up portrait of a professional woman with a calm expression in soft natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxZjYBnBOXV7JfCywvyBzo-9AoVMxvkoX1htY3v_YFsvyDs3-P8u1HrmZOXD_e4cxRvlwTg7eBXXCT0WyusQ0ltsE4sS7EuT5hwm4HzBXne7j-Y1xdG-z4a-7BcLkwcZ_P2IU755WsCmYlITOm0J00xmLTsIhlfnYJ-EDEExRgzpC1ELUQBobj9TIGadjsZrKLMnZNtdMJ864Ds072bLqUmRDuve4pYioexFwtPG-qPyadJp4JJCAD6-gnDiBBS6KzByQ77vrwqLM"/>
+</div>
+</div>
+</div>
+<div class="bg-[#d5dcd0] h-[1px] opacity-20"></div>
+</header>
+<div class="flex min-h-screen pt-16">
+<!-- SideNavBar (Hidden on Mobile) -->
+<aside class="hidden lg:flex flex-col h-[calc(100vh-4rem)] w-64 py-4 px-3 space-y-2 bg-[#fafaf5] sticky top-16">
+<div class="mb-6 px-4">
+<h2 class="font-headline font-semibold text-[#51534A]">The Civic Archive</h2>
+<p class="text-xs text-on-surface-variant uppercase tracking-wider font-label">Governance Hub</p>
+</div>
+<a class="flex items-center gap-3 px-4 py-2.5 text-[#5b6159] hover:bg-[#d5dcd0]/50 transition-all duration-200 rounded-md" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span class="font-body text-sm tracking-tight">Delegation</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2.5 text-[#5b6159] hover:bg-[#d5dcd0]/50 transition-all duration-200 rounded-md" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-body text-sm tracking-tight">Profile</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2.5 text-[#5b6159] hover:bg-[#d5dcd0]/50 transition-all duration-200 rounded-md" href="#">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+<span class="font-body text-sm tracking-tight">Help</span>
+</a>
+<div class="mt-auto border-t border-surface-container pt-4">
+<a class="flex items-center gap-3 px-4 py-2.5 text-[#5b6159] hover:bg-[#d5dcd0]/50 transition-all duration-200 rounded-md" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-body text-sm tracking-tight">Settings</span>
+</a>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 px-4 md:px-8 py-8 max-w-7xl mx-auto w-full">
+<!-- Community Health Bar -->
+<section class="mb-10 p-6 bg-surface-container-low rounded-xl border-l-4 border-primary">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+<div class="flex flex-col">
+<span class="font-label text-xs font-medium text-on-surface-variant uppercase tracking-widest mb-1">Community Pulse</span>
+<h1 class="font-headline text-3xl font-bold">Network Health Overview</h1>
+</div>
+<div class="grid grid-cols-3 gap-8">
+<div class="text-center md:text-left">
+<p class="font-label text-xs text-on-surface-variant mb-1">Total $CC Minted</p>
+<p class="font-headline text-2xl font-semibold text-primary">1.2M</p>
+</div>
+<div class="text-center md:text-left">
+<p class="font-label text-xs text-on-surface-variant mb-1">Verified Actions</p>
+<p class="font-headline text-2xl font-semibold text-primary">15</p>
+</div>
+<div class="text-center md:text-left">
+<p class="font-label text-xs text-on-surface-variant mb-1">Active Issues</p>
+<p class="font-headline text-2xl font-semibold text-primary">42</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Search & Filters -->
+<section class="mb-8 space-y-4">
+<div class="flex flex-col md:flex-row gap-4">
+<div class="relative flex-1 group">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full pl-12 pr-4 py-3 bg-surface-container-high border-none rounded-md focus:ring-1 focus:ring-primary text-on-surface transition-all" placeholder="Search the archive..." type="text"/>
+</div>
+<div class="flex gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
+<button class="flex items-center gap-2 px-4 py-2 bg-primary text-on-primary rounded-md text-sm font-medium whitespace-nowrap">
+<span class="material-symbols-outlined text-sm" data-icon="filter_list">filter_list</span>
+                            All Issues
+                        </button>
+<button class="flex items-center gap-2 px-4 py-2 bg-surface-container text-on-surface-variant hover:bg-surface-container-highest transition-colors rounded-md text-sm font-medium whitespace-nowrap">Scope</button>
+<button class="flex items-center gap-2 px-4 py-2 bg-surface-container text-on-surface-variant hover:bg-surface-container-highest transition-colors rounded-md text-sm font-medium whitespace-nowrap">Topics</button>
+</div>
+</div>
+<div class="flex gap-2 overflow-x-auto py-1 scrollbar-hide">
+<button class="px-4 py-1.5 rounded-full border border-outline-variant text-xs font-label text-on-surface-variant hover:border-primary hover:text-primary transition-colors whitespace-nowrap">Deliberating</button>
+<button class="px-4 py-1.5 rounded-full border border-outline-variant text-xs font-label text-on-surface-variant hover:border-primary hover:text-primary transition-colors whitespace-nowrap">Voting</button>
+<button class="px-4 py-1.5 rounded-full border border-outline-variant text-xs font-label text-on-surface-variant hover:border-primary hover:text-primary transition-colors whitespace-nowrap">Implementing</button>
+<button class="px-4 py-1.5 rounded-full border border-outline-variant text-xs font-label text-on-surface-variant hover:border-primary hover:text-primary transition-colors whitespace-nowrap">Adopted</button>
+</div>
+</section>
+<!-- Issue Cards Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+<!-- Card 1 -->
+<div class="bg-surface-container-lowest p-6 rounded-md hover:shadow-lg transition-all group border border-transparent hover:border-surface-container-highest flex flex-col h-full">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-2 px-2 py-1 bg-surface-container text-on-primary-container rounded text-[10px] uppercase tracking-tighter font-bold">
+                            Local
+                        </div>
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span class="text-xs font-label text-on-surface-variant">Deliberating</span>
+</div>
+</div>
+<h3 class="font-headline text-xl font-bold mb-3 leading-tight group-hover:text-primary transition-colors">Fix drainage on Elm Street</h3>
+<p class="text-sm text-on-surface-variant line-clamp-2 mb-6 font-body">Ongoing flooding during heavy rain is causing erosion of private property and hazardous driving conditions near the intersection.</p>
+<div class="mt-auto pt-6 border-t border-surface-container flex justify-between items-center">
+<div class="flex -space-x-2">
+<img alt="Avatar" class="w-6 h-6 rounded-full border-2 border-surface-container-lowest" data-alt="Portrait of a smiling young man in a denim shirt against a blurred office background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA2yNXbNOT8oiQBWoXax-q5DljZ9QdRII4DnWZaJQVHuNwngdkddP01iNqyaFrfzzm1t0CsfGRhNUXjU4676ZRmqRU1Zplo92xQ_lDCoeWqJs4OQfBTpi_2jrztHk383o3e7wfP57GzvWSCj2PB32QZ92W4GBZ1awocxXn62ud2DJoa0U037iRjMZWHXkFkWB3C0tEqmvqoR48ZpROsEDFhCOPXBWZbSdiCZB-aHm-nO7S32e2pYkRJ06nQiyw6TQZrGhRiZ-Xk13w"/>
+<img alt="Avatar" class="w-6 h-6 rounded-full border-2 border-surface-container-lowest" data-alt="Close-up of a joyful woman with curly hair looking directly at the camera with a bright smile" src="https://lh3.googleusercontent.com/aida-public/AB6AXuARRx4SsqOXQNrnOn2nJEhY7pLI8SnojknSTGBJpGNQ7I5ZDAEvirBWMTFXrCMKaJNH5IIrf1WS3cJT0WWVUY5C8jgBmb4TNkcwhTztktl_iYnkNpsYZcgzq1WdzGhuJSYMqMt46vj5yaePNRc9XkCLd3TWbiE0a9RiisQEtr8BWEdMSBbmgmGZrnrHPoupGnBSB1-IW-JiBvjXPqR6nto9g8Zz2Os3fNn0hlhduR_2x-mSz6Vi2XeaKn6HvRLpUtyjs_-j5e9RFyY"/>
+<div class="w-6 h-6 rounded-full bg-surface-container-highest border-2 border-surface-container-lowest flex items-center justify-center text-[10px] font-bold text-on-surface-variant">+12</div>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-sm" data-icon="schedule">schedule</span>
+<span class="text-xs font-label">2h ago</span>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-container-lowest p-6 rounded-md hover:shadow-lg transition-all group border border-transparent hover:border-surface-container-highest flex flex-col h-full">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-2 px-2 py-1 bg-surface-container text-on-primary-container rounded text-[10px] uppercase tracking-tighter font-bold">
+                            National
+                        </div>
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-blue-500"></span>
+<span class="text-xs font-label text-on-surface-variant">Voting</span>
+</div>
+</div>
+<h3 class="font-headline text-xl font-bold mb-3 leading-tight group-hover:text-primary transition-colors">Community solar panel program</h3>
+<p class="text-sm text-on-surface-variant line-clamp-2 mb-6 font-body">Incentivizing the installation of shared solar grids in residential districts to reduce carbon footprint and lower energy costs.</p>
+<div class="mt-auto pt-6 border-t border-surface-container flex justify-between items-center">
+<div class="flex -space-x-2">
+<img alt="Avatar" class="w-6 h-6 rounded-full border-2 border-surface-container-lowest" data-alt="Portrait of a middle-aged man with glasses and a kind expression in a natural setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCeJWRolyIBNJLWriKMckeUiNH7IM_CBZeK4hYMlDpvPeqJcsACWoU0v-ytliu_n6savL0ENZ3-jNrkYMTHTYqXtCX-34jCXCC23ZnE9JmKcnzRZTVnoRs1SVxJM6PUokxDyfq1NsNE6OVMGa25KfGfReOwm6NaGwohNGr6v04Okzc-F8djKFFdMSYIWE7os9dlytTw_MQik0zmyR8RfVnegak8VIdZvB8m8-aCZnqq9Pxa81ZS4xSUdOo9V1PAfyf0ovdze0WRCD4"/>
+<img alt="Avatar" class="w-6 h-6 rounded-full border-2 border-surface-container-lowest" data-alt="Professional woman in a blazer looking confidently at the camera against a neutral background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNm-gDl6tS5p5KvZYDsm1DDzbYeyKrDzvFoeYOMVVQEvue2F9yvdPhU-YwIU1Jqs6L_lLcpQPfPe_AWSlWvxDBQikA7oheZ9XbMfocIF21Lt7j4LO-B5wM098-_eX4dV_e025XE0uT7itE1H70OaRY35q2meaKddNQU-0MgmYmz9eQtrpx1K3s6DPYUZiXQwOu1tgTegHtju_v5Jq-5rLK-HO_oy6dnd2lzPPLqDLK7VutWaSZ00-dPp5vI8h5peaVRob5OK29umA"/>
+<div class="w-6 h-6 rounded-full bg-surface-container-highest border-2 border-surface-container-lowest flex items-center justify-center text-[10px] font-bold text-on-surface-variant">+85</div>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-sm" data-icon="schedule">schedule</span>
+<span class="text-xs font-label">5h ago</span>
+</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface-container-lowest p-6 rounded-md hover:shadow-lg transition-all group border border-transparent hover:border-surface-container-highest flex flex-col h-full">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-2 px-2 py-1 bg-surface-container text-on-primary-container rounded text-[10px] uppercase tracking-tighter font-bold">
+                            Local
+                        </div>
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-amber-500"></span>
+<span class="text-xs font-label text-on-surface-variant">Implementing</span>
+</div>
+</div>
+<h3 class="font-headline text-xl font-bold mb-3 leading-tight group-hover:text-primary transition-colors">Park cleanup initiative</h3>
+<p class="text-sm text-on-surface-variant line-clamp-2 mb-6 font-body">Bi-weekly community volunteer sessions to restore the Riverside Park area, removing debris and invasive species.</p>
+<div class="mt-auto pt-6 border-t border-surface-container flex justify-between items-center">
+<div class="flex -space-x-2">
+<img alt="Avatar" class="w-6 h-6 rounded-full border-2 border-surface-container-lowest" data-alt="Candid portrait of a young woman with a thoughtful expression looking away in soft evening light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCOSPnjuW6XW902E2YHxdWS0bv2lSd41O0nQljdlEExfVtykBpH1-MlsXbZfsdHLYc9q_Cn1LqQVNqnInz-8Jv7atWTScLIs84V2aBDQPTt5ALMHpZ7IkG3KVXARAPOnuomiwWGPfX5Vz4OVkYbxWvitSPwSqI21gy1u7uQczn5IAo7OMZJI94jjSJSAo-9pyVIdzMCn28ghZyRcZbb5KK2JhcK33_144KyQppmdiPkoLlf0BABa8fCbHyZRHro_kCezIUX3VY7q6A"/>
+<div class="w-6 h-6 rounded-full bg-surface-container-highest border-2 border-surface-container-lowest flex items-center justify-center text-[10px] font-bold text-on-surface-variant">+24</div>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-sm" data-icon="schedule">schedule</span>
+<span class="text-xs font-label">1d ago</span>
+</div>
+</div>
+</div>
+<!-- Card 4 (Asymmetric Large Card) -->
+<div class="md:col-span-2 bg-primary text-on-primary p-8 rounded-md flex flex-col md:flex-row gap-8 items-center overflow-hidden relative group">
+<div class="relative z-10 flex-1">
+<span class="font-label text-xs font-medium uppercase tracking-widest opacity-80 mb-2 block">Featured Proposal</span>
+<h3 class="font-headline text-2xl md:text-3xl font-bold mb-4">The Civic Archive Digitization Project</h3>
+<p class="text-on-primary/80 font-body mb-6 max-w-lg leading-relaxed">A massive effort to bring all historical local records into the Kindact ecosystem for transparent governance and historical preservation.</p>
+<div class="flex items-center gap-6">
+<div class="flex flex-col">
+<span class="text-xs opacity-60">Status</span>
+<span class="font-bold">Voting Phase 2</span>
+</div>
+<div class="flex flex-col">
+<span class="text-xs opacity-60">Commitment</span>
+<span class="font-bold">120,000 $CC</span>
+</div>
+</div>
+</div>
+<div class="relative w-full md:w-1/3 aspect-square rounded-md overflow-hidden shadow-2xl transform group-hover:scale-105 transition-transform duration-500">
+<img alt="Library illustration" class="object-cover w-full h-full opacity-90" data-alt="High-angle shot of a grand classic library with rows of wooden shelves and soft warm overhead lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCIp5VoaiOtjJRljGWcmofYFiu6O_bYQw2oHaA6Iat9sHDApIiTRh31NUZ7zumu2aQQN12ElVhcOrNAyqx3zROxbYUB1ThD_NoWYEqXQ00N9SaMyUcfhDPedDcCoDLZWVMLX_w_GqyMCFX7-_FS3cV6b088EyuHA3h3h2Ji0d06t8TV4i-9eIV47RCwXjLP_7U3vwyfKzLGZfDjR53oNsJmgi7LlzuGU4v60RlJjvmaPHGzr3vvNNOk_tvoJVJskD8rty1GNXH_DkE"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/60 to-transparent"></div>
+</div>
+<div class="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16 blur-3xl"></div>
+</div>
+<!-- Card 5 -->
+<div class="bg-surface-container-lowest p-6 rounded-md hover:shadow-lg transition-all group border border-transparent hover:border-surface-container-highest flex flex-col h-full">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-2 px-2 py-1 bg-surface-container text-on-primary-container rounded text-[10px] uppercase tracking-tighter font-bold">
+                            Local
+                        </div>
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-on-surface-variant"></span>
+<span class="text-xs font-label text-on-surface-variant">Completed</span>
+</div>
+</div>
+<h3 class="font-headline text-xl font-bold mb-3 leading-tight group-hover:text-primary transition-colors">School zone speed bumps</h3>
+<p class="text-sm text-on-surface-variant line-clamp-2 mb-6 font-body">Installation of traffic calming measures on 4th Ave near the primary school entrance to ensure student safety.</p>
+<div class="mt-auto pt-6 border-t border-surface-container flex justify-between items-center">
+<div class="flex -space-x-2">
+<img alt="Avatar" class="w-6 h-6 rounded-full border-2 border-surface-container-lowest" data-alt="Headshot of a man with a beard and friendly expression wearing a casual shirt" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC3a-N1NNxFFMWL9aeO6QD4QnVWNvoaFy5-yAG4GUUbM1ysBzvJ-Ent67BMWanYShsqaux9rRjej0JnbEx7Gm5d-lgpEawv0FuqvAOyHXNxtjECmX43CMQyIcOsIvXsab5D9AeJoxPhr1e53fe1yyRsDGUbBkdPi_OLnGm_3vAWL_yC2VVpduf6ajCoWKmKAbcVQhQ_C4tO64ZuCOVYleewv0_n0AZgEf69GBPJCG4xieynta7jKcD9jSy55D0q_d-GA1pOzF6LtsY"/>
+<div class="w-6 h-6 rounded-full bg-surface-container-highest border-2 border-surface-container-lowest flex items-center justify-center text-[10px] font-bold text-on-surface-variant">+42</div>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-sm" data-icon="check_circle">check_circle</span>
+<span class="text-xs font-label">Completed</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Floating Action Button -->
+<button class="fixed bottom-8 right-8 w-14 h-14 bg-primary text-on-primary rounded-full shadow-xl flex items-center justify-center hover:bg-primary-dim transition-all hover:scale-105 active:scale-95 group z-50">
+<span class="material-symbols-outlined text-2xl" data-icon="add">add</span>
+<span class="absolute right-full mr-4 px-3 py-1.5 bg-on-surface text-surface text-xs font-medium rounded-md opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap">New Issue</span>
+</button>
+</body></html>

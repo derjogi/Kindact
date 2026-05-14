@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Kindact | Issue Detail</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,600;0,700;1,400&amp;family=Inter:wght@400;500;600&amp;family=Work+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-bright": "#fafaf5",
+                        "on-secondary": "#f9faeb",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-surface": "#0d0f0c",
+                        "on-primary-container": "#51534a",
+                        "on-secondary-fixed-variant": "#5a5d52",
+                        "surface-container-low": "#f3f4ee",
+                        "secondary-container": "#e2e4d5",
+                        "surface-container-high": "#e5eae0",
+                        "primary": "#5d5f56",
+                        "surface-tint": "#5d5f56",
+                        "tertiary-fixed-dim": "#8252ec",
+                        "primary-container": "#e3e3d7",
+                        "secondary-fixed": "#e2e4d5",
+                        "primary-fixed": "#e3e3d7",
+                        "error-container": "#fe8b70",
+                        "on-primary-fixed": "#3e4038",
+                        "surface-container": "#ecefe7",
+                        "surface-container-highest": "#dee4da",
+                        "on-tertiary-container": "#000000",
+                        "on-primary": "#f8f9ec",
+                        "background": "#fafaf5",
+                        "on-background": "#2e342d",
+                        "on-error-container": "#742410",
+                        "tertiary-dim": "#622bcb",
+                        "secondary-fixed-dim": "#d4d5c7",
+                        "surface-variant": "#dee4da",
+                        "tertiary-container": "#8f60fa",
+                        "surface-dim": "#d5dcd0",
+                        "primary-fixed-dim": "#d4d5ca",
+                        "tertiary": "#6e3bd8",
+                        "inverse-on-surface": "#9c9d99",
+                        "surface": "#fafaf5",
+                        "on-surface": "#2e342d",
+                        "secondary": "#5e6055",
+                        "on-primary-fixed-variant": "#5a5c53",
+                        "error-dim": "#5c1202",
+                        "inverse-primary": "#f1f2e5",
+                        "tertiary-fixed": "#8f60fa",
+                        "on-tertiary": "#fdf7ff",
+                        "outline-variant": "#aeb4aa",
+                        "error": "#9e422c",
+                        "on-tertiary-fixed-variant": "#fdf6ff",
+                        "on-secondary-container": "#515348",
+                        "on-secondary-fixed": "#3e4036",
+                        "on-surface-variant": "#5b6159",
+                        "on-tertiary-fixed": "#ffffff",
+                        "secondary-dim": "#525449",
+                        "primary-dim": "#51534a",
+                        "on-error": "#fff7f6",
+                        "outline": "#767c74"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Newsreader"],
+                        "body": ["Inter"],
+                        "label": ["Work Sans"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, h4, .serif-text { font-family: 'Newsreader', serif; }
+        .label-text { font-family: 'Work Sans', sans-serif; }
+        .glass-nav { backdrop-filter: blur(20px); }
+    </style>
+</head>
+<body class="bg-surface-dim text-on-surface selection:bg-tertiary/20">
+<!-- Top Navigation -->
+<nav class="fixed top-0 w-full z-50 bg-[#fafaf5]/80 dark:bg-[#2e342d]/80 backdrop-blur-xl shadow-sm dark:shadow-none h-16 flex justify-between items-center px-6">
+<div class="flex items-center gap-8">
+<span class="font-['Newsreader'] font-bold text-2xl text-[#51534A] dark:text-[#fafaf5]">Kindact</span>
+<div class="hidden md:flex space-x-6">
+<a class="text-[#51534A] dark:text-[#fafaf5] border-b-2 border-[#51534A] pb-1 font-['Newsreader'] italic text-lg transition-colors" href="#">Issues</a>
+<a class="text-[#5b6159] dark:text-[#d5dcd0]/60 hover:text-[#51534A] transition-colors font-['Newsreader'] italic text-lg" href="#">Create</a>
+<a class="text-[#5b6159] dark:text-[#d5dcd0]/60 hover:text-[#51534A] transition-colors font-['Newsreader'] italic text-lg" href="#">Activity</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden md:flex bg-surface-container px-3 py-1.5 rounded-full items-center gap-2">
+<span class="material-symbols-outlined text-sm text-primary">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-48 placeholder-on-surface-variant/50" placeholder="Search the archive..." type="text"/>
+</div>
+<div class="flex items-center gap-3">
+<span class="text-[#5d5f56] dark:text-[#d5dcd0] font-medium">$2,450 CC</span>
+<span class="material-symbols-outlined text-[#5d5f56] dark:text-[#d5dcd0] cursor-pointer active:opacity-70">notifications</span>
+<img alt="User avatar" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCxjtdWnghugfwadXOIm7cLKsiCKU6E8zTp2Sv-rp0u1_xhH7Lq6RnS9xVPv20gvJHs-GHLWSSm2zMIh8sabicuj1vp5oreW4-rex9mfOqIMgcnpuFc-shBM1mVV3FmP4axXSEBtQVcMEzL8VF14ue_7C2BNz8qvmKS9vHvmFdFZXtPC0koMuy9RMP3-fGs28bc1o-DmAJ6y33M5RcjJW_ALywBPJDgYrrRoFOfg-Zjt-rla9kd8rdBNuw7k2C_UaYwA-syImE3mCY"/>
+</div>
+</div>
+</nav>
+<!-- Side Navigation -->
+<aside class="fixed left-0 top-16 h-[calc(100vh-64px)] w-64 bg-[#fafaf5] dark:bg-[#2e342d] hidden md:flex flex-col py-4 px-3 space-y-2">
+<div class="px-3 mb-6">
+<h2 class="font-['Newsreader'] font-semibold text-[#51534A] text-xl">The Civic Archive</h2>
+<p class="text-[#5d5f56] dark:text-[#d5dcd0] text-sm tracking-tight">Governance Hub</p>
+</div>
+<div class="space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-[#5b6159] dark:text-[#d5dcd0]/70 hover:bg-[#d5dcd0]/30 transition-all duration-200 rounded-md" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="font-['Inter'] text-sm tracking-tight">Delegation</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-[#5b6159] dark:text-[#d5dcd0]/70 hover:bg-[#d5dcd0]/30 transition-all duration-200 rounded-md" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-['Inter'] text-sm tracking-tight">Profile</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-[#5b6159] dark:text-[#d5dcd0]/70 hover:bg-[#d5dcd0]/30 transition-all duration-200 rounded-md" href="#">
+<span class="material-symbols-outlined">help_outline</span>
+<span class="font-['Inter'] text-sm tracking-tight">Help</span>
+</a>
+</div>
+<div class="mt-auto space-y-1">
+<div class="h-[1px] bg-[#d5dcd0] dark:bg-[#5b6159] my-4 opacity-20"></div>
+<a class="flex items-center gap-3 px-3 py-2 text-[#5b6159] dark:text-[#d5dcd0]/70 hover:bg-[#d5dcd0]/30 transition-all duration-200 rounded-md" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-['Inter'] text-sm tracking-tight">Settings</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="md:ml-64 pt-20 px-6 pb-12">
+<!-- Lifecycle Stepper -->
+<div class="max-w-7xl mx-auto mb-10 overflow-x-auto">
+<div class="flex items-center justify-between min-w-[800px] bg-surface p-4 rounded-xl shadow-sm border border-outline-variant/10">
+<div class="flex items-center gap-2 group cursor-default">
+<div class="w-8 h-8 rounded-full flex items-center justify-center bg-surface-container-highest text-on-surface-variant text-xs font-bold">1</div>
+<span class="label-text text-sm font-medium text-on-surface-variant">Identify</span>
+</div>
+<div class="flex-1 h-[1px] bg-outline-variant mx-4 opacity-30"></div>
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full flex items-center justify-center bg-primary text-on-primary text-xs font-bold ring-4 ring-primary/10">2</div>
+<span class="label-text text-sm font-bold text-primary underline decoration-2 underline-offset-4">Deliberate</span>
+</div>
+<div class="flex-1 h-[1px] bg-outline-variant mx-4 opacity-30"></div>
+<div class="flex items-center gap-2 opacity-40">
+<div class="w-8 h-8 rounded-full flex items-center justify-center bg-surface-container-highest text-on-surface-variant text-xs font-bold">3</div>
+<span class="label-text text-sm font-medium">Decide</span>
+</div>
+<div class="flex-1 h-[1px] bg-outline-variant mx-4 opacity-30"></div>
+<div class="flex items-center gap-2 opacity-40">
+<div class="w-8 h-8 rounded-full flex items-center justify-center bg-surface-container-highest text-on-surface-variant text-xs font-bold">4</div>
+<span class="label-text text-sm font-medium">Implement</span>
+</div>
+<div class="flex-1 h-[1px] bg-outline-variant mx-4 opacity-30"></div>
+<div class="flex items-center gap-2 opacity-40">
+<div class="w-8 h-8 rounded-full flex items-center justify-center bg-surface-container-highest text-on-surface-variant text-xs font-bold">5</div>
+<span class="label-text text-sm font-medium">Reward</span>
+</div>
+</div>
+</div>
+<!-- Header Section -->
+<header class="max-w-7xl mx-auto mb-12">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div class="space-y-4">
+<div class="flex items-center gap-3">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-high text-primary text-xs font-semibold label-text">
+<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            Deliberating
+                        </span>
+<span class="label-text text-xs text-on-surface-variant uppercase tracking-widest">Scope: Local (Ward 4)</span>
+</div>
+<h1 class="text-4xl md:text-5xl font-bold text-on-background tracking-tight max-w-2xl">Protected bike lane network</h1>
+<div class="flex flex-wrap gap-8 pt-4">
+<div class="flex flex-col">
+<span class="label-text text-[10px] uppercase tracking-tighter text-on-surface-variant">Estimated Cost</span>
+<span class="font-body font-semibold text-lg">$45k</span>
+</div>
+<div class="flex flex-col">
+<span class="label-text text-[10px] uppercase tracking-tighter text-on-surface-variant">Timeline</span>
+<span class="font-body font-semibold text-lg">6 months</span>
+</div>
+<div class="flex flex-col">
+<span class="label-text text-[10px] uppercase tracking-tighter text-on-surface-variant">Confidence Level</span>
+<span class="font-body font-semibold text-lg text-emerald-700">High Confidence</span>
+</div>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant/5 shadow-sm min-w-[140px]">
+<span class="label-text text-[10px] uppercase text-on-surface-variant block mb-2">Impact Indicators</span>
+<div class="space-y-2">
+<div class="flex justify-between items-center">
+<span class="text-xs font-medium">Clean Air</span>
+<span class="text-emerald-600 text-xs font-bold">↑ 12%</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-xs font-medium">Safety</span>
+<span class="text-emerald-600 text-xs font-bold">↑ 24%</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</header>
+<!-- Reorganized Layout Grid -->
+<div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<!-- Wide Left Column: Main Content -->
+<div class="lg:col-span-9 space-y-12">
+<!-- Proposal Content -->
+<section class="bg-surface p-8 rounded-2xl shadow-sm border border-outline-variant/5">
+<!-- Proposal Heading -->
+<div class="flex justify-between items-center mb-6 pb-2 border-b-2 border-primary-container">
+<h3 class="text-2xl font-bold">Proposal Details</h3>
+<button class="text-on-surface-variant hover:text-primary transition-colors opacity-40 hover:opacity-100">
+<span class="material-symbols-outlined text-xl">edit</span>
+</button>
+</div>
+<!-- AI Synthesized Summary (Moved here) -->
+<div class="group relative bg-surface-container-low p-6 rounded-xl border-l-4 border-primary mb-8 transition-all hover:bg-surface-container">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm">auto_awesome</span>
+<span class="label-text text-xs font-bold uppercase tracking-widest text-primary">AI Synthesized Summary</span>
+</div>
+<button class="opacity-0 group-hover:opacity-100 transition-opacity text-on-surface-variant hover:text-primary">
+<span class="material-symbols-outlined text-lg">edit</span>
+</button>
+</div>
+<ul class="space-y-3 text-sm font-medium text-on-surface-variant">
+<li class="flex gap-2">
+<span class="text-emerald-600">●</span>
+<span>Strong consensus on health and safety benefits.</span>
+</li>
+<li class="flex gap-2">
+<span class="text-tertiary">●</span>
+<span>Developing disagreement regarding merchant delivery zones.</span>
+</li>
+<li class="flex gap-2">
+<span class="text-on-surface-variant">●</span>
+<span>Clarification needed on winter maintenance scheduling.</span>
+</li>
+</ul>
+</div>
+<!-- Proposal Body Text -->
+<div class="serif-text space-y-8 text-[17px] text-on-surface/90">
+<div class="group relative">
+<button class="absolute -right-6 top-0 opacity-0 group-hover:opacity-100 transition-opacity text-on-surface-variant hover:text-primary">
+<span class="material-symbols-outlined text-lg">edit</span>
+</button>
+<p class="leading-relaxed mb-6">The <span class="bg-primary-container/40 border-b-2 border-primary cursor-help">comprehensive network expansion</span> aims to bridge existing gaps between the northern commercial district and the southern residential belt.</p>
+<div class="space-y-4">
+<h4 class="font-bold text-lg text-on-background">1. Infrastructure Specifications</h4>
+<p>Standardized 2.5m width lanes with concrete curbs for physical separation. <span class="bg-secondary-container/30 px-1 italic">Source #4 indicates this reduces collision risk by 40%.</span> The choice of non-permeable surfacing was selected for durability in extreme seasonal shifts.</p>
+</div>
+</div>
+<div class="group relative pt-4">
+<button class="absolute -right-6 top-0 opacity-0 group-hover:opacity-100 transition-opacity text-on-surface-variant hover:text-primary">
+<span class="material-symbols-outlined text-lg">edit</span>
+</button>
+<h4 class="font-bold text-lg text-on-background mb-4">2. Urban Integration</h4>
+<p>Integration will require removal of 14 non-metered parking spots along 5th Ave. The trade-off has been identified as a <span class="bg-primary-container/40 border-b-2 border-primary cursor-help">key point of friction</span> in preliminary ward meetings.</p>
+</div>
+</div>
+</section>
+<!-- Community Deliberation Section (Full Width across Content Column) -->
+<section class="space-y-6">
+<div class="flex justify-between items-center px-2">
+<h3 class="text-xl font-bold">Community Deliberation</h3>
+<div class="flex gap-2">
+<button class="bg-surface p-1.5 rounded text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-lg">sort</span>
+</button>
+<button class="bg-surface p-1.5 rounded text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-lg">filter_alt</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+<!-- Comment 1 -->
+<div class="bg-surface-container-lowest p-5 rounded-xl border-l-4 border-emerald-500 shadow-sm flex flex-col">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-2">
+<span class="text-xl">🦉</span>
+<span class="font-bold text-sm">Anonymous Owl</span>
+</div>
+<span class="text-xs text-on-surface-variant/60">2h ago</span>
+</div>
+<p class="text-sm leading-relaxed mb-4 flex-1">The safety metrics here are hard to ignore. As someone who bikes with children, this is the first time a proposal feels substantial enough to actually change my habits.</p>
+<div class="flex gap-4 pt-2 border-t border-outline-variant/10">
+<button class="flex items-center gap-1 text-xs text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-sm">thumb_up</span> 42
+                                </button>
+<button class="flex items-center gap-1 text-xs text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-sm">chat_bubble</span> Reply
+                                </button>
+</div>
+</div>
+<!-- Comment 2 -->
+<div class="bg-surface-container-lowest p-5 rounded-xl border-l-4 border-orange-400 shadow-sm flex flex-col">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-2">
+<span class="text-xl">🦊</span>
+<span class="font-bold text-sm">Anonymous Fox</span>
+</div>
+<span class="text-xs text-on-surface-variant/60">5h ago</span>
+</div>
+<p class="text-sm leading-relaxed mb-4 flex-1">Support the goal, but we need a detailed solution for the 5th Avenue loading zones. If my delivery trucks can't stop, the bike lane effectively closes my business.</p>
+<div class="flex gap-4 pt-2 border-t border-outline-variant/10">
+<button class="flex items-center gap-1 text-xs text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-sm">thumb_up</span> 18
+                                </button>
+<button class="flex items-center gap-1 text-xs text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-sm">chat_bubble</span> Reply
+                                </button>
+</div>
+</div>
+<!-- Add Comment Placeholder -->
+<div class="bg-surface-container-high/50 p-5 rounded-xl border-2 border-dashed border-outline-variant/30 text-center flex flex-col justify-center items-center">
+<p class="text-sm text-on-surface-variant mb-4">Add your perspective</p>
+<button class="bg-primary text-on-primary px-4 py-2 rounded-lg font-medium text-xs hover:opacity-90 transition-opacity">
+                                Compose Deliberation
+                            </button>
+</div>
+</div>
+<!-- Interaction Bar -->
+<div class="bg-surface/90 backdrop-blur-md p-4 rounded-2xl shadow-xl border border-outline-variant/10">
+<div class="flex items-center gap-4 text-on-surface-variant/60 select-none">
+<span class="material-symbols-outlined">lock</span>
+<div class="flex-1 h-3 bg-surface-container rounded-full overflow-hidden">
+<div class="w-2/3 h-full bg-surface-container-highest"></div>
+</div>
+<span class="text-xs font-medium whitespace-nowrap">🔒 Voting unlocks when impact assessment is complete</span>
+</div>
+</div>
+</section>
+</div>
+<!-- Narrow Right Column: Reference Sources -->
+<aside class="lg:col-span-3 space-y-6">
+<div class="sticky top-24 space-y-6">
+<h3 class="label-text text-[10px] uppercase font-bold tracking-[0.2em] text-on-surface-variant px-1">Reference Sources (4)</h3>
+<div class="space-y-4">
+<div class="bg-surface p-4 rounded-xl border border-outline-variant/20 group hover:border-primary transition-colors">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-primary text-sm">description</span>
+<span class="text-[10px] font-bold text-on-surface-variant">DOT REPORT #2024-04</span>
+</div>
+<h4 class="text-sm font-bold mb-2">Traffic Flow Analysis - Ward 4</h4>
+<p class="text-[11px] text-on-surface-variant mb-3">Analysis of peak hour vehicle throughput versus projected cyclist volume...</p>
+<a class="text-[11px] font-bold text-tertiary flex items-center gap-1 group-hover:underline" href="#">
+                                View Full Document <span class="material-symbols-outlined text-[12px]">open_in_new</span>
+</a>
+</div>
+<div class="bg-surface p-4 rounded-xl border border-outline-variant/20 group hover:border-primary transition-colors">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-primary text-sm">verified_user</span>
+<span class="text-[10px] font-bold text-on-surface-variant">PUBLIC SAFETY AUDIT</span>
+</div>
+<h4 class="text-sm font-bold mb-2">Intersection Collision Data</h4>
+<p class="text-[11px] text-on-surface-variant mb-3">A five-year look back at pedestrian and cyclist injuries along the proposed corridor.</p>
+<a class="text-[11px] font-bold text-tertiary flex items-center gap-1 group-hover:underline" href="#">
+                                View Full Document <span class="material-symbols-outlined text-[12px]">open_in_new</span>
+</a>
+</div>
+<div class="bg-surface p-4 rounded-xl border border-outline-variant/20 border-l-4 border-l-primary-container">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-primary text-sm">map</span>
+<span class="text-[10px] font-bold text-on-surface-variant">TOPOGRAPHY MAP</span>
+</div>
+<img class="w-full h-24 object-cover rounded mb-2" src="https://lh3.googleusercontent.com/aida-public/AB6AXuASO-xCbVlsIXZV0XZKoORtZrL1x_YBhO-e3xpGFvJjQOR-TOjofUditWoJzM6tgsw6-JxNdqhE1yQcAGQBVxNQdIvlVHqUNGIVBGlH9lEaSCDCY2lL9W9M4OY_gCZE5kQ7W-HTRGw1rC2FvN-BHmrOspJcYiRLvVOhBhP6LqxEDZJOCcrTcsnstHjkDZowk-zfMxz1sleej_xriVfaml6ybf4dOip5_0jMIGd6buMTcMAYUNxRks7U-pv0hucnb1Gsa7fLOsfzkRs"/>
+<h4 class="text-sm font-bold">Corridor Elevation Study</h4>
+</div>
+</div>
+</div>
+</aside>
+</div>
+</main>
+<!-- Bottom Nav for Mobile Only -->
+<nav class="md:hidden fixed bottom-0 w-full bg-surface/90 backdrop-blur-xl border-t border-outline-variant/20 flex justify-around py-4 z-50">
+<span class="material-symbols-outlined text-primary">account_balance_wallet</span>
+<span class="material-symbols-outlined text-on-surface-variant">person</span>
+<span class="material-symbols-outlined text-on-surface-variant">help_outline</span>
+<span class="material-symbols-outlined text-on-surface-variant">settings</span>
+</nav>
+</body></html>
