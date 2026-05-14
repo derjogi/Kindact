@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,600;0,700;1,400&amp;family=Inter:wght@400;500;600&amp;family=Work+Sans:wght@400;500;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-bright": "#fafaf5",
+                    "on-secondary": "#f9faeb",
+                    "surface-container-lowest": "#ffffff",
+                    "inverse-surface": "#0d0f0c",
+                    "on-primary-container": "#51534a",
+                    "on-secondary-fixed-variant": "#5a5d52",
+                    "surface-container-low": "#f3f4ee",
+                    "secondary-container": "#e2e4d5",
+                    "surface-container-high": "#e5eae0",
+                    "primary": "#5d5f56",
+                    "surface-tint": "#5d5f56",
+                    "tertiary-fixed-dim": "#8252ec",
+                    "primary-container": "#e3e3d7",
+                    "secondary-fixed": "#e2e4d5",
+                    "primary-fixed": "#e3e3d7",
+                    "error-container": "#fe8b70",
+                    "on-primary-fixed": "#3e4038",
+                    "surface-container": "#ecefe7",
+                    "surface-container-highest": "#dee4da",
+                    "on-tertiary-container": "#000000",
+                    "on-primary": "#f8f9ec",
+                    "background": "#fafaf5",
+                    "on-background": "#2e342d",
+                    "on-error-container": "#742410",
+                    "tertiary-dim": "#622bcb",
+                    "secondary-fixed-dim": "#d4d5c7",
+                    "surface-variant": "#dee4da",
+                    "tertiary-container": "#8f60fa",
+                    "surface-dim": "#d5dcd0",
+                    "primary-fixed-dim": "#d4d5ca",
+                    "tertiary": "#6e3bd8",
+                    "inverse-on-surface": "#9c9d99",
+                    "surface": "#fafaf5",
+                    "on-surface": "#2e342d",
+                    "secondary": "#5e6055",
+                    "on-primary-fixed-variant": "#5a5c53",
+                    "error-dim": "#5c1202",
+                    "inverse-primary": "#f1f2e5",
+                    "tertiary-fixed": "#8f60fa",
+                    "on-tertiary": "#fdf7ff",
+                    "outline-variant": "#aeb4aa",
+                    "error": "#9e422c",
+                    "on-tertiary-fixed-variant": "#fdf6ff",
+                    "on-secondary-container": "#515348",
+                    "on-secondary-fixed": "#3e4036",
+                    "on-surface-variant": "#5b6159",
+                    "on-tertiary-fixed": "#ffffff",
+                    "secondary-dim": "#525449",
+                    "primary-dim": "#51534a",
+                    "on-error": "#fff7f6",
+                    "outline": "#767c74"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "fontFamily": {
+                    "headline": ["Newsreader", "serif"],
+                    "body": ["Inter", "sans-serif"],
+                    "label": ["Work Sans", "sans-serif"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+        }
+        .serif-italic { font-family: 'Newsreader'; font-style: italic; }
+        .glass-nav {
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .hypercert-gradient {
+            background: linear-gradient(135deg, #ffffff 0%, #f3f4ee 100%);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body selection:bg-primary/20">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-[#fafaf5]/80 dark:bg-[#2e342d]/80 backdrop-blur-xl shadow-sm dark:shadow-none">
+<div class="flex justify-between items-center px-6 h-16 w-full max-w-full mx-auto">
+<div class="flex items-center gap-8">
+<span class="font-['Newsreader'] font-bold text-2xl text-[#51534A] dark:text-[#fafaf5]">Kindact</span>
+<div class="hidden md:flex items-center gap-6">
+<a class="font-['Newsreader'] italic text-lg text-[#5b6159] dark:text-[#d5dcd0]/60 hover:text-[#51534A] transition-colors" href="#">Issues</a>
+<a class="font-['Newsreader'] italic text-lg text-[#5b6159] dark:text-[#d5dcd0]/60 hover:text-[#51534A] transition-colors" href="#">Create</a>
+<a class="font-['Newsreader'] italic text-lg text-[#51534A] dark:text-[#fafaf5] border-b-2 border-[#51534A] pb-1" href="#">Activity</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="bg-primary-container px-3 py-1 rounded-md">
+<span class="font-label text-sm font-semibold text-on-primary-container">$2,450 CC</span>
+</div>
+<button class="material-symbols-outlined text-on-surface-variant p-2 hover:bg-surface-container transition-colors rounded-full">notifications</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant/30">
+<img class="w-full h-full object-cover" data-alt="Close-up portrait of a man with a friendly expression in soft natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB8ES4BtN3hx7wT2sDmsO0LqJWxjR8bfTY1MfKHE5WsC5olU-UqVB6uO4HGvXSIj_ufIliYf79ierzOoa3OjtUIhmYMkQ9tOKvvn91Fw1iXz9r3JDLQTZF1ro84GOIlCorfd8Z1hkg_JWIrXDsIpzN9R26PoN-cWc2E7fFeDO06aDMwBvAdOHzXJjMRAy6ibrcgG_QhedYzD6sLrY6d65INnGzM0pJ2z-Lz8qQpxjapvBhggr5rf921nxdn_a4C6WijK9yA-PzYsuw"/>
+</div>
+</div>
+</div>
+<div class="bg-[#d5dcd0] h-[1px] opacity-20 w-full"></div>
+</nav>
+<div class="flex min-h-screen pt-16">
+<!-- SideNavBar -->
+<aside class="hidden lg:flex flex-col h-[calc(100vh-64px)] w-64 py-4 px-3 space-y-2 bg-[#fafaf5] dark:bg-[#2e342d] fixed left-0">
+<div class="px-3 mb-6">
+<h2 class="font-['Newsreader'] font-semibold text-[#51534A] text-xl">The Civic Archive</h2>
+<p class="font-['Inter'] text-sm tracking-tight text-[#5b6159] opacity-70">Governance Hub</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-[#5b6159] dark:text-[#d5dcd0]/70 hover:bg-[#d5dcd0]/50 dark:hover:bg-white/5 transition-all duration-200 ease-in-out rounded-md" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="font-['Inter'] text-sm tracking-tight">Delegation</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 bg-[#ffffff] dark:bg-[#fafaf5]/10 text-[#51534A] dark:text-[#fafaf5] font-semibold rounded-md shadow-sm" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-['Inter'] text-sm tracking-tight">Profile</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-[#5b6159] dark:text-[#d5dcd0]/70 hover:bg-[#d5dcd0]/50 dark:hover:bg-white/5 transition-all duration-200 ease-in-out rounded-md" href="#">
+<span class="material-symbols-outlined">help_outline</span>
+<span class="font-['Inter'] text-sm tracking-tight">Help</span>
+</a>
+</nav>
+<div class="mt-auto pt-4 border-t border-[#d5dcd0] dark:border-[#5b6159]">
+<a class="flex items-center gap-3 px-3 py-2 text-[#5b6159] dark:text-[#d5dcd0]/70 hover:bg-[#d5dcd0]/50 rounded-md transition-all" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-['Inter'] text-sm tracking-tight">Settings</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 ml-0 lg:ml-64 p-6 lg:p-12 max-w-7xl mx-auto w-full">
+<!-- Header Section -->
+<header class="mb-12">
+<span class="font-label text-tertiary font-medium tracking-widest text-xs uppercase">Proof of Participation</span>
+<h1 class="font-headline text-4xl lg:text-5xl font-bold text-on-surface mt-2 mb-4">Impact Acknowledged</h1>
+<p class="font-body text-on-surface-variant text-lg max-w-2xl leading-relaxed">
+                    Your contribution to the <span class="serif-italic text-primary">Civic Commons</span> has been verified. You've earned rewards that reflect your commitment to the local ecosystem.
+                </p>
+</header>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<!-- Left Column: Rewards & Stats -->
+<div class="lg:col-span-4 space-y-6">
+<!-- CC Reward Card -->
+<div class="bg-primary p-8 rounded-xl text-on-primary shadow-xl relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-4 opacity-10 scale-150">
+<span class="material-symbols-outlined text-8xl" style="font-variation-settings: 'FILL' 1;">stars</span>
+</div>
+<div class="relative z-10">
+<p class="font-label text-xs tracking-widest uppercase text-primary-container/80 mb-6">Token Grant</p>
+<h2 class="font-headline text-5xl font-bold mb-2">You earned 500 $CC</h2>
+<p class="font-body text-on-primary/70 text-sm">For <span class="text-on-primary font-medium">Community solar panel installation</span></p>
+<div class="mt-8 pt-6 border-t border-on-primary/10">
+<button class="flex items-center gap-2 text-sm font-medium hover:gap-3 transition-all">
+                                    Transfer to Wallet
+                                    <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Impact Stats Grid (Asymmetric) -->
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-surface-container-low p-6 rounded-lg">
+<span class="material-symbols-outlined text-primary mb-3">trending_up</span>
+<div class="text-2xl font-headline font-bold text-on-surface">12.4%</div>
+<div class="text-xs font-label text-on-surface-variant uppercase tracking-tighter">Impact Velocity</div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-lg">
+<span class="material-symbols-outlined text-tertiary mb-3">volunteer_activism</span>
+<div class="text-2xl font-headline font-bold text-on-surface">1,420</div>
+<div class="text-xs font-label text-on-surface-variant uppercase tracking-tighter">Civic Points</div>
+</div>
+<div class="col-span-2 bg-surface-container-highest p-6 rounded-lg flex justify-between items-center">
+<div>
+<div class="text-lg font-headline font-bold text-on-surface">Rank #42</div>
+<div class="text-xs font-label text-on-surface-variant uppercase tracking-tighter">Global Contributors</div>
+</div>
+<div class="flex -space-x-2">
+<img class="w-8 h-8 rounded-full border-2 border-surface-container-highest object-cover" data-alt="Portrait of a smiling woman in warm outdoor lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB3KC65_r0oIRxu5t3zG7yYJjeXrt7TuZUjXqzFR1UmKHvgB83kOwzjN7iUmZBI3PGcoq62aUlna69qIgJsEbdD2hUDvsMrqbSMiZesXs3Ks5ZI3x_OhpYYM7e_MTu6lomXzMI122rvBNWTyVN096_pjVqrUOJWVx4YHHCuXSsHgQwrYgY6Do2aKU846bCdjliD8NHu5Bbm_wUvsclr8mxYtJkXAcZ68uz9MgJ0dnq_p6UvlqXjAU7fquspR5PRHUQ1mNcVPEs4NEo"/>
+<img class="w-8 h-8 rounded-full border-2 border-surface-container-highest object-cover" data-alt="Portrait of a person with stylish glasses in a soft studio setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxv1no4_dPxJqMzqJiyH98YXLT2FqN6fK9rpo9vIQP-GX9cE4DyNDFx5O5Jeep7kJcmTFgbo3dtpG26G6z1o-ePC-EVpeP2FPiqrUCvFPiZrs6F3Kb8ZS8a3U8yr2rhGc-U2Be1SP-54tO9_vYfT-SHt44hsLNP72iakI9zkseM71PnpqvCtzxDySt4uGG7fUDk_3NlYS-TCQPYjvBDoQIGxSbyU_bClPZAbxH046XZ-IDCXncreqyHZIcHbdY4YAJQjNeKsjdXcI"/>
+<div class="w-8 h-8 rounded-full border-2 border-surface-container-highest bg-primary text-[10px] flex items-center justify-center text-on-primary">+8</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Hypercert -->
+<div class="lg:col-span-8">
+<div class="hypercert-gradient rounded-xl shadow-lg border border-outline-variant/10 overflow-hidden relative">
+<!-- Certificate Aesthetic Accents -->
+<div class="absolute top-0 left-0 w-full h-2 bg-tertiary"></div>
+<div class="absolute bottom-10 right-10 opacity-5">
+<span class="material-symbols-outlined text-[12rem]">verified_user</span>
+</div>
+<div class="p-8 lg:p-12">
+<div class="flex flex-col md:flex-row justify-between items-start gap-8">
+<div class="flex-1">
+<div class="flex items-center gap-3 mb-6">
+<div class="w-10 h-10 bg-on-surface flex items-center justify-center rounded">
+<span class="material-symbols-outlined text-surface text-2xl">workspace_premium</span>
+</div>
+<span class="font-label text-sm font-semibold text-on-surface tracking-widest uppercase">Hypercert v2.0</span>
+</div>
+<h3 class="font-headline text-3xl font-bold text-on-surface mb-4 leading-tight">Community Solar Panel Installation</h3>
+<p class="font-body text-on-surface-variant leading-relaxed mb-8">
+                                        Successful deployment of 42 high-efficiency photovoltaic units across the District 7 Community Center roof, providing renewable energy to 120 households and reducing carbon footprint by 14 tons annually.
+                                    </p>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+<div>
+<h4 class="font-label text-xs text-outline font-bold uppercase tracking-widest mb-3">Impact Dimensions</h4>
+<ul class="space-y-2">
+<li class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined text-blue-500">north_east</span>
+<span class="font-body text-sm font-medium">Renewable Capacity (+45kW)</span>
+</li>
+<li class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined text-blue-500">north_east</span>
+<span class="font-body text-sm font-medium">Grid Independence (+12%)</span>
+</li>
+<li class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined text-blue-500">north_east</span>
+<span class="font-body text-sm font-medium">CO2 Sequestration (14t/yr)</span>
+</li>
+</ul>
+</div>
+<div class="flex flex-col justify-end">
+<div class="bg-surface-container p-4 rounded-lg">
+<div class="flex justify-between items-center mb-1">
+<span class="text-xs font-label text-on-surface-variant">Verification Date</span>
+<span class="text-sm font-body font-bold">Oct 24, 2023</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-xs font-label text-on-surface-variant">Attestor</span>
+<span class="text-sm font-body font-bold">Kindact Core DAO</span>
+</div>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-6 pt-8 border-t border-outline-variant/20">
+<a class="flex items-center gap-2 font-label text-sm font-semibold text-tertiary hover:underline" href="#">
+<span class="material-symbols-outlined text-base">link</span>
+                                            View on-chain
+                                        </a>
+<a class="flex items-center gap-2 font-label text-sm font-semibold text-primary hover:underline" href="#">
+<span class="material-symbols-outlined text-base">download</span>
+                                            Export PDF
+                                        </a>
+</div>
+</div>
+<div class="w-full md:w-64 bg-surface-container-low p-6 rounded-lg border border-outline-variant/10">
+<div class="aspect-square bg-white rounded-md mb-4 flex items-center justify-center p-4">
+<!-- Mock QR / Fractional Code Aesthetic -->
+<div class="grid grid-cols-4 gap-1 w-full h-full opacity-20">
+<div class="bg-on-surface"></div><div class="bg-on-surface"></div><div class="bg-transparent"></div><div class="bg-on-surface"></div>
+<div class="bg-on-surface"></div><div class="bg-transparent"></div><div class="bg-on-surface"></div><div class="bg-transparent"></div>
+<div class="bg-transparent"></div><div class="bg-on-surface"></div><div class="bg-on-surface"></div><div class="bg-on-surface"></div>
+<div class="bg-on-surface"></div><div class="bg-transparent"></div><div class="bg-transparent"></div><div class="bg-on-surface"></div>
+</div>
+</div>
+<p class="text-[10px] font-mono text-center text-on-surface-variant break-all">HYP-8291-KIND-DX7-2023</p>
+<div class="mt-4 flex flex-col gap-2">
+<div class="h-1 w-full bg-secondary-container rounded-full overflow-hidden">
+<div class="h-full w-3/4 bg-tertiary"></div>
+</div>
+<p class="text-[10px] font-label font-bold text-center uppercase text-on-surface-variant">Fractional Ownership: 0.12%</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Focus Panel Section: Narrative Context -->
+<section class="mt-16 bg-surface-container-low rounded-xl overflow-hidden flex flex-col md:flex-row">
+<div class="md:w-1/3 p-8 bg-surface-container-highest border-r border-outline-variant/10">
+<h5 class="font-headline text-xl font-bold mb-4">Metadata Analysis</h5>
+<div class="space-y-6">
+<div>
+<div class="text-[10px] font-label font-bold uppercase tracking-widest text-outline mb-1">Issue Reference</div>
+<div class="text-sm font-body">#CIV-729: District 7 Energy Transition</div>
+</div>
+<div>
+<div class="text-[10px] font-label font-bold uppercase tracking-widest text-outline mb-1">Execution Period</div>
+<div class="text-sm font-body">Aug 2023 — Oct 2023</div>
+</div>
+<div>
+<div class="text-[10px] font-label font-bold uppercase tracking-widest text-outline mb-1">Protocol Standard</div>
+<div class="text-sm font-body">ERC-721 Impact Certificate</div>
+</div>
+</div>
+</div>
+<div class="md:w-2/3 p-8 lg:p-12">
+<h5 class="font-headline text-2xl font-bold mb-6">Director's Note</h5>
+<p class="font-headline italic text-xl text-primary leading-relaxed">
+                        "The transition to decentralized energy is not just a technical milestone; it's a social contract. Your participation signals a fundamental shift in how we manage our local commons. This reward represents more than just value—it represents a vote of confidence in our shared future."
+                    </p>
+<div class="mt-8 flex items-center gap-4">
+<img class="w-12 h-12 rounded-full object-cover" data-alt="Portrait of a mature man with a thoughtful expression in professional office lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAlXhKUrrOZQ6lPvlwDpkVV6_Oy_B2QySm-BOm6mqYRYFAIN9SGczCSiP35HdCRu76lJY08nFvaRXha5WIP_SSmiRnM67nb8ClYukiACGtnlg0ArjKFU1OHeiclrbyru2qfI0dWkyCR6VcfILpLi5JzdMADmMUskVS1JBDrZMlUSN7tTJm0lbL1v8w2WAIQ3IrUFlZzHTJ5pisMAZLgU52aiwPS5WtBPQLJ2Kk5D-sd-eKOaRFTh6j6G_-jvgn0Hy-lw-sknNj0jO4"/>
+<div>
+<div class="font-body font-bold text-on-surface">Dr. Elena Vance</div>
+<div class="text-xs font-label text-on-surface-variant uppercase">Civic Infrastructure Lead</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+</div>
+<!-- Bottom Mobile Nav (Only visible on mobile as per Responsive Pivot rule) -->
+<div class="md:hidden fixed bottom-0 left-0 w-full bg-surface-bright/90 backdrop-blur-xl border-t border-outline-variant/10 flex justify-around items-center h-16 z-50">
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined">explore</span>
+<span class="text-[10px] font-label uppercase font-medium">Explore</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_circle</span>
+<span class="text-[10px] font-label uppercase font-bold">Profile</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined">analytics</span>
+<span class="text-[10px] font-label uppercase font-medium">Stats</span>
+</button>
+</div>
+</body></html>
