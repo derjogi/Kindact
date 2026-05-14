@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { postComment } from "@/lib/api";
+import { useRuntime } from "@/lib/runtime";
 
 interface DbComment {
   id: string;
@@ -141,33 +142,66 @@ export default function CommentThread({
   onCommentAdded?: () => void;
 }) {
   const [newComment, setNewComment] = useState("");
+  const [writeState, setWriteState] = useState<
+    "idle" | "syncing" | "queued" | "confirmed" | "rejected"
+  >("idle");
+  const mode = useRuntime((s) => s.mode);
+  const isReadOnly = mode === "readonly";
+  const isOffline = mode === "offline";
 
   const topLevel = comments.filter((c) => c.parentId === null);
 
   const handleAdd = async () => {
-    if (!newComment.trim()) return;
-    await postComment(issueId, newComment);
-    setNewComment("");
-    onCommentAdded?.();
+    if (!newComment.trim() || isReadOnly) return;
+    setWriteState(isOffline ? "queued" : "syncing");
+    try {
+      await postComment(issueId, newComment);
+      setNewComment("");
+      setWriteState(isOffline ? "queued" : "confirmed");
+      onCommentAdded?.();
+    } catch (err) {
+      setWriteState("rejected");
+      console.error(err);
+    }
   };
 
   return (
     <div>
-      <div className="mb-4 flex gap-2">
-        <input
-          type="text"
-          value={newComment}
-          onChange={(e) => setNewComment(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleAdd()}
-          placeholder="Add a comment..."
-          className="flex-1 px-3 py-2 text-sm border border-stone-200 rounded-lg focus:outline-none focus:border-stone-400"
-        />
-        <button
-          onClick={handleAdd}
-          className="px-4 py-2 text-sm bg-stone-800 text-white rounded-lg hover:bg-stone-700"
-        >
-          Post
-        </button>
+      <div className="mb-4">
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleAdd()}
+            placeholder={
+              isReadOnly
+                ? "Read-only: sign in to a conductor to comment"
+                : "Add a comment..."
+            }
+            disabled={isReadOnly}
+            className="flex-1 px-3 py-2 text-sm border border-stone-200 rounded-lg focus:outline-none focus:border-stone-400 disabled:bg-stone-50 disabled:text-stone-400 disabled:cursor-not-allowed"
+          />
+          <button
+            onClick={handleAdd}
+            disabled={isReadOnly}
+            className="px-4 py-2 text-sm bg-stone-800 text-white rounded-lg hover:bg-stone-700 disabled:bg-stone-300 disabled:cursor-not-allowed"
+          >
+            Post
+          </button>
+        </div>
+        {writeState !== "idle" ? (
+          <div className="mt-1 text-xs text-stone-500">
+            {writeState === "syncing" ? "↗ syncing…" : null}
+            {writeState === "queued"
+              ? `📥 Will sync when online${
+                  isOffline ? ` · queued in source chain` : ""
+                }`
+              : null}
+            {writeState === "confirmed" ? "✓ confirmed" : null}
+            {writeState === "rejected" ? "⚠ rejected by validator" : null}
+          </div>
+        ) : null}
       </div>
 
       <div className="divide-y divide-stone-100">

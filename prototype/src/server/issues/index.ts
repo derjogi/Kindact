@@ -135,7 +135,7 @@ export async function updateIssue(
 
 // ─── Get ────────────────────────────────────────────────────────────────────
 
-export async function getIssue(issueId: string) {
+export async function getIssue(issueId: string, viewerId?: string) {
   const issue = await prisma.issue.findUnique({
     where: { id: issueId },
     include: {
@@ -146,10 +146,87 @@ export async function getIssue(issueId: string) {
       boundaries: true,
       decisionState: true,
       aiSummary: true,
+      cell: true,
+      anchorLinks: { include: { anchor: true } },
     },
   });
   if (!issue) throw notFound("Issue not found");
-  return issue;
+
+  // Viewer's relation to the issue's home cell, plus any guest-on-this-issue scope.
+  let viewerCellRelation: "member" | "guest" | "none" = "none";
+  let viewerIsGuestOnThisIssue = false;
+  if (viewerId && issue.cellId) {
+    const memberships = await prisma.cellMembership.findMany({
+      where: { cellId: issue.cellId, userId: viewerId, leftAt: null },
+    });
+    const member = memberships.find((m) => m.kind === "member");
+    const guest = memberships.find((m) => m.kind === "guest" && m.issueId === issueId);
+    if (member) viewerCellRelation = "member";
+    else if (guest) viewerCellRelation = "guest";
+    viewerIsGuestOnThisIssue = !!guest;
+  }
+
+  // Viewer's anchor subscriptions that match this issue's anchors (for the
+  // "you see this via your # bike-lanes subscription" strip).
+  const anchorIds = issue.anchorLinks.map((l) => l.anchor.id);
+  let viewerSubscribedAnchorIds: string[] = [];
+  if (viewerId && anchorIds.length > 0) {
+    const subs = await prisma.anchorSubscription.findMany({
+      where: { userId: viewerId, anchorId: { in: anchorIds }, muted: false },
+      select: { anchorId: true },
+    });
+    viewerSubscribedAnchorIds = subs.map((s) => s.anchorId);
+  }
+
+  // Related across cells — other issues that share at least one anchor but live in a different cell.
+  let relatedAcrossCells: Array<{
+    id: string;
+    title: string;
+    status: string;
+    cell: { id: string; cellId: string; displayName: string; tier: string } | null;
+    sharedAnchors: Array<{ id: string; anchorId: string; displayName: string; kind: string }>;
+  }> = [];
+  if (anchorIds.length > 0) {
+    const otherLinks = await prisma.anchorLink.findMany({
+      where: {
+        anchorId: { in: anchorIds },
+        issueId: { not: issueId },
+        issue: issue.cellId ? { cellId: { not: issue.cellId } } : {},
+      },
+      include: { anchor: true, issue: { include: { cell: true } } },
+    });
+    const byIssue = new Map<string, typeof otherLinks>();
+    for (const l of otherLinks) {
+      const list = byIssue.get(l.issueId) ?? [];
+      list.push(l);
+      byIssue.set(l.issueId, list);
+    }
+    relatedAcrossCells = Array.from(byIssue.values()).slice(0, 5).map((links) => {
+      const i = links[0].issue;
+      return {
+        id: i.id,
+        title: i.title,
+        status: i.status,
+        cell: i.cell
+          ? { id: i.cell.id, cellId: i.cell.cellId, displayName: i.cell.displayName, tier: i.cell.tier }
+          : null,
+        sharedAnchors: links.map((l) => ({
+          id: l.anchor.id,
+          anchorId: l.anchor.anchorId,
+          displayName: l.anchor.displayName,
+          kind: l.anchor.kind,
+        })),
+      };
+    });
+  }
+
+  return {
+    ...issue,
+    viewerCellRelation,
+    viewerIsGuestOnThisIssue,
+    viewerSubscribedAnchorIds,
+    relatedAcrossCells,
+  };
 }
 
 // ─── List ───────────────────────────────────────────────────────────────────
@@ -160,6 +237,9 @@ export async function listIssues(filters: {
   search?: string;
   limit?: number;
   cursor?: string;
+  source?: "all" | "subscriptions" | "cells" | "anchor";
+  anchorId?: string;
+  userId?: string;
 }) {
   const take = Math.min(filters.limit ?? 20, 100);
 
@@ -174,12 +254,66 @@ export async function listIssues(filters: {
     ];
   }
 
+  // Source filtering — gates which issue ids are visible.
+  if (filters.source && filters.source !== "all" && filters.userId) {
+    let issueIds: string[] = [];
+    const { resolveDescendantAnchorIds } = await import("@/server/anchors");
+
+    if (filters.source === "anchor" && filters.anchorId) {
+      const anchor = await prisma.anchorRecord.findFirst({
+        where: { OR: [{ id: filters.anchorId }, { anchorId: filters.anchorId }] },
+        select: { id: true },
+      });
+      if (anchor) {
+        const ids = await resolveDescendantAnchorIds([anchor.id]);
+        const links = await prisma.anchorLink.findMany({
+          where: { anchorId: { in: ids } },
+          select: { issueId: true },
+        });
+        issueIds = Array.from(new Set(links.map((l) => l.issueId)));
+      }
+    } else if (filters.source === "subscriptions") {
+      const subs = await prisma.anchorSubscription.findMany({
+        where: { userId: filters.userId, muted: false },
+        select: { anchorId: true },
+      });
+      if (subs.length > 0) {
+        const allIds = await resolveDescendantAnchorIds(subs.map((s) => s.anchorId));
+        const links = await prisma.anchorLink.findMany({
+          where: { anchorId: { in: allIds } },
+          select: { issueId: true },
+        });
+        issueIds = Array.from(new Set(links.map((l) => l.issueId)));
+      }
+    } else if (filters.source === "cells") {
+      const memberships = await prisma.cellMembership.findMany({
+        where: { userId: filters.userId, leftAt: null, kind: "member" },
+        select: { cellId: true },
+      });
+      if (memberships.length > 0) {
+        const cellIds = memberships.map((m) => m.cellId);
+        const issues = await prisma.issue.findMany({
+          where: { cellId: { in: cellIds } },
+          select: { id: true },
+        });
+        issueIds = issues.map((i) => i.id);
+      }
+    }
+
+    where.id = { in: issueIds };
+  }
+
   const issues = await prisma.issue.findMany({
     where,
     take: take + 1,
     ...(filters.cursor ? { cursor: { id: filters.cursor }, skip: 1 } : {}),
     orderBy: { createdAt: "desc" },
-    include: { rewardIntent: true, metrics: true },
+    include: {
+      rewardIntent: true,
+      metrics: true,
+      cell: true,
+      anchorLinks: { include: { anchor: true } },
+    },
   });
 
   const hasMore = issues.length > take;

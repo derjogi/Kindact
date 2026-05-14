@@ -10,7 +10,19 @@ import CollapsibleDescription from "@/components/CollapsibleDescription";
 import SummaryWithRefs from "@/components/SummaryWithRefs";
 import ThreadList from "@/components/ThreadList";
 import DiscussionSearch from "@/components/DiscussionSearch";
-import { fetchIssue, fetchDeliberation } from "@/lib/api";
+import CellBadge from "@/components/CellBadge";
+import AnchorPill from "@/components/AnchorPill";
+import CellContextStrip from "@/components/CellContextStrip";
+import GuestContributorModal from "@/components/GuestContributorModal";
+import JurisdictionalClaimsPanel from "@/components/JurisdictionalClaimsPanel";
+import RelatedAcrossCells from "@/components/RelatedAcrossCells";
+import {
+  fetchIssue,
+  fetchDeliberation,
+  joinCell,
+  joinCellAsGuest,
+  subscribeAnchor,
+} from "@/lib/api";
 import { useStore } from "@/lib/store";
 
 const statusColors: Record<string, string> = {
@@ -65,6 +77,9 @@ export default function IssueDetail({
 
   // Search state
   const [searchQuery, setSearchQuery] = useState<string | null>(null);
+
+  // Guest contributor modal
+  const [guestModalOpen, setGuestModalOpen] = useState(false);
 
   const mainRef = useRef<HTMLDivElement>(null);
 
@@ -211,7 +226,31 @@ export default function IssueDetail({
                 <h1 className="text-xl font-semibold text-stone-900">
                   {issue.title}
                 </h1>
-                <p className="mt-1 text-stone-600">{issue.summary}</p>
+
+                {/* Cell + anchors line — 029 issue detail header */}
+                {(issue.cell || (issue.anchorLinks?.length ?? 0) > 0) && (
+                  <div className="mt-1.5 flex flex-wrap items-center gap-1.5 text-sm text-stone-500">
+                    {issue.cell ? (
+                      <>
+                        <span>Posted in</span>
+                        <CellBadge cell={issue.cell} />
+                      </>
+                    ) : null}
+                    {(issue.anchorLinks?.length ?? 0) > 0 ? (
+                      <>
+                        <span className="text-on-surface-variant">·</span>
+                        <span>publishes to</span>
+                        {(issue.anchorLinks as Array<{ anchor: { id: string; anchorId: string; kind: "topic" | "location" | "event" | "cell"; displayName: string } }>).map(
+                          (al) => (
+                            <AnchorPill key={al.anchor.id} anchor={al.anchor} />
+                          ),
+                        )}
+                      </>
+                    ) : null}
+                  </div>
+                )}
+
+                <p className="mt-2 text-stone-600">{issue.summary}</p>
 
                 <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-stone-500">
                   <span className="flex items-center gap-1.5">
@@ -222,6 +261,11 @@ export default function IssueDetail({
                   </span>
                   <span className="capitalize">{issue.scope}</span>
                   <span>{issue.participants} participants</span>
+                  {issue.viewerCellRelation === "guest" ? (
+                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-violet-50 text-violet-700 text-xs border border-violet-200">
+                      Guest contributor
+                    </span>
+                  ) : null}
                 </div>
 
                 {/* Metrics — hover populates source panel */}
@@ -315,6 +359,34 @@ export default function IssueDetail({
               )}
             </div>
           </div>
+
+          {/* 029: Cell context strip (member / guest / subscribed / public / denied) */}
+          {issue.cell ? (
+            <CellContextStrip
+              issueId={issue.id}
+              cell={issue.cell}
+              anchorLinks={(issue.anchorLinks ?? []) as Parameters<typeof CellContextStrip>[0]["anchorLinks"]}
+              viewerCellRelation={(issue.viewerCellRelation as "member" | "guest" | "none") ?? "none"}
+              viewerSubscribedAnchorIds={(issue.viewerSubscribedAnchorIds as string[]) ?? []}
+              onJoinCell={async () => {
+                await joinCell(issue.cell.id);
+                await loadData();
+              }}
+              onSubscribeAnchor={async (anchorId: string) => {
+                await subscribeAnchor(anchorId);
+                await loadData();
+              }}
+              onOpenGuestModal={() => setGuestModalOpen(true)}
+            />
+          ) : null}
+
+          {/* 029: Jurisdictional claims */}
+          {issue.cell?.jurisdictionalClaims?.length ? (
+            <JurisdictionalClaimsPanel
+              cellId={issue.cell.cellId}
+              claims={issue.cell.jurisdictionalClaims as string[]}
+            />
+          ) : null}
 
           {/* Collapsible Description */}
           <CollapsibleDescription
@@ -467,6 +539,13 @@ export default function IssueDetail({
             rejectCount={issue.decisionState?.rejectCount ?? 0}
             onVoted={loadData}
           />
+
+          {/* 029: Related across cells */}
+          {issue.relatedAcrossCells?.length ? (
+            <RelatedAcrossCells
+              items={issue.relatedAcrossCells as Parameters<typeof RelatedAcrossCells>[0]["items"]}
+            />
+          ) : null}
         </div>
 
         {/* Source Panel (~16%) — hidden on mobile */}
@@ -490,6 +569,21 @@ export default function IssueDetail({
           mobile
         />
       </div>
+
+      {/* 029: Guest contributor modal */}
+      {issue.cell ? (
+        <GuestContributorModal
+          open={guestModalOpen}
+          cell={issue.cell}
+          issueId={issue.id}
+          issueTitle={issue.title}
+          onClose={() => setGuestModalOpen(false)}
+          onConfirm={async () => {
+            await joinCellAsGuest(issue.cell.id, issue.id);
+            await loadData();
+          }}
+        />
+      ) : null}
     </Layout>
   );
 }

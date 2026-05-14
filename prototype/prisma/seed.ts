@@ -38,6 +38,11 @@ const statusMap: Record<string, IssueStatus> = {
 
 async function clean() {
   // Delete in reverse dependency order
+  await prisma.savedLens.deleteMany();
+  await prisma.anchorSubscription.deleteMany();
+  await prisma.anchorLink.deleteMany();
+  await prisma.anchorRecord.deleteMany();
+  await prisma.cellMembership.deleteMany();
   await prisma.burnEvent.deleteMany();
   await prisma.mintEvent.deleteMany();
   await prisma.tokenAccount.deleteMany();
@@ -71,6 +76,7 @@ async function clean() {
   await prisma.issueRevision.deleteMany();
   await prisma.rewardIntent.deleteMany();
   await prisma.issue.deleteMany();
+  await prisma.cell.deleteMany();
   await prisma.session.deleteMany();
   await prisma.walletLink.deleteMany();
   await prisma.identityProviderLink.deleteMany();
@@ -108,6 +114,256 @@ async function seed() {
     data: { userId: currentUserId, balance: 142.3 },
   });
 
+  console.log("🏘️  Creating cells...");
+  // Seed set per holochain/030 (canonical "We" registry, promoted public cells, an uncurated example).
+  type SeedCell = {
+    cellId: string;
+    displayName: string;
+    description: string;
+    tier: "canonical" | "promoted" | "uncurated";
+    scopeLevel: string;
+    locationRefs?: string[];
+    topicTags?: string[];
+    membraneRead?: string;
+    membraneWrite?: string;
+    scopeProofTypes?: string[];
+    jurisdictionalClaims?: string[];
+    governanceEngine?: string;
+  };
+  const seedCells: SeedCell[] = [
+    {
+      cellId: "kindact:we",
+      displayName: "Kindact (Global Registry)",
+      description:
+        "The canonical global registry — a 'We of Wes'. Hosts the cell directory, anchor index, and meta-governance. Read-public; writes via meta-governance.",
+      tier: "canonical",
+      scopeLevel: "global",
+      membraneRead: "public",
+      membraneWrite: "invite_only",
+      governanceEngine: "meta_governance",
+    },
+    {
+      cellId: "kindact:berlin",
+      displayName: "Berlin",
+      description:
+        "Promoted city cell for Berlin. Members coordinate around city-scoped issues — housing, transit, public space.",
+      tier: "promoted",
+      scopeLevel: "city",
+      locationRefs: ["place:berlin", "h3:88283082"],
+      topicTags: ["#berlin", "#urban"],
+      scopeProofTypes: ["geotagged_evidence", "neighbor_invite"],
+      jurisdictionalClaims: ["jc:berlin-housing-rules-v2"],
+      governanceEngine: "consensus_with_neighbor_agreement",
+    },
+    {
+      cellId: "kindact:housing",
+      displayName: "Housing",
+      description:
+        "Promoted topic cell for housing policy and tenant coordination across geographies.",
+      tier: "promoted",
+      scopeLevel: "topic",
+      topicTags: ["#housing", "#tenants"],
+      governanceEngine: "approval_voting",
+    },
+    {
+      cellId: "kindact:green-energy",
+      displayName: "Green Energy",
+      description:
+        "Promoted topic cell for renewable-energy projects, policy, and grants.",
+      tier: "promoted",
+      scopeLevel: "topic",
+      topicTags: ["#energy", "#renewable", "#climate"],
+      governanceEngine: "approval_voting",
+    },
+    {
+      cellId: "kindact:climate",
+      displayName: "Climate",
+      description:
+        "Promoted topic cell for climate adaptation, mitigation, and accountability.",
+      tier: "promoted",
+      scopeLevel: "topic",
+      topicTags: ["#climate"],
+      governanceEngine: "approval_voting",
+    },
+    {
+      cellId: "kindact:permaculture",
+      displayName: "Permaculture",
+      description:
+        "Promoted topic cell for regenerative agriculture and permaculture design coordination.",
+      tier: "promoted",
+      scopeLevel: "topic",
+      topicTags: ["#permaculture", "#regenerative"],
+      governanceEngine: "approval_voting",
+    },
+    {
+      cellId: "uncurated/did:plc:elm-st-neighbors/elm-street-residents",
+      displayName: "Elm Street Residents",
+      description:
+        "Uncurated neighborhood cell. Created by a resident to coordinate on Elm Street issues. Pending promotion proposal.",
+      tier: "uncurated",
+      scopeLevel: "neighborhood",
+      locationRefs: ["place:elm-street"],
+      scopeProofTypes: ["neighbor_invite"],
+      governanceEngine: "consensus_with_neighbor_agreement",
+    },
+  ];
+
+  // Track cellId string → DB UUID for later FK references.
+  const cellDbId: Record<string, string> = {};
+  for (const c of seedCells) {
+    const created = await prisma.cell.create({
+      data: {
+        cellId: c.cellId,
+        displayName: c.displayName,
+        description: c.description,
+        tier: c.tier,
+        scopeLevel: c.scopeLevel,
+        locationRefs: c.locationRefs ?? [],
+        topicTags: c.topicTags ?? [],
+        membraneRead: c.membraneRead ?? "public",
+        membraneWrite: c.membraneWrite ?? "scope_verified",
+        scopeProofTypes: c.scopeProofTypes ?? [],
+        jurisdictionalClaims: c.jurisdictionalClaims ?? [],
+        governanceEngine: c.governanceEngine ?? "approval_voting",
+        creatorId: currentUserId,
+      },
+    });
+    cellDbId[c.cellId] = created.id;
+  }
+
+  // Current user joins a few cells so the UI has state to show.
+  const currentUserCells = ["kindact:berlin", "kindact:green-energy", "kindact:climate"];
+  for (const cid of currentUserCells) {
+    await prisma.cellMembership.create({
+      data: { cellId: cellDbId[cid], userId: currentUserId, kind: "member" },
+    });
+  }
+
+  console.log("⚓  Creating anchors...");
+  // Per holochain/042 — global cross-cell discovery primitive.
+  type SeedAnchor = {
+    anchorId: string;
+    kind: "topic" | "location" | "event" | "cell";
+    displayName: string;
+    description?: string;
+    synonyms?: string[];
+    parents?: string[];
+  };
+  const seedAnchors: SeedAnchor[] = [
+    // Top-level topic anchors
+    { anchorId: "anchor:#energy", kind: "topic", displayName: "Energy" },
+    { anchorId: "anchor:#climate", kind: "topic", displayName: "Climate" },
+    { anchorId: "anchor:#housing", kind: "topic", displayName: "Housing" },
+    { anchorId: "anchor:#governance", kind: "topic", displayName: "Governance" },
+    { anchorId: "anchor:#permaculture", kind: "topic", displayName: "Permaculture" },
+    { anchorId: "anchor:#infrastructure", kind: "topic", displayName: "Infrastructure" },
+    { anchorId: "anchor:#transit", kind: "topic", displayName: "Transit" },
+    { anchorId: "anchor:#waste", kind: "topic", displayName: "Waste & Circular Economy" },
+    { anchorId: "anchor:#digital-access", kind: "topic", displayName: "Digital Access" },
+    // Child topic anchors
+    {
+      anchorId: "anchor:#wind-power",
+      kind: "topic",
+      displayName: "Wind Power",
+      synonyms: ["wind-energy"],
+      parents: ["anchor:#energy", "anchor:#climate"],
+    },
+    {
+      anchorId: "anchor:#solar",
+      kind: "topic",
+      displayName: "Solar",
+      parents: ["anchor:#energy", "anchor:#climate"],
+    },
+    {
+      anchorId: "anchor:#bike-lanes",
+      kind: "topic",
+      displayName: "Bike Lanes",
+      parents: ["anchor:#transit", "anchor:#infrastructure"],
+    },
+    {
+      anchorId: "anchor:#public-space",
+      kind: "topic",
+      displayName: "Public Space",
+      parents: ["anchor:#infrastructure"],
+    },
+    // Location anchors
+    { anchorId: "anchor:📍berlin", kind: "location", displayName: "Berlin" },
+    { anchorId: "anchor:📍manhattan", kind: "location", displayName: "Manhattan" },
+    { anchorId: "anchor:📍new-york", kind: "location", displayName: "New York" },
+    { anchorId: "anchor:📍elm-street", kind: "location", displayName: "Elm Street" },
+    // Event anchor
+    {
+      anchorId: "anchor:event:cop34-2026",
+      kind: "event",
+      displayName: "COP34 (2026)",
+      description: "Coordination cell for actions and commitments around COP34.",
+    },
+  ];
+
+  const anchorDbId: Record<string, string> = {};
+  // First pass: create without parents.
+  for (const a of seedAnchors) {
+    const created = await prisma.anchorRecord.create({
+      data: {
+        anchorId: a.anchorId,
+        kind: a.kind,
+        displayName: a.displayName,
+        description: a.description ?? "",
+        synonyms: a.synonyms ?? [],
+        creatorId: currentUserId,
+      },
+    });
+    anchorDbId[a.anchorId] = created.id;
+  }
+  // Second pass: wire parent IDs.
+  for (const a of seedAnchors) {
+    if (!a.parents?.length) continue;
+    await prisma.anchorRecord.update({
+      where: { id: anchorDbId[a.anchorId] },
+      data: { parentIds: a.parents.map((p) => anchorDbId[p]).filter(Boolean) },
+    });
+  }
+
+  // Subscribe current user to a handful of anchors so the feed has signal.
+  const currentUserSubs = [
+    "anchor:#energy",
+    "anchor:#bike-lanes",
+    "anchor:📍berlin",
+    "anchor:📍elm-street",
+  ];
+  for (const aid of currentUserSubs) {
+    await prisma.anchorSubscription.create({
+      data: { userId: currentUserId, anchorId: anchorDbId[aid] },
+    });
+  }
+
+  // Map issues (by mock-data id "1".."6") to their home cell + anchor links.
+  // Spread across cells so the "cell context affordances" (029) have texture.
+  const issueCellMap: Record<string, string> = {
+    "1": "uncurated/did:plc:elm-st-neighbors/elm-street-residents", // Elm Street drainage
+    "2": "kindact:green-energy",                                     // Solar panel program
+    "3": "kindact:climate",                                          // Reduce packaging waste (climate)
+    "4": "kindact:berlin",                                           // Park cleanup (city)
+    "5": "kindact:housing",                                          // Free public Wi-Fi (tenant access)
+    "6": "kindact:berlin",                                           // Bike lane network (city)
+  };
+  // Cross-cell anchors mean issues in different cells share anchors — that's
+  // what powers the "Related across cells" surface on the issue detail page.
+  const issueAnchorMap: Record<string, string[]> = {
+    "1": ["anchor:#infrastructure", "anchor:📍elm-street"],
+    "2": ["anchor:#solar", "anchor:#energy", "anchor:#climate"],
+    "3": ["anchor:#waste", "anchor:#climate", "anchor:📍berlin"],
+    "4": ["anchor:#public-space", "anchor:📍berlin"],
+    "5": ["anchor:#digital-access", "anchor:#housing"],
+    "6": ["anchor:#bike-lanes", "anchor:#transit", "anchor:📍berlin"],
+  };
+
+  // Cross-cell guest-contribution demo: current user is *not* a member of the
+  // Elm Street uncurated cell but is a guest contributor on its only issue.
+  // The strip on /issues/1 should render the "guest contributor" state.
+  // We add the guest membership *after* the issues are created below.
+  const guestContribIssueMockId = "1";
+
   console.log("📋 Creating issues...");
 
   // Import mock data inline to avoid TS module issues
@@ -115,6 +371,7 @@ async function seed() {
 
   for (const issue of issues) {
     const iid = issueId(Number(issue.id));
+    const homeCellId = issueCellMap[issue.id] ? cellDbId[issueCellMap[issue.id]] : null;
 
     await prisma.issue.create({
       data: {
@@ -126,10 +383,25 @@ async function seed() {
         scope: issue.scope as IssueScope,
         tags: issue.tags,
         creatorId: currentUserId,
+        cellId: homeCellId,
         participants: issue.participants,
         createdAt: new Date(issue.createdAt),
       },
     });
+
+    // Anchor links
+    const anchorIds = issueAnchorMap[issue.id] ?? [];
+    for (const aid of anchorIds) {
+      const dbId = anchorDbId[aid];
+      if (!dbId) continue;
+      await prisma.anchorLink.create({
+        data: {
+          anchorId: dbId,
+          issueId: iid,
+          scopeLevel: issue.scope,
+        },
+      });
+    }
 
     // RewardIntent
     await prisma.rewardIntent.create({
@@ -280,6 +552,26 @@ async function seed() {
           state: "open",
           approveCount: approve,
           rejectCount: reject,
+        },
+      });
+    }
+  }
+
+  // Cross-cell guest contribution: currentUser becomes guest on a single issue
+  // in a cell they are not a member of (per holochain/044 issue-scoped guest).
+  {
+    const guestIid = issueId(Number(guestContribIssueMockId));
+    const guestIssue = await prisma.issue.findUnique({
+      where: { id: guestIid },
+      select: { cellId: true },
+    });
+    if (guestIssue?.cellId) {
+      await prisma.cellMembership.create({
+        data: {
+          cellId: guestIssue.cellId,
+          userId: currentUserId,
+          kind: "guest",
+          issueId: guestIid,
         },
       });
     }

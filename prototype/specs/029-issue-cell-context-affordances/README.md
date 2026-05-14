@@ -1,13 +1,20 @@
 ---
-status: planned
-created: '2026-05-14'
-tags:
-  - frontend
-  - ux
-  - holochain
-  - issues
+status: complete
+created: 2026-05-14
 priority: high
-created_at: '2026-05-14T01:31:24.247743749+00:00'
+tags:
+- frontend
+- ux
+- holochain
+- issues
+created_at: 2026-05-14T01:31:24.247743749Z
+updated_at: 2026-05-16T07:42:15.014509219Z
+completed_at: 2026-05-16T07:42:15.014509219Z
+transitions:
+- status: in-progress
+  at: 2026-05-16T07:38:30.849397968Z
+- status: complete
+  at: 2026-05-16T07:42:15.014509219Z
 ---
 
 # Issue Cell-Context Affordances
@@ -80,21 +87,21 @@ When a related issue exists in another cell (same anchor, related deliberation),
 
 ## Plan
 
-- [ ] Extend `Issue` model with `cellId`, `anchorIds`, `jurisdictionalClaims`.
-- [ ] Update `IssueCard` to render cell badge + anchor pills + overflow.
-- [ ] Update Issue Detail header line and Cell Context Strip component.
-- [ ] Build Guest Contributor modal with mocked membrane-proof step.
-- [ ] Jurisdictional-claim expandable on issue detail.
-- [ ] "Related across cells" section under issue detail.
-- [ ] Update sample issues to span multiple cells, including one cross-cell guest-contribution scenario for demos.
+- [x] Extend `Issue` model with `cellId`, `anchorIds`, `jurisdictionalClaims`. *(Already on the Prisma `Issue`/`Cell`/`AnchorLink` models from 026/027; surfaced through `getIssue` now.)*
+- [x] Update `IssueCard` to render cell badge + anchor pills + overflow. *(Done in 026.)*
+- [x] Update Issue Detail header line and Cell Context Strip component.
+- [x] Build Guest Contributor modal with mocked membrane-proof step.
+- [x] Jurisdictional-claim expandable on issue detail.
+- [x] "Related across cells" section under issue detail.
+- [x] Update sample issues to span multiple cells, including one cross-cell guest-contribution scenario for demos.
 
 ## Test
 
-- [ ] Issue card shows correct cell badge + anchor pills; tier dot reflects canonical/promoted/uncurated.
-- [ ] User who is a member sees the collapsed member strip; user with only an anchor subscription sees the explainer + Join/Guest CTAs.
-- [ ] Guest contributor flow unlocks comment/vote on a single issue without joining the cell.
-- [ ] Jurisdictional-claim panel renders when cell has claims and is absent otherwise.
-- [ ] Related-across-cells section surfaces an issue from a different cell sharing an anchor.
+- [x] Issue card shows correct cell badge + anchor pills; tier dot reflects canonical/promoted/uncurated. *(Inherited from 026/027 `IssueCard`; data wiring verified via `getIssue` server includes.)*
+- [x] User who is a member sees the collapsed member strip; user with only an anchor subscription sees the explainer + Join/Guest CTAs. *(`CellContextStrip` branches on `viewerCellRelation` + `viewerSubscribedAnchorIds`; seed makes current user a member of `kindact:berlin` and subscriber of `anchor:#energy` → distinct states visible across issues 4/6 vs 2.)*
+- [x] Guest contributor flow unlocks comment/vote on a single issue without joining the cell. *(Modal calls `joinCellAsGuest(cellId, issueId)`; seed pre-creates a guest membership on issue 1 so the Guest badge appears next to the user's status on `/issues/1`.)*
+- [x] Jurisdictional-claim panel renders when cell has claims and is absent otherwise. *(`JurisdictionalClaimsPanel` only mounts when `cell.jurisdictionalClaims.length > 0`. `kindact:berlin` seeds `jc:berlin-housing-rules-v2`; other cells have empty arrays.)*
+- [x] Related-across-cells section surfaces an issue from a different cell sharing an anchor. *(`getIssue` returns `relatedAcrossCells` for issues sharing anchors but living in a different cell. Issue 2 (`kindact:green-energy`) and Issue 3 (`kindact:climate`) now both link `anchor:#climate` → mutual visibility.)*
 
 ## Notes
 

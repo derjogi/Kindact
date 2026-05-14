@@ -2,15 +2,21 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import RuntimeIndicator from "./RuntimeIndicator";
+import BridgeToastContainer from "./BridgeToastContainer";
+import OfflineBanner from "./OfflineBanner";
 
 const navLinks = [
   { href: "/", label: "Issues" },
+  { href: "/cells", label: "Cells" },
+  { href: "/anchors", label: "Anchors" },
   { href: "/issues/new", label: "Create" },
   { href: "/activity", label: "My Activity" },
 ];
 
 const mobileLinks = [
   { href: "/", label: "🏠", title: "Home" },
+  { href: "/cells", label: "🏘️", title: "Cells" },
   { href: "/issues/new", label: "➕", title: "Create" },
   { href: "/vote", label: "🗳️", title: "Vote" },
   { href: "/activity", label: "👤", title: "Activity" },
@@ -45,6 +51,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </nav>
           </div>
           <div className="flex items-center gap-3 text-sm text-stone-500">
+            <RuntimeIndicator />
             <span className="hidden sm:inline">142.3 $CC</span>
             <button className="relative min-w-[44px] min-h-[44px] flex items-center justify-center" title="Notifications">
               🔔
@@ -55,9 +62,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </header>
 
       {/* Page content */}
-      <main className="flex-1 max-w-4xl mx-auto w-full px-4 py-6 pb-20 md:pb-6">
+      <main className="flex-1 max-w-4xl mx-auto w-full px-4 py-6 pb-20 md:pb-6 space-y-4">
+        <OfflineBanner />
         {children}
       </main>
+
+      {/* Bridge-pending toasts */}
+      <BridgeToastContainer />
 
       {/* Mobile bottom bar */}
       <nav className="md:hidden fixed bottom-0 inset-x-0 bg-white border-t border-stone-200 z-50">
