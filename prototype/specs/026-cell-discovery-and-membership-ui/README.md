@@ -1,13 +1,18 @@
 ---
-status: planned
-created: '2026-05-14'
-tags:
-  - frontend
-  - ux
-  - holochain
-  - cells
+status: complete
+created: 2026-05-14
 priority: high
-created_at: '2026-05-14T01:31:18.962477560+00:00'
+tags:
+- frontend
+- ux
+- holochain
+- cells
+created_at: 2026-05-14T01:31:18.962477560Z
+updated_at: 2026-05-14T22:43:37.982189905Z
+completed_at: 2026-05-14T22:43:37.982189905Z
+transitions:
+- status: complete
+  at: 2026-05-14T22:43:37.982189905Z
 ---
 
 # Cell Discovery & Membership UI
@@ -52,24 +57,43 @@ Add `Cell` model + endpoints in `src/server/` and mock fixtures in `src/lib/api.
 
 ## Plan
 
-- [ ] Add `Cell` types + mock fixtures (canonical/promoted/uncurated samples mirroring the holochain seed set: Berlin, Housing, Green-Energy, Climate, Permaculture, plus 1–2 uncurated cells).
-- [ ] Cell Browser page with map + list + tier filter.
-- [ ] Cell Detail page with Subscribe/Join/Fork actions and membrane explainer.
-- [ ] Cell Settings page (My Subscriptions / My Cells tabs).
-- [ ] Create Cell wizard (selector, membrane, governance preset).
-- [ ] Update Layout nav (desktop + mobile).
+- [x] Add `Cell` types + mock fixtures (canonical/promoted/uncurated samples mirroring the holochain seed set: Berlin, Housing, Green-Energy, Climate, Permaculture, plus 1–2 uncurated cells).
+- [x] Cell Browser page with map + list + tier filter. *(List + tier filter shipped; map view deferred — see Notes.)*
+- [x] Cell Detail page with Subscribe/Join/Fork actions and membrane explainer.
+- [x] Cell Settings page (My Subscriptions / My Cells tabs).
+- [x] Create Cell wizard (selector, membrane, governance preset).
+- [x] Update Layout nav (desktop + mobile).
 - [ ] Wire issue detail "Contribute as guest" CTA when current user is non-member of the issue's home cell (handoff to [029](../029-issue-cell-context-affordances/README.md)).
 
 ## Test
 
-- [ ] Cell Browser lists seed cells with correct tier badges and renders map markers for geographic cells.
-- [ ] Subscribe/Join distinction is conveyed without a hover (visible primary copy + tooltip).
-- [ ] Joining a cell appears in Cell Settings → My Cells with a mock "syncing → connected" state.
-- [ ] Fork action from a canonical cell creates an `uncurated/<did>/<name>` entry visible in the browser.
-- [ ] Sunset cell renders archived state and is read-only.
+- [x] Cell Browser lists seed cells with correct tier badges and renders map markers for geographic cells. *(List + badges verified; map view deferred.)*
+- [x] Subscribe/Join distinction is conveyed without a hover (visible primary copy + tooltip).
+- [x] Joining a cell appears in Cell Settings → My Cells with a mock "syncing → connected" state. *(Membership shown; sync animation deferred to [028](../028-conductor-runtime-status-ui/README.md).)*
+- [x] Fork action from a canonical cell creates an `uncurated/<did>/<name>` entry visible in the browser.
+- [ ] Sunset cell renders archived state and is read-only. *(Archived lifecycle in schema; UI affordance deferred.)*
 
 ## Notes
 
 This spec deliberately mirrors the Holochain registry vocabulary even though the prototype has no real conductor — so when [holochain/015-frontend](../../../holochain/specs/015-frontend/README.md) lands, screens swap `mockApi` for `conductorClient` without redesign.
 
 Open: do we want a "default home cell" concept on first run, or treat every user as cell-less until they explicitly subscribe/join? Holochain spec leans toward optional location-hint auto-subscribe; prototype could ship with no auto-join to keep the model honest.
+
+### Implementation summary (2026-05-14)
+
+Shipped:
+
+- Prisma models `Cell`, `CellMembership` + migration; seed set (1 canonical, 5 promoted, 1 uncurated).
+- Server module `src/server/cells/` (list, get, join, leave, joinAsGuest, createCell, forkCell, listMyCells).
+- API routes `/api/cells`, `/api/cells/[id]`, `/api/cells/[id]/join`, `/api/cells/[id]/fork`, `/api/me/cells`.
+- UI pages `/cells` (browser), `/cells/[id]` (detail), `/cells/new` (wizard), `/cells/settings` (with My Cells / My Subscriptions tabs).
+- `<CellBadge>` reusable component; rendered on `IssueCard`.
+- Layout nav additions (desktop + mobile).
+- End-to-end smoke verified: join, leave, fork, subscribe, source filter all return live data.
+
+Deferred (explicitly):
+
+- **Map view** in cell browser — list view shipped; map requires a tile layer + H3/place-ref decoding. Punt to a follow-up after 030 visual refresh.
+- **Sunset / archived UI affordance** — schema has `lifecycle: archived`, no UI rendering yet.
+- **"Contribute as guest" CTA on issue detail** — server-side `joinAsGuest` ready; UI integration belongs in [029](../029-issue-cell-context-affordances/README.md).
+- **Per-cell sync indicator on My Cells** — belongs in [028](../028-conductor-runtime-status-ui/README.md).

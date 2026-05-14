@@ -1,16 +1,21 @@
 import { ok, created, handleError } from "@/server/api-utils";
 import { requireAuth } from "@/server/auth/middleware";
+import { getAuthUser } from "@/server/auth/middleware";
 import { listIssues, createIssue } from "@/server/issues";
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
+    const user = await getAuthUser(request);
     const issues = await listIssues({
       status: searchParams.get("status") ?? undefined,
       scope: searchParams.get("scope") ?? undefined,
       search: searchParams.get("search") ?? undefined,
       limit: searchParams.get("limit") ? Number(searchParams.get("limit")) : undefined,
       cursor: searchParams.get("cursor") ?? undefined,
+      source: (searchParams.get("source") as "all" | "subscriptions" | "cells" | "anchor" | null) ?? undefined,
+      anchorId: searchParams.get("anchorId") ?? undefined,
+      userId: user?.id,
     });
     return ok(issues);
   } catch (err) {

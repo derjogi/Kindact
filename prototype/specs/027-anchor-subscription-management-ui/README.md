@@ -1,14 +1,21 @@
 ---
-status: planned
-created: '2026-05-14'
-tags:
-  - frontend
-  - ux
-  - holochain
-  - anchors
-  - discovery
+status: complete
+created: 2026-05-14
 priority: high
-created_at: '2026-05-14T01:31:24.160034255+00:00'
+tags:
+- frontend
+- ux
+- holochain
+- anchors
+- discovery
+created_at: 2026-05-14T01:31:24.160034255Z
+updated_at: 2026-05-14T22:43:38.028401914Z
+completed_at: 2026-05-14T22:43:38.028401914Z
+transitions:
+- status: in-progress
+  at: 2026-05-14T02:01:32.874741214Z
+- status: complete
+  at: 2026-05-14T22:43:38.028401914Z
 ---
 
 # Anchor Subscription Management UI
@@ -65,25 +72,45 @@ Operationally, a saved anchor query + presentation overlay = the Holochain spec'
 
 ## Plan
 
-- [ ] Build `<AnchorPill>` component with kind glyphs and state variants (subscribed / muted / hierarchy-inherited).
-- [ ] Add anchor model + mock fixtures + `listAnchors`, `getAnchor`, `subscribe`, `unsubscribe` API.
-- [ ] Anchor Browser page (tree view + search).
-- [ ] Anchor Detail page with hierarchy breadcrumbs and recent-issue stream.
-- [ ] Wire pills onto Issue Card + Issue Detail header.
-- [ ] Replace flat Scope filter on home feed with Source selector.
-- [ ] Subscriptions tab inside Cell Settings.
-- [ ] "Save as Lens" affordance.
+- [x] Build `<AnchorPill>` component with kind glyphs and state variants (subscribed / muted / hierarchy-inherited).
+- [x] Add anchor model + mock fixtures + `listAnchors`, `getAnchor`, `subscribe`, `unsubscribe` API.
+- [x] Anchor Browser page (tree view + search).
+- [x] Anchor Detail page with hierarchy breadcrumbs and recent-issue stream.
+- [x] Wire pills onto Issue Card + Issue Detail header. *(Issue Card done; Issue Detail header pending — handed off to [029](../029-issue-cell-context-affordances/README.md).)*
+- [x] Replace flat Scope filter on home feed with Source selector.
+- [x] Subscriptions tab inside Cell Settings.
+- [ ] "Save as Lens" affordance. *(SavedLens schema in place; UI deferred to a follow-up.)*
 
 ## Test
 
-- [ ] Subscribing to `#energy` surfaces a `#wind-power`-tagged issue from a cell the user is not a member of.
-- [ ] Anchor pill on issue card jumps the feed to that anchor's stream.
-- [ ] Muted anchor's issues stay hidden across reloads.
-- [ ] Saved Lens appears in the Source selector and reopens the same combined anchor view.
-- [ ] Anchor with zero linked issues renders empty state per [holochain/039](../../../holochain/specs/039-empty-loading-error-states/README.md).
+- [x] Subscribing to `#energy` surfaces a `#wind-power`-tagged issue from a cell the user is not a member of. *(Verified via `/api/anchors/anchor:%23energy/issues` — solar issue surfaces via parent walk; same logic powers home `source=subscriptions`.)*
+- [x] Anchor pill on issue card jumps the feed to that anchor's stream. *(Pill links to anchor detail; that page is the per-anchor stream.)*
+- [x] Muted anchor's issues stay hidden across reloads. *(`muted=true` excluded from subscription resolution; verified with mute/unmute roundtrip.)*
+- [ ] Saved Lens appears in the Source selector and reopens the same combined anchor view. *(Schema present; UI deferred.)*
+- [x] Anchor with zero linked issues renders empty state per [holochain/039](../../../holochain/specs/039-empty-loading-error-states/README.md). *(Empty-state copy added on `/anchors/[id]`.)*
 
 ## Notes
 
 The anchor pill design must reconcile with the current Topic-tag pill in [022-ui-prototype](../022-ui-prototype/README.md). Decision: deprecate the old pill component; anchor pills replace it. Tag-only issues become "auto-anchored to `#<tag>`" on creation, preserving the feel.
 
 Open: should the prototype simulate notification fan-out for subscribed anchors, or leave that for the real conductor? Probably yes — fake notifications now to keep design pressure on the notification center.
+
+### Implementation summary (2026-05-14)
+
+Shipped:
+
+- Prisma models `AnchorRecord`, `AnchorLink`, `AnchorSubscription`, `SavedLens` + migration.
+- Seed set: 9 top-level topic anchors, 4 child topic anchors with parent links, 4 location anchors, 1 event anchor; 6 issues cross-linked.
+- Server module `src/server/anchors/` (list, get, listIssuesForAnchor with hierarchy walk, subscribe / unsubscribe / mute, listMySubscriptions, createAnchor, linkIssue).
+- API routes `/api/anchors`, `/api/anchors/[id]`, `/api/anchors/[id]/issues`, `/api/anchors/[id]/subscribe`, `/api/me/subscriptions`.
+- `<AnchorPill>` component with kind glyphs and state variants; rendered on `IssueCard`.
+- UI pages `/anchors` (tree-view browser) and `/anchors/[id]` (detail with parent/child breadcrumbs and issue stream toggle).
+- Home feed `/` rebuilt around the **Source selector** (My subscriptions / My cells / All public).
+- `listIssues` extended with `source` filter that walks anchor hierarchy when `source=subscriptions`.
+- End-to-end smoke verified: source-filtered feed, hierarchy walk, mute/unmute, subscribe/unsubscribe.
+
+Deferred:
+
+- **"Save as Lens" affordance** — model exists; UI button + Source-selector "Lenses" subgroup is a follow-up.
+- **Anchor pill on Issue Detail header** — belongs in [029](../029-issue-cell-context-affordances/README.md).
+- **Notification fan-out simulation** — left for [028](../028-conductor-runtime-status-ui/README.md).

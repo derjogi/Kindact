@@ -84,3 +84,125 @@ export interface User {
   decayRate: number;
   activities: UserActivity[];
 }
+
+// ─── 026: Cells ─────────────────────────────────────────────────────────────
+
+export type CellTier = "canonical" | "promoted" | "uncurated";
+export type CellLifecycle = "active" | "archived";
+export type CellMembershipKind = "member" | "guest";
+export type ViewerRelation = "member" | "guest" | "none";
+
+export interface CellSummary {
+  id: string;
+  cellId: string;
+  displayName: string;
+  description: string;
+  tier: CellTier;
+  scopeLevel: string;
+  locationRefs: string[];
+  topicTags: string[];
+  membraneRead: string;
+  membraneWrite: string;
+  jurisdictionalClaims: string[];
+  governanceEngine: string;
+  lifecycle: CellLifecycle;
+  memberCount: number;
+  issueCount: number;
+  isMember: boolean;
+  forkedFromId?: string | null;
+  createdAt?: string | Date;
+  lastActivityAt?: string | Date;
+}
+
+export interface CellDetail extends CellSummary {
+  scopeProofTypes: string[];
+  forkedFrom: { id: string; cellId: string; displayName: string } | null;
+  viewerRelation: ViewerRelation;
+}
+
+export interface MyCellMembership {
+  membershipId: string;
+  kind: CellMembershipKind;
+  issueId: string | null;
+  joinedAt: string | Date;
+  cell: {
+    id: string;
+    cellId: string;
+    displayName: string;
+    tier: CellTier;
+    scopeLevel: string;
+    memberCount: number;
+    issueCount: number;
+  };
+}
+
+// ─── 027: Anchors ───────────────────────────────────────────────────────────
+
+export type AnchorKind = "topic" | "location" | "event" | "cell";
+
+export interface AnchorSummary {
+  id: string;
+  anchorId: string;
+  kind: AnchorKind;
+  displayName: string;
+  description?: string;
+  synonyms: string[];
+  parentIds: string[];
+  issueCount: number;
+  subscriberCount: number;
+  isSubscribed: boolean;
+}
+
+export interface AnchorDetail {
+  id: string;
+  anchorId: string;
+  kind: AnchorKind;
+  displayName: string;
+  description: string;
+  synonyms: string[];
+  issueCount: number;
+  subscriberCount: number;
+  parents: { id: string; anchorId: string; displayName: string; kind: AnchorKind }[];
+  children: { id: string; anchorId: string; displayName: string; kind: AnchorKind }[];
+  subscription: { id: string; muted: boolean; subscribedAt: string | Date } | null;
+}
+
+export interface MyAnchorSubscription {
+  id: string;
+  muted: boolean;
+  subscribedAt: string | Date;
+  anchor: {
+    id: string;
+    anchorId: string;
+    kind: AnchorKind;
+    displayName: string;
+    issueCount: number;
+  };
+}
+
+// Issue payload as it now arrives from the API (with cell + anchor links).
+export interface IssueListItem {
+  id: string;
+  title: string;
+  summary: string;
+  status: string;
+  scope: string;
+  tags: string[];
+  participants: number;
+  cellId?: string | null;
+  cell?: {
+    id: string;
+    cellId: string;
+    displayName: string;
+    tier: CellTier;
+  } | null;
+  anchorLinks?: Array<{
+    id: string;
+    anchor: {
+      id: string;
+      anchorId: string;
+      kind: AnchorKind;
+      displayName: string;
+    };
+  }>;
+}

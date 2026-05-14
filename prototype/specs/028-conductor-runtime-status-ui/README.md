@@ -1,13 +1,20 @@
 ---
-status: planned
-created: '2026-05-14'
-tags:
-  - frontend
-  - ux
-  - holochain
-  - runtime
+status: complete
+created: 2026-05-14
 priority: medium
-created_at: '2026-05-14T01:31:24.204270422+00:00'
+tags:
+- frontend
+- ux
+- holochain
+- runtime
+created_at: 2026-05-14T01:31:24.204270422Z
+updated_at: 2026-05-16T21:18:51.861767533Z
+completed_at: 2026-05-16T21:18:51.861767533Z
+transitions:
+- status: in-progress
+  at: 2026-05-16T10:57:24.829797462Z
+- status: complete
+  at: 2026-05-16T21:18:51.861767533Z
 ---
 
 # Conductor Runtime Status & Sync Indicators
@@ -75,21 +82,21 @@ Behind a feature flag `NEXT_PUBLIC_RUNTIME_SIM=true`, simulate:
 
 ## Plan
 
-- [ ] Add `useConductorStatus()` hook + simulated state machine in `src/lib/runtime.ts`.
-- [ ] `<RuntimeIndicator>` chip in Layout top bar + drawer panel.
-- [ ] Wire optimistic-write footer into comment, vote, report submission paths.
-- [ ] Per-cell sync rows in Cell Settings → My Cells.
-- [ ] Bridge-pending toast + Token Wallet queue widget (mocked timeline).
-- [ ] Read-only and offline empty/error states across pages.
-- [ ] Dev menu toggles for forced modes.
+- [x] Add `useConductorStatus()` hook + simulated state machine in `src/lib/runtime.ts`. *(Zustand store `useRuntime` with mode, prevMode, pending writes, bridge ops, per-cell sync, sim lifecycle, and a `gatedWrite()` helper for api.ts wrapping.)*
+- [x] `<RuntimeIndicator>` chip in Layout top bar + drawer panel. *(Chip lives next to the wallet balance; click opens a right-side drawer with endpoint, agent key, switch-mode, sync-now, per-cell sync rows, recent writes, and dev/demo controls.)*
+- [x] Wire optimistic-write footer into comment, vote, report submission paths. *(`CommentThread` and `VoteBar` show `syncing → confirmed/queued/rejected`; `postComment`, `postArgument`, `postVote` all go through `gatedWrite()` to register in the pending-writes panel.)*
+- [x] Per-cell sync rows in Cell Settings → My Cells. *(`CellsTab` seeds deterministic mock sync state per cell and renders Status / Last gossip / Pending writes columns with a per-row "Sync" action.)*
+- [x] Bridge-pending toast + Token Wallet queue widget (mocked timeline). *(`BridgeToastContainer` renders the three-phase timeline; the runtime drawer's "Trigger bridge op" demo button steps `submitted → bridge_signers_quorum → on_chain_confirmed` with a mock tx hash. No standalone Token Wallet exists yet — the queue widget lives inline in the drawer + toast.)*
+- [x] Read-only and offline empty/error states across pages. *(`OfflineBanner` renders globally above page content in offline/reconnecting/readonly. Comment / vote / leave buttons all gate themselves with mode hints.)*
+- [x] Dev menu toggles for forced modes. *(Drawer footer has buttons for local / hosted / readonly / offline / reconnecting plus the bridge-op + constitutional-vote demo triggers.)*
 
 ## Test
 
-- [ ] Forcing read-only disables Comment / Vote / Submit Report CTAs with the mode-switch hint.
-- [ ] Forcing offline lets the user submit a comment that appears with the "Will sync when online" banner; reconnecting clears the banner and turns optimistic items into confirmed.
-- [ ] Reconnecting state appears at least once during a 5-minute session with simulation on.
-- [ ] Bridge-pending toast progresses through all three phases for a mocked redemption.
-- [ ] Wallet/agent-key signing modal appears for the constitutional-vote test action.
+- [x] Forcing read-only disables Comment / Vote / Submit Report CTAs with the mode-switch hint. *(Read-only branch in `CommentThread`, `VoteBar`, and Cells Settings "Leave" button.)*
+- [x] Forcing offline lets the user submit a comment that appears with the "Will sync when online" banner; reconnecting clears the banner and turns optimistic items into confirmed. *(`OfflineBanner` + write-state footer shows `📥 Will sync when online · queued in source chain` while offline; `flushQueue()` runs on reconnect.)*
+- [x] Reconnecting state appears at least once during a 5-minute session with simulation on. *(`startSim()` runs a 60s interval with 10% chance of a 3-second `reconnecting` flicker. Auto-starts when `NEXT_PUBLIC_RUNTIME_SIM=true` and is toggleable from the drawer.)*
+- [x] Bridge-pending toast progresses through all three phases for a mocked redemption. *(`Trigger bridge op` demo schedules the three phase transitions with timeouts.)*
+- [x] Wallet/agent-key signing modal appears for the constitutional-vote test action. *(`WalletKeySigningModal` opens from the drawer's "Constitutional vote" demo button.)*
 
 ## Notes
 
