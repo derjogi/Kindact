@@ -26,30 +26,30 @@ export default function HoverToolbar({
       {children}
 
       {showToolbar && (
-        <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-stone-800 text-white rounded-lg px-2 py-1 flex gap-1 shadow-lg z-10 text-sm">
+        <div className="absolute -top-9 left-1/2 -translate-x-1/2 bg-on-surface text-surface rounded-md px-2 py-1 flex gap-1 elevation-floating z-10 font-meta text-sm">
           <button
             onClick={onUpvote}
-            className="hover:bg-stone-700 px-1.5 py-0.5 rounded transition-colors"
+            className="hover:bg-primary-dim px-1.5 py-0.5 rounded transition-colors"
             title="Upvote"
           >
             👍
           </button>
           <button
             onClick={onDownvote}
-            className="hover:bg-stone-700 px-1.5 py-0.5 rounded transition-colors"
+            className="hover:bg-primary-dim px-1.5 py-0.5 rounded transition-colors"
             title="Downvote"
           >
             👎
           </button>
           <button
             onClick={() => setShowCommentInput(!showCommentInput)}
-            className="hover:bg-stone-700 px-1.5 py-0.5 rounded transition-colors"
+            className="hover:bg-primary-dim px-1.5 py-0.5 rounded transition-colors"
             title="Comment"
           >
             💬
           </button>
           <button
-            className="hover:bg-stone-700 px-1.5 py-0.5 rounded transition-colors"
+            className="hover:bg-primary-dim px-1.5 py-0.5 rounded transition-colors"
             title="Flag"
           >
             🏴
@@ -64,7 +64,7 @@ export default function HoverToolbar({
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             placeholder="Why?"
-            className="flex-1 px-3 py-1.5 text-sm border border-stone-200 rounded-lg focus:outline-none focus:border-stone-400"
+            className="input-line flex-1 px-3 py-1.5 text-sm text-on-surface"
             autoFocus
             onBlur={() => {
               if (!comment) {
@@ -79,7 +79,7 @@ export default function HoverToolbar({
               setShowCommentInput(false);
               setShowToolbar(false);
             }}
-            className="px-3 py-1.5 text-sm bg-stone-800 text-white rounded-lg"
+            className="btn-primary px-3 py-1.5 font-meta text-sm rounded-md"
           >
             Send
           </button>

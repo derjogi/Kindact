@@ -29,19 +29,21 @@ interface IssueCardProps {
   };
 }
 
-const statusColors: Record<string, string> = {
-  draft: "bg-stone-400",
-  deliberating: "bg-emerald-500",
-  vote_ready: "bg-blue-500",
-  adopted: "bg-violet-500",
-  implementing: "bg-amber-500",
-  completed: "bg-stone-600",
+const statusDotColor: Record<string, string> = {
+  draft: "bg-on-surface-variant",
+  deliberating: "bg-status-deliberating animate-pulse",
+  vote_ready: "bg-status-voting",
+  "vote-ready": "bg-status-voting",
+  adopted: "bg-status-adopted",
+  implementing: "bg-status-implementing",
+  completed: "bg-status-completed",
 };
 
 const statusLabels: Record<string, string> = {
   draft: "Draft",
   deliberating: "Deliberating",
   vote_ready: "Voting",
+  "vote-ready": "Voting",
   adopted: "Adopted",
   implementing: "Implementing",
   completed: "Completed",
@@ -55,43 +57,54 @@ export default function IssueCard({ issue }: IssueCardProps) {
   const overflow = anchors.length - visibleAnchors.length;
 
   return (
-    <div className="block rounded-lg border border-stone-200 bg-white px-4 py-3 hover:border-stone-300 hover:shadow-sm transition-all">
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex-1 min-w-0">
-          <Link href={`/issues/${issue.id}`} className="block">
-            <div className="flex items-center gap-2 mb-1">
-              <span
-                className={`w-2 h-2 rounded-full shrink-0 ${
-                  statusColors[issue.status] ?? "bg-stone-400"
-                }`}
-              />
-              <h3 className="font-medium text-stone-900 truncate">{issue.title}</h3>
-            </div>
-            <p className="text-sm text-stone-500 line-clamp-1">{issue.summary}</p>
-          </Link>
-
-          {/* Cell + anchor row */}
-          {(issue.cell || anchors.length > 0) && (
-            <div className="mt-2 flex flex-wrap items-center gap-1.5">
-              {issue.cell ? <CellBadge cell={issue.cell} /> : null}
-              {visibleAnchors.map((al) => (
-                <AnchorPill key={al.anchor.id} anchor={al.anchor} />
-              ))}
-              {overflow > 0 ? (
-                <span className="text-xs text-stone-400 px-1">+{overflow}</span>
-              ) : null}
-            </div>
-          )}
-
-          <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-stone-400">
-            <span className="capitalize">{issue.scope}</span>
-            <span>·</span>
-            <span>{issue.participants} participants</span>
-            <span>·</span>
-            <span>{statusLabels[issue.status] ?? issue.status}</span>
-          </div>
+    <article className="card-lift group p-5 bg-surface-container-lowest rounded-md">
+      {/* Top row: scope chip + status dot */}
+      <div className="flex items-center justify-between mb-3">
+        <span className="font-meta text-[10px] uppercase tracking-widest font-bold px-2 py-0.5 rounded bg-surface-container text-on-primary-container">
+          {issue.scope}
+        </span>
+        <div className="flex items-center gap-1.5">
+          <span
+            className={`w-2 h-2 rounded-full shrink-0 ${
+              statusDotColor[issue.status] ?? "bg-on-surface-variant"
+            }`}
+          />
+          <span className="font-meta text-xs text-on-surface-variant">
+            {statusLabels[issue.status] ?? issue.status}
+          </span>
         </div>
       </div>
-    </div>
+
+      {/* Title + summary navigate to issue detail */}
+      <Link href={`/issues/${issue.id}`} className="block">
+        <h3 className="font-display text-xl font-bold leading-tight text-on-surface group-hover:text-primary-dim transition-colors mb-2">
+          {issue.title}
+        </h3>
+        <p className="font-sans text-sm text-on-surface-variant line-clamp-2 mb-4">
+          {issue.summary}
+        </p>
+      </Link>
+
+      {/* Cell + anchor chips — independent links */}
+      {(issue.cell || anchors.length > 0) && (
+        <div className="mb-4 flex flex-wrap items-center gap-1.5">
+          {issue.cell ? <CellBadge cell={issue.cell} /> : null}
+          {visibleAnchors.map((al) => (
+            <AnchorPill key={al.anchor.id} anchor={al.anchor} />
+          ))}
+          {overflow > 0 ? (
+            <span className="font-meta text-xs text-on-surface-variant">
+              +{overflow}
+            </span>
+          ) : null}
+        </div>
+      )}
+
+      {/* Footer */}
+      <div className="pt-3 flex items-center justify-between font-meta text-xs text-on-surface-variant">
+        <span>{issue.participants} participants</span>
+        {issue.status === "completed" ? <span>✓ Completed</span> : null}
+      </div>
+    </article>
   );
 }

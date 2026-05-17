@@ -1,13 +1,18 @@
 ---
-status: planned
-created: '2026-05-14'
-tags:
-  - frontend
-  - design-system
-  - visual
-  - stitch
+status: complete
+created: 2026-05-14
 priority: medium
-created_at: '2026-05-14T01:31:24.303109345+00:00'
+tags:
+- frontend
+- design-system
+- visual
+- stitch
+created_at: 2026-05-14T01:31:24.303109345Z
+updated_at: 2026-05-19T22:08:30.657738740Z
+completed_at: 2026-05-19T22:08:30.657738740Z
+transitions:
+- status: in-progress
+  at: 2026-05-17T20:26:49.038094534Z
 ---
 
 # Stitch "Civic Archive" Visual Refresh

@@ -17,7 +17,13 @@ interface SourcePanelProps {
   mobile?: boolean;
 }
 
-export default function SourcePanel({ sources, label, onJumpToComment, idle, mobile }: SourcePanelProps) {
+export default function SourcePanel({
+  sources,
+  label,
+  onJumpToComment,
+  idle,
+  mobile,
+}: SourcePanelProps) {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -29,46 +35,51 @@ export default function SourcePanel({ sources, label, onJumpToComment, idle, mob
     }
   }, [idle, sources]);
 
-  const directSources = sources.filter(s => s.strength === "direct");
-  const otherSources = sources.filter(s => s.strength !== "direct");
+  const directSources = sources.filter((s) => s.strength === "direct");
+  const otherSources = sources.filter((s) => s.strength !== "direct");
 
   // Mobile bottom sheet
   if (mobile) {
     const isActive = !idle && sources.length > 0;
     return (
       <>
-        {/* Backdrop */}
         {isActive && (
-          <div
-            className="fixed inset-0 bg-black/20 z-40 transition-opacity duration-200"
-            onClick={() => {/* parent handles clearing */}}
-          />
+          <div className="fixed inset-0 bg-on-surface/20 z-40 transition-opacity duration-200" />
         )}
-        {/* Bottom sheet */}
         <div
-          className={`fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-2xl shadow-2xl border-t border-stone-200 transition-transform duration-300 ${
+          className={`fixed bottom-0 left-0 right-0 z-50 bg-surface-container-lowest rounded-t-2xl elevation-floating transition-transform duration-300 ${
             isActive ? "translate-y-0" : "translate-y-full"
           }`}
         >
           <div className="flex justify-center py-2">
-            <div className="w-10 h-1 bg-stone-300 rounded-full" />
+            <div className="w-10 h-1 bg-surface-container-highest rounded-full" />
           </div>
           {label && (
             <div className="px-4 pb-2">
-              <h3 className="text-xs font-medium text-stone-500 uppercase tracking-wide">
+              <h3 className="font-meta text-[10px] uppercase tracking-widest text-on-surface-variant">
                 {label}
               </h3>
             </div>
           )}
-          <div className="max-h-[40vh] overflow-y-auto px-4 pb-4 space-y-2">
+          <div className="max-h-[40vh] overflow-y-auto px-4 pb-6 space-y-2">
             {directSources.map((s) => (
-              <SourceCard key={s.commentId} source={s} onJump={onJumpToComment} />
+              <SourceCard
+                key={s.commentId}
+                source={s}
+                onJump={onJumpToComment}
+              />
             ))}
             {otherSources.length > 0 && (
               <>
-                <p className="text-xs text-stone-400 mt-2">See also</p>
+                <p className="font-meta text-[10px] uppercase tracking-widest text-on-surface-variant mt-3">
+                  See also
+                </p>
                 {otherSources.map((s) => (
-                  <SourceCard key={s.commentId} source={s} onJump={onJumpToComment} />
+                  <SourceCard
+                    key={s.commentId}
+                    source={s}
+                    onJump={onJumpToComment}
+                  />
                 ))}
               </>
             )}
@@ -78,26 +89,30 @@ export default function SourcePanel({ sources, label, onJumpToComment, idle, mob
     );
   }
 
-  // Desktop sticky panel
+  // Desktop sticky focus panel
   return (
-    <div className="sticky top-4">
+    <div className="sticky top-20">
       <div
-        className={`bg-white rounded-lg border border-stone-200 overflow-hidden transition-all duration-200 ${
+        className={`bg-surface-container-low rounded-md overflow-hidden transition-all duration-200 ${
           idle || sources.length === 0 ? "p-4" : "p-0"
         }`}
       >
         {idle || sources.length === 0 ? (
-          <div className="flex items-center gap-2 text-stone-400 text-sm">
+          <div className="flex items-start gap-2 font-meta text-xs text-on-surface-variant">
             <span>💬</span>
-            <span>Hover over the summary or a metric to see sources</span>
+            <span>
+              Hover over the summary or a metric to see sources.
+            </span>
           </div>
         ) : (
           <div
-            className={`transition-opacity duration-200 ${visible ? "opacity-100" : "opacity-0"}`}
+            className={`transition-opacity duration-200 ${
+              visible ? "opacity-100" : "opacity-0"
+            }`}
           >
             {label && (
               <div className="px-4 pt-3 pb-2">
-                <h3 className="text-xs font-medium text-stone-500 uppercase tracking-wide">
+                <h3 className="font-meta text-[10px] uppercase tracking-widest text-on-surface-variant">
                   {label}
                 </h3>
               </div>
@@ -106,15 +121,25 @@ export default function SourcePanel({ sources, label, onJumpToComment, idle, mob
               {directSources.length > 0 && (
                 <>
                   {directSources.map((s) => (
-                    <SourceCard key={s.commentId} source={s} onJump={onJumpToComment} />
+                    <SourceCard
+                      key={s.commentId}
+                      source={s}
+                      onJump={onJumpToComment}
+                    />
                   ))}
                 </>
               )}
               {otherSources.length > 0 && (
                 <>
-                  <p className="text-xs text-stone-400 mt-2">See also</p>
+                  <p className="font-meta text-[10px] uppercase tracking-widest text-on-surface-variant mt-2">
+                    See also
+                  </p>
                   {otherSources.map((s) => (
-                    <SourceCard key={s.commentId} source={s} onJump={onJumpToComment} />
+                    <SourceCard
+                      key={s.commentId}
+                      source={s}
+                      onJump={onJumpToComment}
+                    />
                   ))}
                 </>
               )}
@@ -126,19 +151,29 @@ export default function SourcePanel({ sources, label, onJumpToComment, idle, mob
   );
 }
 
-function SourceCard({ source, onJump }: { source: Source; onJump: (id: string) => void }) {
+function SourceCard({
+  source,
+  onJump,
+}: {
+  source: Source;
+  onJump: (id: string) => void;
+}) {
   return (
-    <div className="p-2.5 bg-stone-50 rounded-lg border border-stone-100 text-sm">
+    <div className="p-3 bg-surface-container-lowest rounded-md">
       <div className="flex items-center justify-between mb-1">
-        <span className="text-xs font-medium text-stone-500">{source.alias}</span>
+        <span className="font-meta text-xs font-medium text-on-surface-variant">
+          {source.alias}
+        </span>
         <button
           onClick={() => onJump(source.commentId)}
-          className="text-xs text-violet-600 hover:text-violet-800 transition-colors"
+          className="font-meta text-xs text-tertiary hover:underline transition-colors"
         >
           ↓ jump
         </button>
       </div>
-      <p className="text-stone-600 text-xs leading-relaxed line-clamp-3">{source.text}</p>
+      <p className="text-on-surface text-xs leading-relaxed line-clamp-3">
+        {source.text}
+      </p>
     </div>
   );
 }
