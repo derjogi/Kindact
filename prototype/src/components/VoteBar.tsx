@@ -22,7 +22,7 @@ export default function VoteBar({
   const [showQuiz, setShowQuiz] = useState(false);
   const [eligible, setEligible] = useState(false);
   const [pendingVote, setPendingVote] = useState<"approve" | "reject" | null>(
-    null
+    null,
   );
   const [writeState, setWriteState] = useState<
     "idle" | "syncing" | "queued" | "confirmed" | "rejected"
@@ -73,16 +73,16 @@ export default function VoteBar({
 
   return (
     <>
-      <div className="sticky bottom-14 md:bottom-0 bg-white border-t md:border md:rounded-lg border-stone-200 p-4 flex flex-col gap-2 z-40">
+      <div className="sticky bottom-14 md:bottom-4 z-40 bg-surface-container-lowest/85 backdrop-blur-[16px] rounded-md elevation-floating p-4 flex flex-col gap-2">
         <div className="flex items-center justify-between gap-4">
           <div className="flex gap-2">
             <button
               onClick={() => handleVote("approve")}
               disabled={isReadOnly}
-              className={`px-4 py-2.5 min-h-[44px] rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+              className={`px-5 py-2.5 min-h-[44px] rounded-md font-meta text-sm font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
                 userVote === "approve"
-                  ? "bg-emerald-600 text-white"
-                  : "bg-stone-100 text-stone-700 hover:bg-emerald-50 hover:text-emerald-700 active:bg-emerald-100"
+                  ? "btn-primary"
+                  : "bg-surface-container text-on-surface hover:bg-primary-container"
               }`}
             >
               ✅ Approve
@@ -90,25 +90,28 @@ export default function VoteBar({
             <button
               onClick={() => handleVote("reject")}
               disabled={isReadOnly}
-              className={`px-4 py-2.5 min-h-[44px] rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+              className={`px-5 py-2.5 min-h-[44px] rounded-md font-meta text-sm font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
                 userVote === "reject"
-                  ? "bg-rose-600 text-white"
-                  : "bg-stone-100 text-stone-700 hover:bg-rose-50 hover:text-rose-700 active:bg-rose-100"
+                  ? "bg-status-implementing text-on-primary"
+                  : "bg-surface-container text-on-surface hover:bg-surface-container-high"
               }`}
             >
               ❌ Reject
             </button>
           </div>
-          <div className="text-sm text-stone-500">
-            {pct}% approval ({total})
+          <div className="font-meta text-sm text-on-surface-variant">
+            <span className="font-display text-base font-semibold text-primary-dim">
+              {pct}%
+            </span>{" "}
+            approval ({total})
           </div>
         </div>
         {isReadOnly ? (
-          <div className="text-xs text-stone-500">
+          <div className="font-meta text-xs text-on-surface-variant">
             🔒 Sign in to a conductor to vote.
           </div>
         ) : writeState !== "idle" ? (
-          <div className="text-xs text-stone-500 flex items-center gap-1.5">
+          <div className="font-meta text-xs text-on-surface-variant flex items-center gap-1.5">
             {writeState === "syncing" ? "↗ syncing…" : null}
             {writeState === "queued" ? "📥 Will sync when online" : null}
             {writeState === "confirmed" ? "✓ confirmed by validators" : null}

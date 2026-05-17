@@ -129,19 +129,19 @@ export default function SummaryWithRefs({
   }, [stickyIndex, onClearSources]);
 
   return (
-    <div className="rounded-lg border border-stone-200 bg-white p-5">
-      <div className="mb-2 flex items-center justify-between">
-        <h2 className="text-sm font-medium uppercase tracking-wide text-stone-500">
-          Summary
+    <div className="rounded-md bg-surface-container-lowest p-6">
+      <div className="mb-3 flex items-center justify-between">
+        <h2 className="font-meta text-[10px] uppercase tracking-widest text-on-surface-variant">
+          AI Summary
         </h2>
         {updatedSinceLastVisit && (
-          <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-xs text-emerald-600">
+          <span className="font-meta rounded-full bg-primary-container px-2.5 py-0.5 text-xs text-on-primary-container">
             🟢 Updated since your last visit
           </span>
         )}
       </div>
       <div
-        className="text-sm leading-relaxed text-stone-700"
+        className="font-display text-lg leading-[1.6] text-on-surface"
         onMouseLeave={handleMouseLeave}
       >
         {segments.map((seg, i) => {
@@ -154,8 +154,8 @@ export default function SummaryWithRefs({
               key={i}
               className={`
                 ${hasRefs ? "cursor-pointer" : ""}
-                ${isSticky ? "rounded bg-yellow-100" : ""}
-                ${hasRefs && !isSticky ? "rounded hover:bg-yellow-50" : ""}
+                ${isSticky ? "rounded bg-primary-container" : ""}
+                ${hasRefs && !isSticky ? "rounded hover:bg-surface-container" : ""}
                 ${isDimmed ? "opacity-50" : ""}
                 transition-all duration-150
               `}
