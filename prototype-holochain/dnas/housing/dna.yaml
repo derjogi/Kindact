@@ -1,0 +1,12 @@
+---
+manifest_version: "1"
+name: housing
+integrity:
+  network_seed: null
+  properties: null
+  origin_time: 1670000000000000
+  zomes:
+    - name: housing
+      bundled: ./zomes/housing/target/wasm32-unknown-unknown/release/housing.wasm
+coordinator:
+  zomes: []

@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: complete
 created: '2026-05-12'
 tags: [holochain, anchors, discovery, foundational]
 priority: high

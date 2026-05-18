@@ -4,6 +4,7 @@ members = [
     "zomes/kindact-base",
     "dnas/global-registry/zomes/registry",
     "dnas/manhattan-windturbine/zomes/wind_turbine",
+    "dnas/housing/zomes/housing",
 ]
 resolver = "2"
 

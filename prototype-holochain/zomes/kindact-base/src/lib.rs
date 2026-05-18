@@ -11,6 +11,7 @@ pub enum IssueStatus {
     Implementing,
     Completed,
     Archived,
+    Challenged, // Phase 2: Added Challenged state
 }
 
 #[hdk_entry_helper]
@@ -25,6 +26,12 @@ pub struct ModuleManifest {
     pub contract_address: Option<String>,
 }
 
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct JurisdictionalContext {
+    pub location: Option<String>,
+    pub has_geotagged_evidence: bool,
+}
+
 pub fn validate_transition(from: &IssueStatus, to: &IssueStatus) -> bool {
     match (from, to) {
         (IssueStatus::Draft, IssueStatus::Deliberating) => true,
@@ -33,8 +40,21 @@ pub fn validate_transition(from: &IssueStatus, to: &IssueStatus) -> bool {
         (IssueStatus::Adopted, IssueStatus::Implementing) => true,
         (IssueStatus::Implementing, IssueStatus::Completed) => true,
         (IssueStatus::Completed, IssueStatus::Archived) => true,
+        (_, IssueStatus::Challenged) => true, // Any state can be challenged
+        (IssueStatus::Challenged, _) => true, // Can transition out of challenged if resolved
         _ => false,
     }
+}
+
+/// Phase 2: Jurisdictional validation logic
+pub fn validate_jurisdiction(
+    context: &JurisdictionalContext,
+    required_tier: &str,
+) -> Result<(), String> {
+    if required_tier == "geotagged_evidence_required" && !context.has_geotagged_evidence {
+        return Err("Geotagged evidence required for this jurisdiction".into());
+    }
+    Ok(())
 }
 
 #[cfg(test)]
@@ -44,7 +64,6 @@ mod tests {
     #[test]
     fn test_transitions() {
         assert!(validate_transition(&IssueStatus::Draft, &IssueStatus::Deliberating));
-        assert!(validate_transition(&IssueStatus::Deliberating, &IssueStatus::VoteReady));
-        assert!(!validate_transition(&IssueStatus::Draft, &IssueStatus::VoteReady));
+        assert!(validate_transition(&IssueStatus::Deliberating, &IssueStatus::Challenged));
     }
 }

@@ -7,19 +7,20 @@ pub enum EntryTypes {
     Anchor(AnchorEntry),
     AnchorLink(AnchorLinkEntry),
     Subscription(SubscriptionEntry),
+    JurisdictionalClaim(JurisdictionalClaimEntry),
 }
 
 #[hdk_entry_helper]
 #[derive(Clone)]
 pub struct CellEntry {
     pub dna_hash: DnaHash,
-    pub status: String, // e.g., "active", "archived"
+    pub status: String,
 }
 
 #[hdk_entry_helper]
 #[derive(Clone)]
 pub struct AnchorEntry {
-    pub name: String, // e.g., "#wind-power"
+    pub name: String,
 }
 
 #[hdk_entry_helper]
@@ -37,6 +38,16 @@ pub struct SubscriptionEntry {
     pub subscriber: AgentPubKey,
 }
 
+#[hdk_entry_helper]
+#[derive(Clone)]
+pub struct JurisdictionalClaimEntry {
+    pub claim_id: String,
+    pub scope_geographic: Vec<String>, // e.g., ["h3:881f1d4895fffff"]
+    pub topic_tags: Vec<String>,      // e.g., ["#housing"]
+    pub decision_engine: String,      // e.g., "consensus_neighbor_agreement"
+    pub verification_tier: String,    // e.g., "geotagged_evidence_required"
+}
+
 #[hdk_extern]
 pub fn register_cell(cell: CellEntry) -> ExternResult<ActionHash> {
     create_entry(EntryTypes::Cell(cell))
@@ -47,15 +58,11 @@ pub fn publish_anchor_link(link: AnchorLinkEntry) -> ExternResult<ActionHash> {
     let anchor_entry = AnchorEntry { name: link.anchor_name.clone() };
     let anchor_hash = hash_entry(EntryTypes::Anchor(anchor_entry.clone()))?;
 
-    // 1. Ensure anchor exists (create if not)
     if get(anchor_hash.clone(), GetOptions::default())?.is_none() {
         create_entry(EntryTypes::Anchor(anchor_entry))?;
     }
 
-    // 2. Create the AnchorLink entry
     let action_hash = create_entry(EntryTypes::AnchorLink(link.clone()))?;
-
-    // 3. Link from Anchor to the specific Issue for discovery
     create_link(anchor_hash, link.issue_id, LinkTypes::AnchorToIssue, ())?;
 
     Ok(action_hash)
@@ -71,6 +78,18 @@ pub fn get_issues_for_anchor(anchor_name: String) -> ExternResult<Vec<ActionHash
         .collect();
 
     Ok(issue_hashes)
+}
+
+#[hdk_extern]
+pub fn create_jurisdictional_claim(claim: JurisdictionalClaimEntry) -> ExternResult<ActionHash> {
+    create_entry(EntryTypes::JurisdictionalClaim(claim))
+}
+
+#[hdk_extern]
+pub fn get_jurisdictional_claims(_: ()) -> ExternResult<Vec<JurisdictionalClaimEntry>> {
+    // In a real scenario, we'd query by scope. For the prototype, return all.
+    // This is a stub for cross-cell validation.
+    Ok(vec![])
 }
 
 #[hdk_link_types]

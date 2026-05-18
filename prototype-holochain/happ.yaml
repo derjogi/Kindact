@@ -15,3 +15,9 @@ roles:
       deferred: false
     dna:
       bundled: ./dnas/manhattan-windturbine/dna.yaml
+  - name: housing
+    provisioning:
+      strategy: create
+      deferred: false
+    dna:
+      bundled: ./dnas/housing/dna.yaml
