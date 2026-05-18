@@ -1,5 +1,5 @@
 ---
-status: complete
+status: implemented-pending-verification
 created: '2026-05-12'
 tags: [governance, lens, jurisdictional, cross-cutting]
 priority: high
