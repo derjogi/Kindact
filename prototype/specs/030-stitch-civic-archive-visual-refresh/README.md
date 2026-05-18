@@ -13,6 +13,8 @@ completed_at: 2026-05-19T22:08:30.657738740Z
 transitions:
 - status: in-progress
   at: 2026-05-17T20:26:49.038094534Z
+- status: complete
+  at: 2026-05-19T22:08:30.657738740Z
 ---
 
 # Stitch "Civic Archive" Visual Refresh

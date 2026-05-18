@@ -57,7 +57,7 @@ export default function ThreadList({ comments, issueId, onCommentAdded, lastVisi
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as SortOption)}
-            className="px-3 py-1.5 text-sm border border-stone-200 rounded-lg bg-white focus:outline-none focus:border-stone-400"
+            className="input-line px-3 py-1.5 text-sm font-meta"
           >
             <option value="oldest">Oldest first</option>
             <option value="newest">Newest first</option>
@@ -65,7 +65,7 @@ export default function ThreadList({ comments, issueId, onCommentAdded, lastVisi
         </div>
       </div>
 
-      {/* Thread list */}
+      {/* Thread list — drop divider lines, use whitespace + tonal layering */}
       <div className="space-y-1">
         {spotlights.map((thread) => (
           <ThreadItem
@@ -82,7 +82,7 @@ export default function ThreadList({ comments, issueId, onCommentAdded, lastVisi
           />
         ))}
         {rest.length > 0 && spotlights.length > 0 && (
-          <div className="border-t border-stone-100 my-2" />
+          <div className="my-3 h-px bg-surface-container-low" />
         )}
         {rest.map((thread) => (
           <ThreadItem
@@ -132,29 +132,33 @@ function ThreadItem({
   return (
     <div
       id={`comment-${thread.id}`}
-      className={`rounded-lg transition-colors ${
-        spotlight ? "border-l-2 border-violet-500 pl-3" : "pl-3"
+      className={`rounded-md transition-colors ${
+        spotlight ? "border-l-2 border-tertiary pl-3" : "pl-3"
       }`}
     >
       <button
         onClick={onToggle}
-        className="w-full text-left py-3 hover:bg-stone-50 rounded-lg px-2 transition-colors"
+        className="w-full text-left py-3 hover:bg-surface-container-low rounded-md px-2 transition-colors"
       >
         <div className="flex items-center gap-2 text-sm">
-          <span className="font-medium text-stone-700">{thread.alias}</span>
-          <span className="text-stone-400 text-xs">{thread.createdAt}</span>
+          <span className="font-medium text-on-surface">{thread.alias}</span>
+          <span className="font-meta text-on-surface-variant text-xs">
+            {thread.createdAt}
+          </span>
           {isNew && (
-            <span className="rounded-full bg-emerald-50 px-1.5 py-0.5 text-[10px] font-medium text-emerald-600">
+            <span className="rounded-full bg-primary-container px-1.5 py-0.5 font-meta text-[10px] font-medium text-on-primary-container">
               NEW
             </span>
           )}
           {replies > 0 && (
-            <span className="text-xs text-stone-400 ml-auto">
+            <span className="font-meta text-xs text-on-surface-variant ml-auto">
               💬 {replies} {replies === 1 ? "reply" : "replies"}
             </span>
           )}
         </div>
-        <p className="mt-1 text-sm text-stone-600 line-clamp-2">{thread.text}</p>
+        <p className="mt-1 text-sm text-on-surface-variant line-clamp-2">
+          {thread.text}
+        </p>
       </button>
 
       {expanded && (

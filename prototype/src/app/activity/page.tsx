@@ -25,13 +25,13 @@ const statusLabels: Record<string, string> = {
 };
 
 const statusColors: Record<string, string> = {
-  draft: "bg-stone-400",
-  deliberating: "bg-emerald-500",
-  vote_ready: "bg-blue-500",
-  "vote-ready": "bg-blue-500",
-  adopted: "bg-violet-500",
-  implementing: "bg-amber-500",
-  completed: "bg-stone-600",
+  draft: "bg-on-surface-variant",
+  deliberating: "bg-status-deliberating",
+  vote_ready: "bg-status-voting",
+  "vote-ready": "bg-status-voting",
+  adopted: "bg-status-adopted",
+  implementing: "bg-status-implementing",
+  completed: "bg-status-completed",
 };
 
 const claimStatusLabels: Record<string, string> = {
@@ -50,7 +50,9 @@ export default function ActivityPage() {
   const [issues, setIssues] = useState<Record<string, unknown>[]>([]);
   const [votes, setVotes] = useState<Record<string, unknown>[]>([]);
   const [claims, setClaims] = useState<Record<string, unknown>[]>([]);
-  const [notifications, setNotifications] = useState<Record<string, unknown>[]>([]);
+  const [notifications, setNotifications] = useState<Record<string, unknown>[]>(
+    [],
+  );
   const [tabLoading, setTabLoading] = useState(false);
 
   useEffect(() => {
@@ -106,7 +108,9 @@ export default function ActivityPage() {
   if (loading) {
     return (
       <Layout>
-        <div className="text-center py-16 text-stone-400">Loading…</div>
+        <div className="text-center py-16 font-meta text-sm text-on-surface-variant">
+          Loading…
+        </div>
       </Layout>
     );
   }
@@ -121,61 +125,67 @@ export default function ActivityPage() {
   return (
     <Layout>
       <div className="space-y-6">
-        <h1 className="text-xl font-semibold text-stone-900">
-          My Activity
-          {displayName && (
-            <span className="text-sm font-normal text-stone-400 ml-2">
-              ({displayName})
-            </span>
-          )}
-        </h1>
+        {/* Editorial header */}
+        <section className="p-6 bg-surface-container-lowest rounded-md border-l-4 border-primary card-lift">
+          <p className="font-meta text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">
+            Your Record
+          </p>
+          <h1 className="font-display text-3xl font-bold text-on-surface">
+            My Activity
+            {displayName && (
+              <span className="font-sans text-base font-normal text-on-surface-variant ml-2">
+                ({displayName})
+              </span>
+            )}
+          </h1>
+        </section>
 
         {/* Balance */}
-        <div className="bg-white rounded-lg border border-stone-200 p-5">
-          <div className="text-2xl font-semibold text-stone-900">
+        <div className="bg-surface-container-lowest rounded-md p-5 card-lift">
+          <div className="font-meta text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">
+            $CC Balance
+          </div>
+          <div className="font-display text-3xl font-semibold text-on-surface">
             💰 {balance !== null ? balance.toFixed(1) : "—"} $CC
           </div>
-          <div className="text-sm text-stone-400 mt-1">Decays ~1% / month</div>
+          <div className="font-meta text-sm text-on-surface-variant mt-1">
+            Decays ~1% / month
+          </div>
         </div>
 
-        {/* Tabs */}
-        <div className="bg-white rounded-lg border border-stone-200 overflow-hidden">
-          <div className="flex border-b border-stone-200 overflow-x-auto scrollbar-hide">
-            {tabs.map((tab) => (
-              <button
-                key={tab.key}
-                onClick={() => setActiveTab(tab.key)}
-                className={`px-4 py-2.5 min-h-[44px] text-sm whitespace-nowrap transition-colors ${
-                  activeTab === tab.key
-                    ? "text-stone-900 font-medium border-b-2 border-stone-800"
-                    : "text-stone-400 hover:text-stone-600"
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
+        {/* Tab strip */}
+        <div className="flex gap-1 overflow-x-auto scrollbar-hide">
+          {tabs.map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => setActiveTab(tab.key)}
+              className={`px-4 py-2 min-h-[44px] font-meta text-sm whitespace-nowrap rounded-md transition-colors ${
+                activeTab === tab.key
+                  ? "bg-primary text-on-primary"
+                  : "text-on-surface-variant hover:text-primary-dim bg-surface-container-low"
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
 
-          <div className="p-5">
-            {tabLoading ? (
-              <p className="text-center text-stone-400 py-8">Loading…</p>
-            ) : (
-              <>
-                {activeTab === "issues" && (
-                  <IssuesList items={issues} />
-                )}
-                {activeTab === "votes" && (
-                  <VotesList items={votes} />
-                )}
-                {activeTab === "claims" && (
-                  <ClaimsList items={claims} />
-                )}
-                {activeTab === "notifications" && (
-                  <NotificationsList items={notifications} />
-                )}
-              </>
-            )}
-          </div>
+        {/* Tab content */}
+        <div className="bg-surface-container-lowest rounded-md p-5 card-lift">
+          {tabLoading ? (
+            <p className="text-center font-meta text-sm text-on-surface-variant py-8">
+              Loading…
+            </p>
+          ) : (
+            <>
+              {activeTab === "issues" && <IssuesList items={issues} />}
+              {activeTab === "votes" && <VotesList items={votes} />}
+              {activeTab === "claims" && <ClaimsList items={claims} />}
+              {activeTab === "notifications" && (
+                <NotificationsList items={notifications} />
+              )}
+            </>
+          )}
         </div>
       </div>
     </Layout>
@@ -185,7 +195,7 @@ export default function ActivityPage() {
 function IssuesList({ items }: { items: Record<string, unknown>[] }) {
   if (items.length === 0) {
     return (
-      <p className="text-sm text-stone-400 text-center py-8">
+      <p className="font-meta text-sm text-on-surface-variant text-center py-8">
         You haven&apos;t created any issues yet.
       </p>
     );
@@ -197,17 +207,20 @@ function IssuesList({ items }: { items: Record<string, unknown>[] }) {
         <Link
           key={issue.id as string}
           href={`/issues/${issue.id}`}
-          className="flex items-start gap-3 px-3 py-3 rounded-lg hover:bg-stone-50 transition-colors"
+          className="flex items-start gap-3 px-3 py-3 rounded-md hover:bg-surface-container-low transition-colors"
         >
           <span
-            className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${statusColors[issue.status as string] ?? "bg-stone-400"}`}
+            className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${statusColors[issue.status as string] ?? "bg-on-surface-variant"}`}
           />
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-stone-800 truncate">
+            <p className="font-display text-sm font-medium text-on-surface truncate">
               {issue.title as string}
             </p>
-            <div className="flex items-center gap-2 text-xs text-stone-400 mt-0.5">
-              <span>{statusLabels[issue.status as string] ?? (issue.status as string)}</span>
+            <div className="flex items-center gap-2 font-meta text-xs text-on-surface-variant mt-0.5">
+              <span>
+                {statusLabels[issue.status as string] ??
+                  (issue.status as string)}
+              </span>
               <span>·</span>
               <span>{issue.participants as number} participants</span>
             </div>
@@ -221,7 +234,7 @@ function IssuesList({ items }: { items: Record<string, unknown>[] }) {
 function VotesList({ items }: { items: Record<string, unknown>[] }) {
   if (items.length === 0) {
     return (
-      <p className="text-sm text-stone-400 text-center py-8">
+      <p className="font-meta text-sm text-on-surface-variant text-center py-8">
         You haven&apos;t voted on any issues yet.
       </p>
     );
@@ -236,18 +249,18 @@ function VotesList({ items }: { items: Record<string, unknown>[] }) {
           <Link
             key={voteRecord.id as string}
             href={`/issues/${issue.id}`}
-            className="flex items-start gap-3 px-3 py-3 rounded-lg hover:bg-stone-50 transition-colors"
+            className="flex items-start gap-3 px-3 py-3 rounded-md hover:bg-surface-container-low transition-colors"
           >
             <span className="text-lg mt-0.5">
               {vote === "approve" ? "✅" : "❌"}
             </span>
             <div className="flex-1 min-w-0">
-              <p className="text-sm text-stone-800">
+              <p className="text-sm text-on-surface">
                 You voted{" "}
                 <span className="font-medium capitalize">{vote}</span> on
                 &ldquo;{issue.title as string}&rdquo;
               </p>
-              <p className="text-xs text-stone-400 mt-0.5">
+              <p className="font-meta text-xs text-on-surface-variant mt-0.5">
                 {new Date(voteRecord.createdAt as string).toLocaleDateString()}
               </p>
             </div>
@@ -261,7 +274,7 @@ function VotesList({ items }: { items: Record<string, unknown>[] }) {
 function ClaimsList({ items }: { items: Record<string, unknown>[] }) {
   if (items.length === 0) {
     return (
-      <p className="text-sm text-stone-400 text-center py-8">
+      <p className="font-meta text-sm text-on-surface-variant text-center py-8">
         You haven&apos;t claimed any work packages yet.
       </p>
     );
@@ -277,14 +290,12 @@ function ClaimsList({ items }: { items: Record<string, unknown>[] }) {
           <Link
             key={claim.id as string}
             href={`/issues/${issue.id}`}
-            className="flex items-start gap-3 px-3 py-3 rounded-lg hover:bg-stone-50 transition-colors"
+            className="flex items-start gap-3 px-3 py-3 rounded-md hover:bg-surface-container-low transition-colors"
           >
             <span className="text-lg mt-0.5">📋</span>
             <div className="flex-1 min-w-0">
-              <p className="text-sm text-stone-800">
-                {wp.title as string}
-              </p>
-              <div className="flex items-center gap-2 text-xs text-stone-400 mt-0.5">
+              <p className="text-sm text-on-surface">{wp.title as string}</p>
+              <div className="flex items-center gap-2 font-meta text-xs text-on-surface-variant mt-0.5">
                 <span className="capitalize">
                   {claimStatusLabels[status] ?? status}
                 </span>
@@ -302,7 +313,7 @@ function ClaimsList({ items }: { items: Record<string, unknown>[] }) {
 function NotificationsList({ items }: { items: Record<string, unknown>[] }) {
   if (items.length === 0) {
     return (
-      <p className="text-sm text-stone-400 text-center py-8">
+      <p className="font-meta text-sm text-on-surface-variant text-center py-8">
         No notifications yet.
       </p>
     );
@@ -313,20 +324,18 @@ function NotificationsList({ items }: { items: Record<string, unknown>[] }) {
       {items.map((notif) => (
         <div
           key={notif.id as string}
-          className={`flex items-start gap-3 px-3 py-3 rounded-lg ${
-            notif.read ? "" : "bg-stone-50"
+          className={`flex items-start gap-3 px-3 py-3 rounded-md transition-colors ${
+            notif.read ? "" : "bg-surface-container-low"
           }`}
         >
-          <span className="text-lg mt-0.5">
-            {notif.read ? "📬" : "📩"}
-          </span>
+          <span className="text-lg mt-0.5">{notif.read ? "📬" : "📩"}</span>
           <div className="flex-1 min-w-0">
             <p
-              className={`text-sm ${notif.read ? "text-stone-500" : "text-stone-800 font-medium"}`}
+              className={`text-sm ${notif.read ? "text-on-surface-variant" : "text-on-surface font-medium"}`}
             >
               {notif.message as string}
             </p>
-            <p className="text-xs text-stone-400 mt-0.5">
+            <p className="font-meta text-xs text-on-surface-variant mt-0.5">
               {new Date(notif.createdAt as string).toLocaleDateString()}
             </p>
           </div>
