@@ -21,16 +21,33 @@ export default function CellSettingsPage() {
   const [tab, setTab] = useState<Tab>("subscriptions");
   return (
     <Layout>
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h1 className="text-xl font-semibold text-stone-900">Cell settings</h1>
-          <Link href="/cells/new" className="text-sm text-stone-600 underline">
-            + Create cell
-          </Link>
-        </div>
+      <div className="space-y-5">
+        {/* Editorial header */}
+        <section className="p-6 bg-surface-container-lowest rounded-md border-l-4 border-primary card-lift">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="font-meta text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">
+                Membership
+              </p>
+              <h1 className="font-display text-3xl font-bold text-on-surface">
+                Cell settings
+              </h1>
+            </div>
+            <Link
+              href="/cells/new"
+              className="font-meta text-sm text-on-surface-variant underline"
+            >
+              + Create cell
+            </Link>
+          </div>
+        </section>
 
-        <div className="flex gap-1 border-b border-stone-200">
-          <TabButton active={tab === "subscriptions"} onClick={() => setTab("subscriptions")}>
+        {/* Tab strip — tonal shift instead of bottom border on container */}
+        <div className="flex gap-1">
+          <TabButton
+            active={tab === "subscriptions"}
+            onClick={() => setTab("subscriptions")}
+          >
             My Subscriptions
           </TabButton>
           <TabButton active={tab === "cells"} onClick={() => setTab("cells")}>
@@ -56,10 +73,10 @@ function TabButton({
   return (
     <button
       onClick={onClick}
-      className={`px-3 py-2 text-sm border-b-2 -mb-px ${
+      className={`px-3 py-2 font-meta text-sm rounded-md transition-colors ${
         active
-          ? "border-stone-800 text-stone-900 font-medium"
-          : "border-transparent text-stone-500 hover:text-stone-700"
+          ? "bg-primary text-on-primary"
+          : "text-on-surface-variant hover:text-primary-dim bg-surface-container-low"
       }`}
     >
       {children}
@@ -82,11 +99,9 @@ function CellsTab() {
       const data = await fetchMyCells();
       setItems(data);
 
-      // Seed sync state for any cells we don't already track.
       const now = Date.now();
       for (const m of data) {
         if (!cellSync[m.cell.cellId]) {
-          // Deterministic but varied mock state per cell.
           const hash = m.cell.cellId
             .split("")
             .reduce((a, c) => a + c.charCodeAt(0), 0);
@@ -117,22 +132,34 @@ function CellsTab() {
   }, []);
 
   async function onLeave(cellUuid: string) {
-    if (!confirm("Leave this cell? Your existing posts remain but you stop participating.")) return;
+    if (
+      !confirm(
+        "Leave this cell? Your existing posts remain but you stop participating.",
+      )
+    )
+      return;
     await leaveCell(cellUuid);
     await load();
   }
 
-  if (loading) return <p className="text-stone-400 text-sm py-6">Loading…</p>;
+  if (loading)
+    return (
+      <p className="font-meta text-sm text-on-surface-variant py-6">Loading…</p>
+    );
   if (items.length === 0) {
     return (
-      <p className="text-stone-400 text-sm py-6">
-        You are not a member of any cells. <Link href="/cells" className="underline">Browse cells</Link>.
+      <p className="font-meta text-sm text-on-surface-variant py-6">
+        You are not a member of any cells.{" "}
+        <Link href="/cells" className="underline">
+          Browse cells
+        </Link>
+        .
       </p>
     );
   }
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       {items.map((m) => {
         const sync = cellSync[m.cell.cellId];
         const cellPending = pending.filter(
@@ -140,20 +167,29 @@ function CellsTab() {
         ).length;
         const writeBlocked = mode === "readonly";
 
+        const syncDot =
+          sync?.status === "connected"
+            ? "bg-status-deliberating"
+            : sync?.status === "syncing"
+            ? "bg-status-implementing animate-pulse"
+            : sync?.status === "paused"
+            ? "bg-on-surface-variant"
+            : "bg-status-adopted";
+
         return (
           <div
             key={m.membershipId}
-            className="rounded-lg border border-stone-200 bg-white px-4 py-3"
+            className="rounded-md bg-surface-container-lowest px-5 py-4 card-lift"
           >
             <div className="flex items-center justify-between gap-3">
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   <CellBadge cell={m.cell} />
-                  <span className="text-xs text-stone-400">
+                  <span className="font-meta text-xs text-on-surface-variant">
                     {m.kind === "guest" ? "guest contributor" : "member"}
                   </span>
                 </div>
-                <div className="text-xs text-stone-400 mt-1">
+                <div className="font-meta text-xs text-on-surface-variant mt-1">
                   {m.cell.scopeLevel} · {m.cell.memberCount} members ·{" "}
                   {m.cell.issueCount} issues · joined{" "}
                   {new Date(m.joinedAt).toLocaleDateString()}
@@ -163,54 +199,52 @@ function CellsTab() {
                 <button
                   onClick={() => onLeave(m.cell.id)}
                   disabled={writeBlocked}
-                  className="text-xs text-red-700 hover:underline disabled:text-stone-300 disabled:no-underline disabled:cursor-not-allowed"
-                  title={writeBlocked ? "Read-only mode disables writes" : undefined}
+                  className="font-meta text-xs text-status-adopted hover:underline disabled:text-on-surface-variant/40 disabled:no-underline disabled:cursor-not-allowed"
+                  title={
+                    writeBlocked
+                      ? "Read-only mode disables writes"
+                      : undefined
+                  }
                 >
                   Leave
                 </button>
               ) : null}
             </div>
 
-            {/* Per-cell sync row */}
-            <div className="mt-2 pt-2 border-t border-stone-100 grid grid-cols-3 gap-2 text-[11px] text-stone-500">
+            {/* Per-cell sync row — tonal shift, no divider */}
+            <div className="mt-3 pt-3 grid grid-cols-3 gap-2 font-meta text-[11px] text-on-surface-variant border-t border-surface-container-low/0 bg-surface-container-low/0">
               <div>
-                <span className="block uppercase tracking-wide text-[9px] text-stone-400">
+                <span className="block uppercase tracking-widest text-[9px] text-on-surface-variant">
                   Status
                 </span>
-                <span className="inline-flex items-center gap-1.5">
-                  <span
-                    className={`w-1.5 h-1.5 rounded-full ${
-                      sync?.status === "connected"
-                        ? "bg-emerald-500"
-                        : sync?.status === "syncing"
-                        ? "bg-amber-500 animate-pulse"
-                        : sync?.status === "paused"
-                        ? "bg-stone-400"
-                        : "bg-rose-500"
-                    }`}
-                  />
+                <span className="inline-flex items-center gap-1.5 text-on-surface">
+                  <span className={`w-1.5 h-1.5 rounded-full ${syncDot}`} />
                   {sync?.status === "syncing"
                     ? `syncing ${sync.syncPercent}%`
                     : sync?.status ?? "unknown"}
                 </span>
               </div>
               <div>
-                <span className="block uppercase tracking-wide text-[9px] text-stone-400">
+                <span className="block uppercase tracking-widest text-[9px] text-on-surface-variant">
                   Last gossip
                 </span>
-                {sync ? relTime(sync.lastGossipAt) : "—"}
+                <span className="text-on-surface">
+                  {sync ? relTime(sync.lastGossipAt) : "—"}
+                </span>
               </div>
               <div className="flex items-end justify-between gap-2">
                 <div>
-                  <span className="block uppercase tracking-wide text-[9px] text-stone-400">
+                  <span className="block uppercase tracking-widest text-[9px] text-on-surface-variant">
                     Pending writes
                   </span>
-                  {(sync?.pendingWrites ?? 0) + cellPending}
+                  <span className="text-on-surface">
+                    {(sync?.pendingWrites ?? 0) + cellPending}
+                  </span>
                 </div>
                 <button
                   type="button"
                   onClick={() => syncCellNow(m.cell.cellId)}
-                  className="text-[11px] text-stone-600 hover:underline"
+                  className="text-[11px] text-on-surface-variant hover:text-primary-dim hover:underline"
                 >
                   Sync
                 </button>
@@ -259,27 +293,36 @@ function SubscriptionsTab() {
     await load();
   }
 
-  if (loading) return <p className="text-stone-400 text-sm py-6">Loading…</p>;
+  if (loading)
+    return (
+      <p className="font-meta text-sm text-on-surface-variant py-6">Loading…</p>
+    );
   if (items.length === 0) {
     return (
-      <p className="text-stone-400 text-sm py-6">
-        No subscriptions yet. <Link href="/anchors" className="underline">Browse anchors</Link> and
-        subscribe to topics or places to follow them across cells.
+      <p className="font-meta text-sm text-on-surface-variant py-6">
+        No subscriptions yet.{" "}
+        <Link href="/anchors" className="underline">
+          Browse anchors
+        </Link>{" "}
+        and subscribe to topics or places to follow them across cells.
       </p>
     );
   }
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       {items.map((s) => (
         <div
           key={s.id}
-          className="flex items-center justify-between gap-3 rounded-lg border border-stone-200 bg-white px-4 py-3"
+          className="flex items-center justify-between gap-3 rounded-md bg-surface-container-lowest px-5 py-4 card-lift"
         >
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <AnchorPill anchor={s.anchor} state={s.muted ? "muted" : "subscribed"} />
-              <span className="text-xs text-stone-400">
+              <AnchorPill
+                anchor={s.anchor}
+                state={s.muted ? "muted" : "subscribed"}
+              />
+              <span className="font-meta text-xs text-on-surface-variant">
                 {s.anchor.issueCount} issues · since{" "}
                 {new Date(s.subscribedAt).toLocaleDateString()}
               </span>
@@ -288,13 +331,13 @@ function SubscriptionsTab() {
           <div className="flex items-center gap-3">
             <button
               onClick={() => onToggleMute(s.anchor.anchorId, s.muted)}
-              className="text-xs text-stone-600 hover:underline"
+              className="font-meta text-xs text-on-surface-variant hover:text-primary-dim hover:underline"
             >
               {s.muted ? "Unmute" : "Mute"}
             </button>
             <button
               onClick={() => onUnsub(s.anchor.anchorId)}
-              className="text-xs text-red-700 hover:underline"
+              className="font-meta text-xs text-status-adopted hover:underline"
             >
               Unsubscribe
             </button>

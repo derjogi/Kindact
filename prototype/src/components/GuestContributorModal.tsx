@@ -22,9 +22,9 @@ interface Props {
 }
 
 const tierDot: Record<CellTier, string> = {
-  canonical: "bg-emerald-500",
-  promoted: "bg-sky-500",
-  uncurated: "bg-stone-400",
+  canonical: "bg-status-deliberating",
+  promoted: "bg-status-voting",
+  uncurated: "bg-on-surface-variant",
 };
 
 export default function GuestContributorModal({
@@ -76,19 +76,19 @@ export default function GuestContributorModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/50 p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-on-surface/40 backdrop-blur-[2px] p-4"
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-lg shadow-xl w-full max-w-lg p-6 space-y-4"
+        className="bg-surface-container-lowest rounded-md elevation-floating w-full max-w-lg p-6 space-y-4"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h2 className="text-lg font-semibold text-stone-900">
+            <h2 className="font-display text-lg font-semibold text-on-surface">
               Contribute as guest
             </h2>
-            <p className="mt-0.5 text-sm text-stone-500 flex items-center gap-1.5">
+            <p className="mt-0.5 font-meta text-sm text-on-surface-variant flex items-center gap-1.5">
               <span className={`w-1.5 h-1.5 rounded-full ${tierDot[cell.tier]}`} />
               {cell.cellId}
             </p>
@@ -96,7 +96,7 @@ export default function GuestContributorModal({
           <button
             type="button"
             onClick={onClose}
-            className="text-stone-400 hover:text-stone-600 text-xl leading-none"
+            className="text-on-surface-variant hover:text-on-surface text-xl leading-none"
             aria-label="Close"
           >
             ×
@@ -105,17 +105,17 @@ export default function GuestContributorModal({
 
         {step === "explain" ? (
           <div className="space-y-3">
-            <div className="bg-stone-50 border border-stone-200 rounded-md p-3 text-sm text-stone-700">
-              <p className="font-medium text-stone-900 mb-1">{issueTitle}</p>
+            <div className="bg-surface-container-low rounded-md p-3 text-sm text-on-surface">
+              <p className="font-display font-medium text-on-surface mb-1">{issueTitle}</p>
               <p>
                 You&apos;ll get write access to <em>this issue only</em> in{" "}
-                <code className="text-xs bg-white px-1 py-0.5 rounded border border-stone-200">
+                <code className="text-xs bg-surface-container-lowest px-1 py-0.5 rounded font-mono">
                   {cell.cellId}
                 </code>
                 . No validation duties. You can comment, vote, and submit work reports.
               </p>
             </div>
-            <ul className="text-xs text-stone-500 space-y-1 list-disc pl-5">
+            <ul className="font-meta text-xs text-on-surface-variant space-y-1 list-disc pl-5">
               <li>You will not become a full member of the cell.</li>
               <li>Your guest badge appears next to your alias on every interaction.</li>
               <li>Access ends when this issue is archived.</li>
@@ -125,11 +125,11 @@ export default function GuestContributorModal({
 
         {step === "proof" ? (
           <div className="space-y-3">
-            <p className="text-sm text-stone-700">
+            <p className="text-sm text-on-surface">
               <strong>{cell.cellId}</strong> requires scope proof before guest writes.
             </p>
             {proofTypes.length > 0 ? (
-              <p className="text-xs text-stone-500">
+              <p className="font-meta text-xs text-on-surface-variant">
                 Accepted: {proofTypes.map((p) => p.replace(/_/g, " ")).join(", ")}
               </p>
             ) : null}
@@ -137,9 +137,9 @@ export default function GuestContributorModal({
               value={proofText}
               onChange={(e) => setProofText(e.target.value)}
               placeholder="Paste invite token, evidence URL, or notes about your scope claim…"
-              className="w-full min-h-[88px] text-sm rounded-md border border-stone-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-stone-400"
+              className="input-line w-full min-h-[88px] text-sm px-3 py-2 focus:outline-none"
             />
-            <label className="flex items-start gap-2 text-xs text-stone-600">
+            <label className="flex items-start gap-2 font-meta text-xs text-on-surface-variant">
               <input
                 type="checkbox"
                 checked={proofConfirmed}
@@ -155,14 +155,14 @@ export default function GuestContributorModal({
         ) : null}
 
         {error ? (
-          <p className="text-xs text-rose-600">{error}</p>
+          <p className="text-xs text-status-adopted">{error}</p>
         ) : null}
 
         <div className="flex items-center justify-end gap-2 pt-1">
           <button
             type="button"
             onClick={onClose}
-            className="px-3 py-1.5 text-sm text-stone-600 hover:text-stone-900"
+            className="px-3 py-1.5 text-sm text-on-surface-variant hover:text-on-surface"
           >
             Cancel
           </button>
@@ -170,7 +170,7 @@ export default function GuestContributorModal({
             type="button"
             onClick={handleAdvance}
             disabled={step === "submitting"}
-            className="px-3 py-1.5 text-sm font-medium rounded bg-stone-800 hover:bg-stone-900 text-white disabled:opacity-60"
+            className="btn-primary px-3 py-1.5 text-sm font-medium rounded-md disabled:opacity-60"
           >
             {step === "submitting"
               ? "Registering…"

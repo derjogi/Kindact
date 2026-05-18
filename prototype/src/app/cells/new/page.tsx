@@ -87,12 +87,24 @@ export default function CreateCellPage() {
 
   return (
     <Layout>
-      <div className="space-y-4">
-        <Link href="/cells" className="text-xs text-stone-500 hover:text-stone-700">
+      <div className="max-w-2xl mx-auto space-y-5">
+        <Link
+          href="/cells"
+          className="font-meta text-xs text-on-surface-variant hover:text-primary-dim"
+        >
           ← All cells
         </Link>
-        <h1 className="text-xl font-semibold text-stone-900">Create a cell</h1>
-        <div className="text-sm bg-amber-50 border border-amber-200 rounded-lg p-3 text-stone-700">
+
+        <section className="p-6 bg-surface-container-lowest rounded-md border-l-4 border-primary card-lift">
+          <p className="font-meta text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">
+            New cell
+          </p>
+          <h1 className="font-display text-3xl font-bold text-on-surface">
+            Create a cell
+          </h1>
+        </section>
+
+        <div className="text-sm bg-surface-container-lowest border-l-4 border-status-implementing rounded-md p-4 text-on-surface card-lift">
           New cells land in the <code className="font-mono">uncurated</code>{" "}
           namespace. They become discoverable immediately. Promotion to{" "}
           <em>canonical</em> happens via meta-governance proposal — see{" "}
@@ -103,18 +115,18 @@ export default function CreateCellPage() {
         </div>
 
         {error ? (
-          <div className="text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg p-3">
+          <div className="text-sm text-on-surface bg-surface-container-lowest border-l-4 border-status-adopted rounded-md p-3 card-lift">
             {error}
           </div>
         ) : null}
 
-        <form onSubmit={onSubmit} className="space-y-4">
+        <form onSubmit={onSubmit} className="space-y-5">
           <Field label="Display name" required>
             <input
               type="text"
               value={form.displayName}
               onChange={(e) => set("displayName", e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-stone-200 rounded-lg bg-white"
+              className="input-line w-full px-3 py-2 text-sm focus:outline-none"
               placeholder="e.g. Manhattan Wind Turbine 2026"
             />
           </Field>
@@ -124,7 +136,7 @@ export default function CreateCellPage() {
               value={form.description}
               onChange={(e) => set("description", e.target.value)}
               rows={4}
-              className="w-full px-3 py-2 text-sm border border-stone-200 rounded-lg bg-white"
+              className="input-line w-full px-3 py-2 text-sm focus:outline-none resize-y"
               placeholder="What does this cell coordinate around?"
             />
           </Field>
@@ -134,7 +146,7 @@ export default function CreateCellPage() {
               <select
                 value={form.scopeLevel}
                 onChange={(e) => set("scopeLevel", e.target.value)}
-                className="w-full px-3 py-2 text-sm border border-stone-200 rounded-lg bg-white"
+                className="input-line w-full px-3 py-2 text-sm focus:outline-none"
               >
                 {SCOPE_LEVELS.map((s) => (
                   <option key={s} value={s}>
@@ -147,7 +159,7 @@ export default function CreateCellPage() {
               <select
                 value={form.governanceEngine}
                 onChange={(e) => set("governanceEngine", e.target.value)}
-                className="w-full px-3 py-2 text-sm border border-stone-200 rounded-lg bg-white"
+                className="input-line w-full px-3 py-2 text-sm focus:outline-none"
               >
                 {GOV.map((s) => (
                   <option key={s} value={s}>
@@ -166,16 +178,19 @@ export default function CreateCellPage() {
               type="text"
               value={form.locationRefs}
               onChange={(e) => set("locationRefs", e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-stone-200 rounded-lg bg-white"
+              className="input-line w-full px-3 py-2 text-sm focus:outline-none"
             />
           </Field>
 
-          <Field label="Topic tags" hint="comma-separated, e.g. #housing, #tenants">
+          <Field
+            label="Topic tags"
+            hint="comma-separated, e.g. #housing, #tenants"
+          >
             <input
               type="text"
               value={form.topicTags}
               onChange={(e) => set("topicTags", e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-stone-200 rounded-lg bg-white"
+              className="input-line w-full px-3 py-2 text-sm focus:outline-none"
             />
           </Field>
 
@@ -183,7 +198,7 @@ export default function CreateCellPage() {
             <select
               value={form.membraneWrite}
               onChange={(e) => set("membraneWrite", e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-stone-200 rounded-lg bg-white"
+              className="input-line w-full px-3 py-2 text-sm focus:outline-none"
             >
               {MEMBRANE_WRITE.map((m) => (
                 <option key={m.value} value={m.value}>
@@ -196,14 +211,14 @@ export default function CreateCellPage() {
           <div className="flex justify-end gap-2 pt-2">
             <Link
               href="/cells"
-              className="px-3 py-1.5 rounded-lg border border-stone-300 text-stone-700 text-sm"
+              className="px-4 py-2 rounded-md text-sm text-on-surface-variant hover:text-on-surface"
             >
               Cancel
             </Link>
             <button
               type="submit"
               disabled={submitting}
-              className="px-3 py-1.5 rounded-lg bg-stone-800 text-white text-sm hover:bg-stone-700"
+              className="btn-primary px-5 py-2 rounded-md text-sm font-medium disabled:opacity-60"
             >
               {submitting ? "Creating…" : "Create cell"}
             </button>
@@ -227,12 +242,16 @@ function Field({
 }) {
   return (
     <label className="block">
-      <div className="text-sm font-medium text-stone-700 mb-1">
+      <div className="font-meta text-xs uppercase tracking-widest text-on-surface-variant mb-1.5">
         {label}
-        {required ? <span className="text-red-500"> *</span> : null}
+        {required ? <span className="text-status-adopted"> *</span> : null}
       </div>
       {children}
-      {hint ? <div className="text-xs text-stone-400 mt-0.5">{hint}</div> : null}
+      {hint ? (
+        <div className="font-meta text-xs text-on-surface-variant mt-1">
+          {hint}
+        </div>
+      ) : null}
     </label>
   );
 }

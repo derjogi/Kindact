@@ -4,7 +4,8 @@ import { useRuntime } from "@/lib/runtime";
 
 /**
  * Per-page banner shown when the conductor is offline or reconnecting.
- * Sits at the top of the main content area.
+ * Sits at the top of the main content area. Uses tonal layering + a
+ * status-palette accent rail rather than full borders.
  */
 export default function OfflineBanner() {
   const mode = useRuntime((s) => s.mode);
@@ -13,7 +14,7 @@ export default function OfflineBanner() {
 
   if (mode === "offline") {
     return (
-      <div className="rounded-md border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-900 flex items-center gap-2">
+      <div className="rounded-md border-l-4 border-status-adopted bg-surface-container-lowest px-3 py-2 text-sm text-on-surface flex items-center gap-2 card-lift">
         <span aria-hidden>📥</span>
         <span>
           Offline · writes are queued in your source chain
@@ -26,8 +27,11 @@ export default function OfflineBanner() {
 
   if (mode === "reconnecting") {
     return (
-      <div className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900 flex items-center gap-2">
-        <span aria-hidden className="inline-block w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+      <div className="rounded-md border-l-4 border-status-implementing bg-surface-container-lowest px-3 py-2 text-sm text-on-surface flex items-center gap-2 card-lift">
+        <span
+          aria-hidden
+          className="inline-block w-1.5 h-1.5 rounded-full bg-status-implementing animate-pulse"
+        />
         <span>Reconnecting to the conductor…</span>
       </div>
     );
@@ -35,7 +39,7 @@ export default function OfflineBanner() {
 
   if (mode === "readonly") {
     return (
-      <div className="rounded-md border border-stone-200 bg-stone-50 px-3 py-2 text-sm text-stone-700 flex items-center gap-2">
+      <div className="rounded-md bg-surface-container-low px-3 py-2 text-sm text-on-surface-variant flex items-center gap-2">
         <span aria-hidden>⚪</span>
         <span>
           Read-only mode. Sign in to a Holochain conductor or Holo host to write.

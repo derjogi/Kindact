@@ -70,14 +70,18 @@ export default function AnchorDetailPage() {
   if (loading && !anchor) {
     return (
       <Layout>
-        <p className="text-stone-400 text-center py-12">Loading anchor…</p>
+        <p className="font-meta text-sm text-on-surface-variant text-center py-12">
+          Loading anchor…
+        </p>
       </Layout>
     );
   }
   if (error || !anchor) {
     return (
       <Layout>
-        <p className="text-red-600 text-center py-12">{error ?? "Anchor not found."}</p>
+        <p className="text-status-adopted text-center py-12">
+          {error ?? "Anchor not found."}
+        </p>
       </Layout>
     );
   }
@@ -86,29 +90,37 @@ export default function AnchorDetailPage() {
 
   return (
     <Layout>
-      <div className="space-y-5">
-        <div>
-          <Link href="/anchors" className="text-xs text-stone-500 hover:text-stone-700">
+      <div className="space-y-6">
+        {/* Editorial header */}
+        <section className="p-6 bg-surface-container-lowest rounded-md border-l-4 border-primary card-lift">
+          <Link
+            href="/anchors"
+            className="font-meta text-xs text-on-surface-variant hover:text-primary-dim"
+          >
             ← All anchors
           </Link>
-          <div className="mt-1 flex items-center gap-3">
-            <h1 className="text-2xl font-semibold text-stone-900">
-              <span className="text-stone-400 mr-1">{kindGlyph[anchor.kind]}</span>
+          <div className="mt-2 flex flex-wrap items-center gap-3">
+            <h1 className="font-display text-3xl font-bold text-on-surface">
+              <span className="text-on-surface-variant mr-1">
+                {kindGlyph[anchor.kind]}
+              </span>
               {anchor.kind === "topic"
                 ? anchor.displayName.replace(/^#/, "")
                 : anchor.displayName}
             </h1>
-            <span className="text-[10px] uppercase tracking-wider text-stone-400 border border-stone-200 px-1.5 py-0.5 rounded">
+            <span className="font-meta text-[10px] uppercase tracking-widest text-on-primary-container bg-surface-container px-2 py-0.5 rounded">
               {anchor.kind}
             </span>
           </div>
-          <p className="text-xs font-mono text-stone-400 mt-1">{anchor.anchorId}</p>
-        </div>
+          <p className="font-mono font-meta text-xs text-on-surface-variant mt-1">
+            {anchor.anchorId}
+          </p>
+        </section>
 
         {/* Parent breadcrumbs */}
         {anchor.parents.length > 0 ? (
-          <div className="text-xs text-stone-500 flex items-center gap-1 flex-wrap">
-            <span className="text-stone-400">parents:</span>
+          <div className="font-meta text-xs text-on-surface-variant flex items-center gap-1 flex-wrap">
+            <span>parents:</span>
             {anchor.parents.map((p) => (
               <AnchorPill key={p.id} anchor={p} />
             ))}
@@ -116,32 +128,34 @@ export default function AnchorDetailPage() {
         ) : null}
 
         {/* Action bar */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
           <button
             onClick={onToggleSub}
             disabled={acting}
-            className={`px-3 py-1.5 rounded-lg text-sm ${
+            className={
               isSub
-                ? "border border-stone-300 text-stone-700 hover:bg-stone-50"
-                : "bg-stone-800 text-white hover:bg-stone-700"
-            }`}
+                ? "px-3 py-1.5 rounded-md bg-surface-container-low hover:bg-surface-container text-on-surface text-sm transition-colors"
+                : "btn-primary px-4 py-2 rounded-md text-sm font-medium"
+            }
           >
             {acting ? "…" : isSub ? "Unsubscribe" : "Subscribe"}
           </button>
-          <span className="text-xs text-stone-400">
-            {anchor.subscriberCount} subscribers · {anchor.issueCount} direct issue
-            {anchor.issueCount === 1 ? "" : "s"}
+          <span className="font-meta text-xs text-on-surface-variant">
+            {anchor.subscriberCount} subscribers · {anchor.issueCount} direct
+            issue{anchor.issueCount === 1 ? "" : "s"}
           </span>
         </div>
 
         {anchor.description ? (
-          <p className="text-stone-700">{anchor.description}</p>
+          <p className="font-sans text-base leading-[1.6] text-on-surface">
+            {anchor.description}
+          </p>
         ) : null}
 
         {/* Children */}
         {anchor.children.length > 0 ? (
           <div>
-            <div className="text-xs uppercase tracking-wide text-stone-400 mb-1">
+            <div className="font-meta text-xs uppercase tracking-widest text-on-surface-variant mb-2">
               Child anchors
             </div>
             <div className="flex flex-wrap gap-1.5">
@@ -154,11 +168,11 @@ export default function AnchorDetailPage() {
 
         {/* Issues */}
         <div>
-          <div className="flex items-center justify-between mb-2">
-            <h2 className="text-sm font-semibold text-stone-700">
+          <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+            <h2 className="font-display text-lg font-semibold text-on-surface">
               Issues ({issues.length})
             </h2>
-            <label className="text-xs text-stone-500 flex items-center gap-1.5">
+            <label className="font-meta text-xs text-on-surface-variant flex items-center gap-1.5">
               <input
                 type="checkbox"
                 checked={includeChildren}
@@ -167,9 +181,9 @@ export default function AnchorDetailPage() {
               Include child anchors
             </label>
           </div>
-          <div className="space-y-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {issues.length === 0 ? (
-              <p className="text-stone-400 text-sm">
+              <p className="font-meta text-sm text-on-surface-variant">
                 No issues are linked to this anchor yet.
               </p>
             ) : (

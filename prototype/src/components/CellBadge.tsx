@@ -3,17 +3,17 @@ import type { CellTier } from "@/lib/types";
 
 const tierMeta: Record<CellTier, { dot: string; label: string; tip: string }> = {
   canonical: {
-    dot: "bg-emerald-500",
+    dot: "bg-status-deliberating",
     label: "canonical",
     tip: "Canonical cell — governed by meta-governance.",
   },
   promoted: {
-    dot: "bg-sky-500",
+    dot: "bg-status-voting",
     label: "promoted",
     tip: "Promoted public cell — community-curated.",
   },
   uncurated: {
-    dot: "bg-stone-400",
+    dot: "bg-on-surface-variant",
     label: "uncurated",
     tip: "Uncurated user-created cell. Anyone humanity-verified can create one.",
   },
@@ -38,7 +38,7 @@ export default function CellBadge({ cell, linkTo = "cellId", size = "sm" }: Cell
   const inner = (
     <span
       title={`${meta.tip}\nID: ${cell.cellId}`}
-      className={`inline-flex items-center gap-1.5 rounded-full bg-stone-100 text-stone-700 hover:bg-stone-200 transition-colors ${sizeCls}`}
+      className={`inline-flex items-center gap-1.5 rounded-full font-meta bg-surface-container-low text-on-primary-container hover:bg-surface-container transition-colors ${sizeCls}`}
     >
       <span className={`w-2 h-2 rounded-full ${meta.dot} shrink-0`} />
       <span className="truncate max-w-[12rem]">{cell.displayName}</span>

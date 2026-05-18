@@ -34,19 +34,19 @@ export default function AnchorPill({
 
   const tone =
     state === "subscribed"
-      ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+      ? "bg-primary-container text-on-primary-container"
       : state === "muted"
-      ? "bg-stone-50 text-stone-400 border border-stone-200 line-through"
+      ? "bg-surface-container-low text-on-surface-variant line-through"
       : state === "inherited"
-      ? "bg-sky-50 text-sky-700 border border-sky-200"
-      : "bg-stone-50 text-stone-600 border border-stone-200 hover:bg-stone-100";
+      ? "bg-tertiary-container text-tertiary"
+      : "bg-surface-container-low text-on-surface-variant hover:bg-surface-container";
 
   const sizeCls = size === "sm" ? "text-xs px-2 py-0.5" : "text-sm px-2.5 py-1";
   const target = anchor.anchorId; // routing uses the stable global id
 
   const inner = (
     <span
-      className={`inline-flex items-center gap-1 rounded-full transition-colors ${tone} ${sizeCls}`}
+      className={`inline-flex items-center gap-1 rounded-full font-meta transition-colors ${tone} ${sizeCls}`}
     >
       {/* hash anchors already encode # in displayName via kind glyph */}
       <span aria-hidden className="font-medium">{glyph === "#" ? "#" : glyph}</span>

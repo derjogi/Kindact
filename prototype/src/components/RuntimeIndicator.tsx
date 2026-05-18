@@ -6,34 +6,34 @@ import WalletKeySigningModal from "./WalletKeySigningModal";
 
 const chipFor: Record<RuntimeMode, { dot: string; label: string; bg: string; text: string }> = {
   local: {
-    dot: "bg-emerald-500",
+    dot: "bg-status-deliberating",
     label: "Local",
-    bg: "bg-emerald-50 border-emerald-200",
-    text: "text-emerald-800",
+    bg: "bg-primary-container",
+    text: "text-on-primary-container",
   },
   hosted: {
-    dot: "bg-sky-500",
+    dot: "bg-status-voting",
     label: "Hosted",
-    bg: "bg-sky-50 border-sky-200",
-    text: "text-sky-800",
+    bg: "bg-surface-container-low",
+    text: "text-status-voting",
   },
   readonly: {
-    dot: "bg-stone-400",
+    dot: "bg-on-surface-variant",
     label: "Read-only",
-    bg: "bg-stone-50 border-stone-200",
-    text: "text-stone-600",
+    bg: "bg-surface-container-low",
+    text: "text-on-surface-variant",
   },
   reconnecting: {
-    dot: "bg-amber-500 animate-pulse",
+    dot: "bg-status-implementing animate-pulse",
     label: "Reconnecting…",
-    bg: "bg-amber-50 border-amber-200",
-    text: "text-amber-800",
+    bg: "bg-surface-container-low",
+    text: "text-status-implementing",
   },
   offline: {
-    dot: "bg-rose-500",
+    dot: "bg-status-adopted",
     label: "Offline",
-    bg: "bg-rose-50 border-rose-200",
-    text: "text-rose-800",
+    bg: "bg-surface-container-low",
+    text: "text-status-adopted",
   },
 };
 
@@ -81,7 +81,7 @@ export default function RuntimeIndicator() {
         type="button"
         onClick={() => setOpen(true)}
         title="Conductor runtime"
-        className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-xs ${chip.bg} ${chip.text}`}
+        className={`inline-flex items-center gap-1.5 rounded-full font-meta px-2 py-0.5 text-xs ${chip.bg} ${chip.text}`}
       >
         <span className={`w-1.5 h-1.5 rounded-full ${chip.dot}`} />
         <span className="whitespace-nowrap">{chipText}</span>
@@ -89,21 +89,21 @@ export default function RuntimeIndicator() {
 
       {open ? (
         <div
-          className="fixed inset-0 z-50 flex justify-end bg-stone-900/30"
+          className="fixed inset-0 z-50 flex justify-end bg-on-surface/30 backdrop-blur-[2px]"
           onClick={() => setOpen(false)}
         >
           <aside
-            className="w-full max-w-sm bg-white h-full shadow-xl p-5 overflow-y-auto"
+            className="w-full max-w-sm bg-surface-container-lowest h-full elevation-floating p-5 overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-base font-semibold text-stone-900">
+              <h2 className="font-display text-base font-semibold text-on-surface">
                 Conductor Runtime
               </h2>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="text-stone-400 hover:text-stone-600 text-xl leading-none"
+                className="text-on-surface-variant hover:text-on-surface text-xl leading-none"
                 aria-label="Close"
               >
                 ×
@@ -112,31 +112,33 @@ export default function RuntimeIndicator() {
 
             <div className="space-y-4 text-sm">
               <div>
-                <div className="text-xs text-stone-500 uppercase tracking-wide mb-1">
+                <div className="font-meta text-[10px] text-on-surface-variant uppercase tracking-widest mb-1">
                   Current mode
                 </div>
                 <div
-                  className={`inline-flex items-center gap-2 rounded-full border px-2.5 py-1 ${chip.bg} ${chip.text}`}
+                  className={`inline-flex items-center gap-2 rounded-full px-2.5 py-1 ${chip.bg} ${chip.text}`}
                 >
                   <span className={`w-2 h-2 rounded-full ${chip.dot}`} />
                   <span className="font-medium">{chip.label}</span>
                 </div>
               </div>
 
-              <dl className="grid grid-cols-[110px_1fr] gap-y-1.5 text-xs text-stone-600">
-                <dt className="text-stone-400">Endpoint</dt>
-                <dd className="font-mono text-stone-700 truncate">{endpoint}</dd>
-                <dt className="text-stone-400">Agent key</dt>
-                <dd className="font-mono text-stone-700 truncate">{agentKey}</dd>
-                <dt className="text-stone-400">Cells</dt>
-                <dd className="text-stone-700">{cellCount} installed</dd>
-                <dt className="text-stone-400">Pending writes</dt>
-                <dd className="text-stone-700">{pending.length} total · {pendingCount} queued</dd>
+              <dl className="grid grid-cols-[110px_1fr] gap-y-1.5 text-xs text-on-surface-variant">
+                <dt>Endpoint</dt>
+                <dd className="font-mono text-on-surface truncate">{endpoint}</dd>
+                <dt>Agent key</dt>
+                <dd className="font-mono text-on-surface truncate">{agentKey}</dd>
+                <dt>Cells</dt>
+                <dd className="text-on-surface">{cellCount} installed</dd>
+                <dt>Pending writes</dt>
+                <dd className="text-on-surface">
+                  {pending.length} total · {pendingCount} queued
+                </dd>
               </dl>
 
               {/* Switch mode */}
               <div>
-                <div className="text-xs text-stone-500 uppercase tracking-wide mb-1">
+                <div className="font-meta text-[10px] text-on-surface-variant uppercase tracking-widest mb-1">
                   Switch mode
                 </div>
                 <div className="flex flex-wrap gap-1.5">
@@ -145,10 +147,10 @@ export default function RuntimeIndicator() {
                       key={m}
                       type="button"
                       onClick={() => setMode(m)}
-                      className={`px-2 py-1 rounded text-xs border ${
+                      className={`font-meta px-2 py-1 rounded text-xs ${
                         mode === m
-                          ? "bg-stone-800 text-white border-stone-800"
-                          : "bg-white text-stone-600 border-stone-300 hover:border-stone-400"
+                          ? "bg-primary text-on-primary"
+                          : "bg-surface-container-low text-on-surface-variant hover:bg-surface-container"
                       }`}
                     >
                       {chipFor[m].label}
@@ -165,14 +167,14 @@ export default function RuntimeIndicator() {
                     flushQueue();
                     Object.keys(cellSync).forEach(syncCellNow);
                   }}
-                  className="px-2.5 py-1 text-xs rounded bg-white border border-stone-300 hover:bg-stone-50"
+                  className="font-meta px-2.5 py-1 text-xs rounded bg-surface-container-low hover:bg-surface-container text-on-surface"
                 >
                   Sync now
                 </button>
                 <button
                   type="button"
                   onClick={() => (simEnabled ? stopSim() : startSim())}
-                  className="px-2.5 py-1 text-xs rounded bg-white border border-stone-300 hover:bg-stone-50"
+                  className="font-meta px-2.5 py-1 text-xs rounded bg-surface-container-low hover:bg-surface-container text-on-surface"
                 >
                   {simEnabled ? "Stop simulation" : "Start simulation"}
                 </button>
@@ -181,20 +183,20 @@ export default function RuntimeIndicator() {
               {/* Cells */}
               {cellCount > 0 ? (
                 <div>
-                  <div className="text-xs text-stone-500 uppercase tracking-wide mb-1">
+                  <div className="font-meta text-[10px] text-on-surface-variant uppercase tracking-widest mb-1">
                     Cell sync
                   </div>
                   <ul className="space-y-1.5">
                     {Object.values(cellSync).map((c) => (
                       <li
                         key={c.cellId}
-                        className="flex items-center justify-between gap-2 rounded border border-stone-200 px-2 py-1.5"
+                        className="flex items-center justify-between gap-2 rounded bg-surface-container-low px-2 py-1.5"
                       >
                         <div className="min-w-0">
-                          <div className="text-xs font-mono text-stone-700 truncate">
+                          <div className="text-xs font-mono text-on-surface truncate">
                             {c.cellId}
                           </div>
-                          <div className="text-[10px] text-stone-500 mt-0.5">
+                          <div className="font-meta text-[10px] text-on-surface-variant mt-0.5">
                             {c.status}
                             {c.status === "syncing" ? ` ${c.syncPercent}%` : ""}
                             {c.pendingWrites > 0
@@ -205,7 +207,7 @@ export default function RuntimeIndicator() {
                         <button
                           type="button"
                           onClick={() => syncCellNow(c.cellId)}
-                          className="text-[10px] text-stone-600 hover:underline shrink-0"
+                          className="font-meta text-[10px] text-on-surface-variant hover:text-primary-dim hover:underline shrink-0"
                         >
                           Sync
                         </button>
@@ -218,7 +220,7 @@ export default function RuntimeIndicator() {
               {/* Pending writes detail */}
               {pending.length > 0 ? (
                 <div>
-                  <div className="text-xs text-stone-500 uppercase tracking-wide mb-1">
+                  <div className="font-meta text-[10px] text-on-surface-variant uppercase tracking-widest mb-1">
                     Recent writes
                   </div>
                   <ul className="space-y-1 text-xs">
@@ -227,16 +229,16 @@ export default function RuntimeIndicator() {
                         <span
                           className={`inline-block w-1.5 h-1.5 rounded-full ${
                             p.status === "confirmed"
-                              ? "bg-emerald-500"
+                              ? "bg-status-deliberating"
                               : p.status === "rejected"
-                              ? "bg-rose-500"
+                              ? "bg-status-adopted"
                               : p.status === "syncing"
-                              ? "bg-amber-500 animate-pulse"
-                              : "bg-stone-400"
+                              ? "bg-status-implementing animate-pulse"
+                              : "bg-on-surface-variant"
                           }`}
                         />
-                        <span className="text-stone-600 truncate flex-1">{p.label}</span>
-                        <span className="text-stone-400">{p.status}</span>
+                        <span className="text-on-surface truncate flex-1">{p.label}</span>
+                        <span className="font-meta text-on-surface-variant">{p.status}</span>
                       </li>
                     ))}
                   </ul>
@@ -244,8 +246,8 @@ export default function RuntimeIndicator() {
               ) : null}
 
               {/* Dev menu */}
-              <div className="pt-3 border-t border-stone-200">
-                <div className="text-xs text-stone-500 uppercase tracking-wide mb-1">
+              <div className="pt-3">
+                <div className="font-meta text-[10px] text-on-surface-variant uppercase tracking-widest mb-1">
                   Dev: force state
                 </div>
                 <div className="flex flex-wrap gap-1.5">
@@ -255,7 +257,7 @@ export default function RuntimeIndicator() {
                         key={m}
                         type="button"
                         onClick={() => forceMode(m)}
-                        className="px-2 py-1 text-[11px] rounded border border-stone-300 hover:bg-stone-50 text-stone-600"
+                        className="font-meta px-2 py-1 text-[11px] rounded bg-surface-container-low hover:bg-surface-container text-on-surface-variant"
                       >
                         {m}
                       </button>
@@ -266,7 +268,7 @@ export default function RuntimeIndicator() {
 
               {/* Demo actions */}
               <div>
-                <div className="text-xs text-stone-500 uppercase tracking-wide mb-1">
+                <div className="font-meta text-[10px] text-on-surface-variant uppercase tracking-widest mb-1">
                   Demo
                 </div>
                 <div className="flex flex-wrap gap-1.5">
@@ -288,14 +290,14 @@ export default function RuntimeIndicator() {
                         5500,
                       );
                     }}
-                    className="px-2 py-1 text-[11px] rounded border border-stone-300 hover:bg-stone-50 text-stone-600"
+                    className="font-meta px-2 py-1 text-[11px] rounded bg-surface-container-low hover:bg-surface-container text-on-surface-variant"
                   >
                     Trigger bridge op
                   </button>
                   <button
                     type="button"
                     onClick={() => setSigningOpen(true)}
-                    className="px-2 py-1 text-[11px] rounded border border-stone-300 hover:bg-stone-50 text-stone-600"
+                    className="font-meta px-2 py-1 text-[11px] rounded bg-surface-container-low hover:bg-surface-container text-on-surface-variant"
                   >
                     Constitutional vote
                   </button>

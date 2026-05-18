@@ -23,9 +23,12 @@ const mobileLinks = [
 ];
 
 const sideLinks = [
-  { href: "/activity", label: "Delegation", icon: "🪪" },
+  { href: "/delegation", label: "Delegation", icon: "🪪" },
+  { href: "/implementation", label: "Implementation", icon: "🛠️" },
+  { href: "/reward", label: "Rewards & Impact", icon: "✨" },
   { href: "/activity", label: "Profile", icon: "👤" },
   { href: "/anchors", label: "Anchors", icon: "📍" },
+  { href: "/onboarding", label: "Welcome tour", icon: "📚" },
 ];
 
 export default function Layout({

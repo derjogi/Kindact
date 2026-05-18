@@ -32,8 +32,6 @@ export default function CellDetailPage() {
     try {
       const c = await fetchCell(rawId);
       setCell(c);
-      // Fetch issues from this cell — use source=anchor isn't appropriate; we
-      // approximate by listing all issues and filtering client-side.
       const items = (await fetchIssues({ source: "all" })) as IssueListItem[];
       setIssues(items.filter((i) => i.cell?.id === c.id));
     } catch (err) {
@@ -87,14 +85,16 @@ export default function CellDetailPage() {
   if (loading) {
     return (
       <Layout>
-        <p className="text-stone-400 text-center py-12">Loading cell…</p>
+        <p className="font-meta text-sm text-on-surface-variant text-center py-12">
+          Loading cell…
+        </p>
       </Layout>
     );
   }
   if (error || !cell) {
     return (
       <Layout>
-        <p className="text-red-600 text-center py-12">
+        <p className="text-status-adopted text-center py-12">
           {error ?? "Cell not found."}
         </p>
       </Layout>
@@ -110,37 +110,44 @@ export default function CellDetailPage() {
 
   return (
     <Layout>
-      <div className="space-y-5">
-        {/* Header */}
-        <div>
-          <Link href="/cells" className="text-xs text-stone-500 hover:text-stone-700">
+      <div className="space-y-6">
+        {/* Editorial header */}
+        <section className="p-6 bg-surface-container-lowest rounded-md border-l-4 border-primary card-lift">
+          <Link
+            href="/cells"
+            className="font-meta text-xs text-on-surface-variant hover:text-primary-dim"
+          >
             ← All cells
           </Link>
-          <div className="mt-1 flex items-center gap-3">
-            <h1 className="text-2xl font-semibold text-stone-900">{cell.displayName}</h1>
+          <div className="mt-2 flex flex-wrap items-center gap-3">
+            <h1 className="font-display text-3xl font-bold text-on-surface">
+              {cell.displayName}
+            </h1>
             <CellBadge cell={cell} linkTo="none" />
           </div>
-          <p className="text-xs font-mono text-stone-400 mt-1">{cell.cellId}</p>
+          <p className="font-mono font-meta text-xs text-on-surface-variant mt-1">
+            {cell.cellId}
+          </p>
           {cell.forkedFrom ? (
-            <p className="text-xs text-stone-500 mt-1">
+            <p className="font-meta text-xs text-on-surface-variant mt-1">
               ⤴ forked from{" "}
               <Link
                 href={`/cells/${encodeURIComponent(cell.forkedFrom.cellId)}`}
-                className="underline"
+                className="underline text-primary-dim"
               >
                 {cell.forkedFrom.displayName}
               </Link>
             </p>
           ) : null}
-        </div>
+        </section>
 
-        {/* Action bar — Subscribe / Join / Fork */}
+        {/* Action bar */}
         <div className="flex flex-wrap gap-2 items-center">
           {cell.viewerRelation === "member" ? (
             <button
               onClick={onLeave}
               disabled={acting}
-              className="px-3 py-1.5 rounded-lg border border-stone-300 text-stone-700 text-sm hover:bg-stone-50"
+              className="px-3 py-1.5 rounded-md bg-surface-container-low hover:bg-surface-container text-on-surface text-sm transition-colors"
             >
               {acting ? "…" : "Leave cell"}
             </button>
@@ -148,7 +155,7 @@ export default function CellDetailPage() {
             <button
               onClick={onJoin}
               disabled={acting}
-              className="px-3 py-1.5 rounded-lg bg-stone-800 text-white text-sm hover:bg-stone-700"
+              className="btn-primary px-4 py-2 rounded-md text-sm font-medium"
               title="Join = full member, can post and vote in this cell."
             >
               {acting ? "…" : "Join cell"}
@@ -157,12 +164,12 @@ export default function CellDetailPage() {
           <button
             onClick={onFork}
             disabled={acting}
-            className="px-3 py-1.5 rounded-lg border border-stone-300 text-stone-700 text-sm hover:bg-stone-50"
+            className="px-3 py-1.5 rounded-md bg-surface-container-low hover:bg-surface-container text-on-surface text-sm transition-colors"
             title="Create a fork in your uncurated namespace."
           >
             ⑂ Fork
           </button>
-          <span className="ml-auto text-xs text-stone-400">
+          <span className="ml-auto font-meta text-xs text-on-surface-variant">
             Subscribe to a topic anchor to read across cells without joining{" "}
             <Link href="/anchors" className="underline">
               (anchors)
@@ -171,10 +178,12 @@ export default function CellDetailPage() {
         </div>
 
         {/* Description */}
-        <p className="text-stone-700">{cell.description}</p>
+        <p className="font-sans text-base leading-[1.6] text-on-surface">
+          {cell.description}
+        </p>
 
         {/* Facts grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-3 text-sm bg-stone-50 rounded-lg p-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-4 text-sm bg-surface-container-low rounded-md p-5">
           <Fact label="Tier" value={cell.tier} />
           <Fact label="Scope level" value={cell.scopeLevel} />
           <Fact label="Members" value={String(cell.memberCount)} />
@@ -192,18 +201,23 @@ export default function CellDetailPage() {
             <Fact label="Scope proofs" value={cell.scopeProofTypes.join(", ")} />
           ) : null}
           {cell.jurisdictionalClaims.length > 0 ? (
-            <Fact label="Jurisdictional claims" value={cell.jurisdictionalClaims.join(", ")} />
+            <Fact
+              label="Jurisdictional claims"
+              value={cell.jurisdictionalClaims.join(", ")}
+            />
           ) : null}
         </div>
 
-        {/* Issues in this cell */}
+        {/* Issues */}
         <div>
-          <h2 className="text-sm font-semibold text-stone-700 mb-2">
+          <h2 className="font-display text-lg font-semibold text-on-surface mb-3">
             Issues in this cell ({issues.length})
           </h2>
-          <div className="space-y-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {issues.length === 0 ? (
-              <p className="text-stone-400 text-sm">No issues yet.</p>
+              <p className="font-meta text-sm text-on-surface-variant">
+                No issues yet.
+              </p>
             ) : (
               issues.map((i) => <IssueCard key={i.id} issue={i} />)
             )}
@@ -217,8 +231,10 @@ export default function CellDetailPage() {
 function Fact({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <div className="text-[10px] uppercase tracking-wide text-stone-400">{label}</div>
-      <div className="text-stone-700">{value}</div>
+      <div className="font-meta text-[10px] uppercase tracking-widest text-on-surface-variant">
+        {label}
+      </div>
+      <div className="text-on-surface mt-0.5">{value}</div>
     </div>
   );
 }

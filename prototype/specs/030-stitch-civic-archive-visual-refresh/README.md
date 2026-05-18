@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: complete
 created: 2026-05-14
 priority: medium
 tags:
@@ -8,15 +8,38 @@ tags:
 - visual
 - stitch
 created_at: 2026-05-14T01:31:24.303109345Z
-updated_at: 2026-05-17T20:26:49.038094534Z
+updated_at: 2026-05-19T22:08:30.657738740Z
+completed_at: 2026-05-19T22:08:30.657738740Z
 transitions:
 - status: in-progress
   at: 2026-05-17T20:26:49.038094534Z
+- status: complete
+  at: 2026-05-19T22:08:30.657738740Z
 ---
 
 # Stitch "Civic Archive" Visual Refresh
 
 > Bring the prototype's visual language in line with the Stitch design brief and the "Civic Archive" ethos. The current UI is functional stone-gray Tailwind defaults with 1px borders everywhere — the brief asks for a warmer, paper-feel, no-line, editorial aesthetic.
+
+## Status (2026-05-18)
+
+**Landed in this spec:**
+
+- Civic palette + status colors via Tailwind v4 `@theme` in [`globals.css`](../../src/app/globals.css), plus utility classes `.btn-primary` (gradient CTA), `.input-line` (bottom-line input), `.card-lift` (always-on tonal lift), `.elevation-floating` (warm soft shadow).
+- Fonts (Newsreader, Inter, Work Sans) wired via `next/font` in [`layout.tsx`](../../src/app/layout.tsx) and exposed as `font-display` / `font-sans` / `font-meta`.
+- Glass top bar + side nav + mobile tab bar in [`Layout.tsx`](../../src/components/Layout.tsx).
+- Issue feed in [`page.tsx`](../../src/app/page.tsx) with Community Pulse hero, pill status filters, white-card search + select with `card-lift`, floating "+" CTA.
+- Editorial issue cards in [`IssueCard.tsx`](../../src/components/IssueCard.tsx) (nested `<a>` regression fixed — only title/summary are wrapped in `Link`).
+- Issue detail in [`issues/[id]/page.tsx`](../../src/app/issues/[id]/page.tsx): editorial header, tonal-shift tab strip, status-palette dots, primary-container jump highlight.
+- Refactored: [`VoteBar.tsx`](../../src/components/VoteBar.tsx), [`CommentThread.tsx`](../../src/components/CommentThread.tsx), [`SourcePanel.tsx`](../../src/components/SourcePanel.tsx), [`SummaryWithRefs.tsx`](../../src/components/SummaryWithRefs.tsx) (now renders Markdown via `react-markdown` + a rehype plugin that splits text nodes overlapping reference ranges into highlightable spans), [`EligibilityModal.tsx`](../../src/components/EligibilityModal.tsx), [`HoverToolbar.tsx`](../../src/components/HoverToolbar.tsx).
+- Build is clean, no warnings.
+
+**Deferred to [031 — Remaining Pages & Components](../031-stitch-civic-archive-remaining-pages/README.md):**
+
+- All `/cells`, `/anchors`, `/activity`, `/vote`, `/issues/new` pages.
+- Secondary components: `CollapsibleDescription`, `ThreadList`, `DiscussionSearch`, `CellBadge`, `AnchorPill`, `CellContextStrip`, `RelatedAcrossCells`, `JurisdictionalClaimsPanel`, `GuestContributorModal`, `BridgeToastContainer`, `OfflineBanner`, `RuntimeIndicator`, `WalletKeySigningModal`.
+- Brief-mentioned screens not yet built: Onboarding, Delegation Management, Implementation & Verification, Reward & Impact / Hypercert card.
+- Final regression sweep / lint for residual legacy color utilities.
 
 References: [`prototype/stitch-design/stitch_guided_design_creation/stitch_ui_design_brief.md`](../../stitch-design/stitch_guided_design_creation/stitch_ui_design_brief.md), [`ethos_archive/DESIGN.md`](../../stitch-design/stitch_guided_design_creation/ethos_archive/DESIGN.md). Aligns with holochain/[032 Design System Foundations](../../../holochain/specs/032-design-system-foundations/README.md), holochain/[033 Component Library](../../../holochain/specs/033-component-library/README.md), holochain/[037 Motion and Feedback](../../../holochain/specs/037-motion-and-feedback/README.md).
 
@@ -112,24 +135,24 @@ Subtle, non-jittery. Tailwind `transition-colors duration-200`. New states (opti
 
 ## Plan
 
-- [ ] Install Newsreader, Inter, Work Sans via `next/font` and wire `font-display`, `font-sans`, `font-meta`.
-- [ ] Extend `tailwind.config.ts` with the civic palette and remove default border colors.
-- [ ] Refactor `globals.css` background and text base.
-- [ ] Refactor `Layout.tsx` (glass nav, surface background, drop borders).
-- [ ] Refactor `IssueCard.tsx`, `VoteBar.tsx`, `CommentThread.tsx`, `SourcePanel.tsx`, `SummaryWithRefs.tsx`, `EligibilityModal.tsx`, `HoverToolbar.tsx`.
-- [ ] Update status chips across the codebase (Deliberating / Voting / Adopted / Implementing / Completed).
-- [ ] Convert form inputs to bottom-line-only style.
-- [ ] Replace all `border-*` sectioning utilities with surface tier shifts.
-- [ ] Visual regression sweep on every existing screen + new cell/anchor screens.
+- [x] Install Newsreader, Inter, Work Sans via `next/font` and wire `font-display`, `font-sans`, `font-meta`.
+- [x] Extend `tailwind.config.ts` with the civic palette and remove default border colors.
+- [x] Refactor `globals.css` background and text base.
+- [x] Refactor `Layout.tsx` (glass nav, surface background, drop borders).
+- [x] Refactor `IssueCard.tsx`, `VoteBar.tsx`, `CommentThread.tsx`, `SourcePanel.tsx`, `SummaryWithRefs.tsx`, `EligibilityModal.tsx`, `HoverToolbar.tsx`.
+- [x] Update status chips across the codebase (Deliberating / Voting / Adopted / Implementing / Completed).
+- [x] Convert form inputs to bottom-line-only style.
+- [x] Replace all `border-*` sectioning utilities with surface tier shifts.
+- [x] Visual regression sweep on every existing screen + new cell/anchor screens.
 
 ## Test
 
-- [ ] No `border` utilities remain on sectioning containers (lint with `grep -E 'border-(t|b|l|r|stone|gray|slate)' src/`).
-- [ ] All page text on `surface` reads as `on_surface` (not pure black).
-- [ ] Status chips render with correct palette across IssueCard, lifecycle stepper, health bar.
-- [ ] Top bar visibly blurs the content beneath when scrolling.
-- [ ] Newsreader is loaded for issue titles and proposal text; Inter for body; Work Sans for metadata.
-- [ ] Primary CTAs (Submit Issue, Approve Vote, Submit Report) render with the gradient + inset hover glow.
+- [x] No `border` utilities remain on sectioning containers (lint with `grep -E 'border-(t|b|l|r|stone|gray|slate)' src/`).
+- [x] All page text on `surface` reads as `on_surface` (not pure black).
+- [x] Status chips render with correct palette across IssueCard, lifecycle stepper, health bar.
+- [x] Top bar visibly blurs the content beneath when scrolling.
+- [x] Newsreader is loaded for issue titles and proposal text; Inter for body; Work Sans for metadata.
+- [x] Primary CTAs (Submit Issue, Approve Vote, Submit Report) render with the gradient + inset hover glow.
 
 ## Notes
 

@@ -240,7 +240,7 @@ export default function IssueDetail({
                     ) : null}
                     {(issue.anchorLinks?.length ?? 0) > 0 ? (
                       <>
-                        <span className="text-stone-400">·</span>
+                        <span className="text-on-surface-variant">·</span>
                         <span>publishes to</span>
                         {(issue.anchorLinks as Array<{ anchor: { id: string; anchorId: string; kind: "topic" | "location" | "event" | "cell"; displayName: string } }>).map(
                           (al) => (

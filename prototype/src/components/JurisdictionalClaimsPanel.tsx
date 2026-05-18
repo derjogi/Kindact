@@ -13,11 +13,11 @@ export default function JurisdictionalClaimsPanel({ cellId, claims }: Props) {
   if (!claims || claims.length === 0) return null;
 
   return (
-    <div className="bg-amber-50/50 border border-amber-200 rounded-md">
+    <div className="bg-surface-container-lowest border-l-4 border-status-implementing rounded-md card-lift">
       <button
         type="button"
         onClick={() => setExpanded((v) => !v)}
-        className="w-full flex items-center justify-between gap-2 px-3 py-2 text-sm text-amber-900 hover:bg-amber-100/50"
+        className="w-full flex items-center justify-between gap-2 px-3 py-2 text-sm text-on-surface hover:bg-surface-container-low transition-colors rounded-md"
       >
         <span className="flex items-center gap-2">
           <span aria-hidden>⚖️</span>
@@ -28,24 +28,24 @@ export default function JurisdictionalClaimsPanel({ cellId, claims }: Props) {
             </strong>
           </span>
         </span>
-        <span className="text-xs text-amber-700/80">
+        <span className="font-meta text-xs text-on-surface-variant">
           {expanded ? "▲ Hide clauses" : "▼ See clauses applied"}
         </span>
       </button>
 
       {expanded ? (
-        <div className="border-t border-amber-200 px-3 py-2 space-y-2 text-sm text-amber-900">
+        <div className="px-3 py-2 space-y-2 text-sm text-on-surface bg-surface-container-low rounded-b-md">
           {claims.map((c) => (
             <div key={c} className="flex items-start gap-2">
-              <code className="text-xs bg-white border border-amber-200 rounded px-1.5 py-0.5">
+              <code className="text-xs bg-surface-container-lowest rounded px-1.5 py-0.5 font-mono">
                 {c}
               </code>
-              <span className="text-xs text-amber-800/80">
-                — applied because this issue lives in <code>{cellId}</code>.
+              <span className="text-xs text-on-surface-variant">
+                — applied because this issue lives in <code className="font-mono">{cellId}</code>.
               </span>
             </div>
           ))}
-          <p className="text-xs text-amber-700/70 pt-1">
+          <p className="text-xs text-on-surface-variant pt-1">
             Prototype: clauses are referenced by id. Full text resolution lives
             in the cell&apos;s jurisdictional claim registry (holochain/043).
           </p>

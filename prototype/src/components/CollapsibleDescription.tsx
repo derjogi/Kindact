@@ -127,7 +127,7 @@ export default function CollapsibleDescription({
       segments.push(
         <span
           key={`quote-${qc.id}`}
-          className="bg-amber-50 hover:bg-amber-100 transition-colors cursor-pointer rounded-sm"
+          className="bg-primary-container/60 hover:bg-primary-container transition-colors cursor-pointer rounded-sm"
           onMouseEnter={() => handlePassageHover(qc)}
           onMouseLeave={onClearSources}
         >
@@ -149,25 +149,25 @@ export default function CollapsibleDescription({
   };
 
   return (
-    <div className="bg-white rounded-lg border border-stone-200 overflow-hidden">
+    <div className="bg-surface-container-lowest rounded-md overflow-hidden card-lift">
       <button
         onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center justify-between px-5 py-3 text-sm font-medium text-stone-600 hover:bg-stone-50 transition-colors"
+        className="w-full flex items-center justify-between px-5 py-3 text-sm font-meta uppercase tracking-widest text-on-surface-variant hover:bg-surface-container-low transition-colors"
       >
         <span>Description</span>
-        <span className="text-stone-400">{expanded ? "▲" : "▼"}</span>
+        <span className="text-on-surface-variant">{expanded ? "▲" : "▼"}</span>
       </button>
 
       {expanded && (
         <div className="px-5 pb-5 relative" ref={contentRef} onMouseUp={handleMouseUp}>
-          <div className="prose prose-stone prose-sm max-w-none">
+          <div className="prose prose-sm max-w-none text-on-surface">
             {renderHighlightedContent()}
           </div>
 
           {/* Selection popup */}
           {selectionPos && selectedText && !quoting && (
             <button
-              className="absolute z-20 px-3 py-1.5 bg-stone-800 text-white text-xs rounded-lg shadow-lg hover:bg-stone-700 transition-colors"
+              className="btn-primary absolute z-20 px-3 py-1.5 text-xs rounded-md elevation-floating transition-colors"
               style={{ top: selectionPos.top, left: selectionPos.left }}
               onClick={handleStartQuote}
             >
@@ -177,9 +177,9 @@ export default function CollapsibleDescription({
 
           {/* Quote comment input */}
           {quoting && (
-            <div className="mt-3 border border-stone-200 rounded-lg p-3 bg-stone-50">
-              <div className="text-xs text-stone-500 mb-2 flex items-start gap-2">
-                <span className="text-stone-400">❝</span>
+            <div className="mt-3 rounded-md p-3 bg-surface-container-low">
+              <div className="text-xs text-on-surface-variant mb-2 flex items-start gap-2">
+                <span className="text-on-surface-variant">❝</span>
                 <span className="italic line-clamp-2">{selectedText}</span>
               </div>
               <div className="flex gap-2">
@@ -189,18 +189,18 @@ export default function CollapsibleDescription({
                   onChange={(e) => setQuoteInput(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSubmitQuote()}
                   placeholder="Your comment on this passage…"
-                  className="flex-1 px-3 py-1.5 text-sm border border-stone-200 rounded-lg focus:outline-none focus:border-stone-400"
+                  className="input-line flex-1 px-3 py-1.5 text-sm focus:outline-none"
                   autoFocus
                 />
                 <button
                   onClick={handleSubmitQuote}
-                  className="px-3 py-1.5 text-sm bg-stone-800 text-white rounded-lg hover:bg-stone-700"
+                  className="btn-primary px-3 py-1.5 text-sm rounded-md"
                 >
                   Post
                 </button>
                 <button
                   onClick={handleCancelQuote}
-                  className="px-3 py-1.5 text-sm text-stone-400 hover:text-stone-600"
+                  className="px-3 py-1.5 text-sm text-on-surface-variant hover:text-primary-dim"
                 >
                   Cancel
                 </button>

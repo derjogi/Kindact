@@ -67,150 +67,155 @@ export default function CreateIssuePage() {
 
   return (
     <Layout>
-      <div className="max-w-xl mx-auto space-y-6">
-        <h1 className="text-xl font-semibold text-stone-900">
-          Create a New Issue
-        </h1>
+      <div className="max-w-2xl mx-auto space-y-5">
+        {/* Editorial header */}
+        <section className="p-6 bg-surface-container-lowest rounded-md border-l-4 border-primary card-lift">
+          <p className="font-meta text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">
+            New entry
+          </p>
+          <h1 className="font-display text-3xl font-bold text-on-surface">
+            Create a New Issue
+          </h1>
+        </section>
 
-        <div className="space-y-4">
+        <div className="space-y-5">
           {/* Title */}
-          <div>
-            <label className="block text-sm font-medium text-stone-700 mb-1">
-              Title
-            </label>
+          <Field label="Title">
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="What's the problem or opportunity?"
-              className="w-full px-3 py-2 text-sm border border-stone-200 rounded-lg focus:outline-none focus:border-stone-400"
+              className="input-line w-full px-3 py-2 text-sm focus:outline-none"
             />
-          </div>
+          </Field>
 
           {/* Similar issues */}
           {similar.length > 0 && (
-            <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-sm">
-              <p className="font-medium text-amber-800 mb-1">
-                ⚠️ Similar issues found:
+            <div className="p-4 bg-surface-container-lowest border-l-4 border-status-implementing rounded-md text-sm card-lift">
+              <p className="font-meta text-xs uppercase tracking-widest text-on-surface-variant mb-2">
+                ⚠️ Similar issues found
               </p>
-              {similar.map((s) => (
-                <p key={s.id as string} className="text-amber-700">
-                  &ldquo;{s.title as string}&rdquo; —{" "}
-                  <a href={`/issues/${s.id}`} className="underline">
-                    View issue
-                  </a>
-                </p>
-              ))}
+              <div className="space-y-1">
+                {similar.map((s) => (
+                  <p key={s.id as string} className="text-on-surface">
+                    &ldquo;{s.title as string}&rdquo; —{" "}
+                    <a
+                      href={`/issues/${s.id}`}
+                      className="underline text-primary-dim"
+                    >
+                      View issue
+                    </a>
+                  </p>
+                ))}
+              </div>
             </div>
           )}
 
           {/* Summary */}
-          <div>
-            <label className="block text-sm font-medium text-stone-700 mb-1">
-              Summary{" "}
-              <span className="font-normal text-stone-400">
-                (1–2 sentences)
-              </span>
-            </label>
+          <Field
+            label="Summary"
+            hint="1–2 sentences"
+          >
             <input
               type="text"
               value={summary}
               onChange={(e) => setSummary(e.target.value)}
               placeholder="Brief description of the issue"
-              className="w-full px-3 py-2 text-sm border border-stone-200 rounded-lg focus:outline-none focus:border-stone-400"
+              className="input-line w-full px-3 py-2 text-sm focus:outline-none"
             />
-          </div>
+          </Field>
 
           {/* Description */}
-          <div>
-            <label className="block text-sm font-medium text-stone-700 mb-1">
-              Description
-            </label>
+          <Field label="Description">
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Provide more detail about the problem and any proposed solutions..."
+              placeholder="Provide more detail about the problem and any proposed solutions…"
               rows={6}
-              className="w-full px-3 py-2 text-sm border border-stone-200 rounded-lg focus:outline-none focus:border-stone-400 resize-y"
+              className="input-line w-full px-3 py-2 text-sm focus:outline-none resize-y"
             />
-          </div>
+          </Field>
 
           {/* Scope + Tags */}
           <div className="flex flex-wrap gap-4">
-            <div>
-              <label className="block text-sm font-medium text-stone-700 mb-1">
-                Scope
-              </label>
+            <Field label="Scope">
               <select
                 value={scope}
-                onChange={(e) => setScope(e.target.value as "local" | "national" | "global")}
-                className="px-3 py-2 text-sm border border-stone-200 rounded-lg bg-white focus:outline-none"
+                onChange={(e) =>
+                  setScope(e.target.value as "local" | "national" | "global")
+                }
+                className="input-line px-3 py-2 text-sm focus:outline-none"
               >
                 <option value="local">Local</option>
                 <option value="national">National</option>
                 <option value="global">Global</option>
               </select>
-            </div>
+            </Field>
 
             <div className="flex-1 min-w-48">
-              <label className="block text-sm font-medium text-stone-700 mb-1">
-                Topics
-              </label>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={tagInput}
-                  onChange={(e) => setTagInput(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addTag())}
-                  placeholder="Add a tag"
-                  className="flex-1 px-3 py-2 text-sm border border-stone-200 rounded-lg focus:outline-none focus:border-stone-400"
-                />
-                <button
-                  onClick={addTag}
-                  className="px-3 py-2 text-sm border border-stone-200 rounded-lg hover:bg-stone-50"
-                >
-                  +
-                </button>
-              </div>
-              {tags.length > 0 && (
-                <div className="flex flex-wrap gap-1 mt-2">
-                  {tags.map((t) => (
-                    <span
-                      key={t}
-                      className="px-2 py-0.5 rounded-full bg-stone-100 text-xs text-stone-600 flex items-center gap-1"
-                    >
-                      {t}
-                      <button
-                        onClick={() => setTags(tags.filter((x) => x !== t))}
-                        className="text-stone-400 hover:text-stone-600"
-                      >
-                        ×
-                      </button>
-                    </span>
-                  ))}
+              <label className="block">
+                <div className="font-meta text-xs uppercase tracking-widest text-on-surface-variant mb-1.5">
+                  Topics
                 </div>
-              )}
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={tagInput}
+                    onChange={(e) => setTagInput(e.target.value)}
+                    onKeyDown={(e) =>
+                      e.key === "Enter" && (e.preventDefault(), addTag())
+                    }
+                    placeholder="Add a tag"
+                    className="input-line flex-1 px-3 py-2 text-sm focus:outline-none"
+                  />
+                  <button
+                    onClick={addTag}
+                    type="button"
+                    className="px-3 py-2 text-sm rounded-md bg-surface-container-low hover:bg-surface-container text-on-surface"
+                  >
+                    +
+                  </button>
+                </div>
+                {tags.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mt-2">
+                    {tags.map((t) => (
+                      <span
+                        key={t}
+                        className="font-meta px-2 py-0.5 rounded-full bg-surface-container-low text-xs text-on-surface flex items-center gap-1"
+                      >
+                        {t}
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setTags(tags.filter((x) => x !== t))
+                          }
+                          className="text-on-surface-variant hover:text-on-surface"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </label>
             </div>
           </div>
 
           {/* Reward intent */}
-          <div>
-            <label className="block text-sm font-medium text-stone-700 mb-1">
-              Reward intent{" "}
-              <span className="font-normal text-stone-400">(optional)</span>
-            </label>
+          <Field label="Reward intent" hint="optional">
             <input
               type="text"
               value={rewardIntent}
               onChange={(e) => setRewardIntent(e.target.value)}
               placeholder="e.g. 500 $CC per milestone"
-              className="w-full px-3 py-2 text-sm border border-stone-200 rounded-lg focus:outline-none focus:border-stone-400"
+              className="input-line w-full px-3 py-2 text-sm focus:outline-none"
             />
-          </div>
+          </Field>
         </div>
 
         {error && (
-          <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+          <div className="p-3 bg-surface-container-lowest border-l-4 border-status-adopted rounded-md text-sm text-on-surface card-lift">
             {error}
           </div>
         )}
@@ -219,19 +224,43 @@ export default function CreateIssuePage() {
         <div className="flex justify-end gap-3 pt-2">
           <a
             href="/"
-            className="px-4 py-2 text-sm text-stone-500 hover:text-stone-700"
+            className="px-4 py-2 text-sm text-on-surface-variant hover:text-on-surface"
           >
             Cancel
           </a>
           <button
             onClick={handleSubmit}
             disabled={submitting}
-            className="px-5 py-2 text-sm bg-stone-800 text-white rounded-lg hover:bg-stone-700 disabled:opacity-50"
+            className="btn-primary px-5 py-2 text-sm rounded-md font-medium disabled:opacity-50"
           >
             {submitting ? "Submitting…" : "Submit Issue"}
           </button>
         </div>
       </div>
     </Layout>
+  );
+}
+
+function Field({
+  label,
+  hint,
+  children,
+}: {
+  label: string;
+  hint?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <label className="block">
+      <div className="font-meta text-xs uppercase tracking-widest text-on-surface-variant mb-1.5">
+        {label}
+        {hint ? (
+          <span className="normal-case tracking-normal text-on-surface-variant ml-2">
+            ({hint})
+          </span>
+        ) : null}
+      </div>
+      {children}
+    </label>
   );
 }

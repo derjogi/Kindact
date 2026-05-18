@@ -36,7 +36,6 @@ export default function AnchorBrowser() {
     };
   }, [search, kind]);
 
-  // Tree view: roots = anchors with no parent that is itself in the visible set.
   const idSet = useMemo(() => new Set(anchors.map((a) => a.id)), [anchors]);
   const childrenByParent = useMemo(() => {
     const m = new Map<string, AnchorSummary[]>();
@@ -56,26 +55,33 @@ export default function AnchorBrowser() {
 
   return (
     <Layout>
-      <div className="space-y-4">
-        <div>
-          <h1 className="text-xl font-semibold text-stone-900">Anchors</h1>
-          <p className="text-sm text-stone-500">
-            Global topic / location / event handles. Subscribe to follow them across cells —
-            no membership required.
+      <div className="space-y-5">
+        {/* Editorial header */}
+        <section className="p-6 bg-surface-container-lowest rounded-md border-l-4 border-primary card-lift">
+          <p className="font-meta text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">
+            The Archive
           </p>
-        </div>
+          <h1 className="font-display text-3xl font-bold text-on-surface">
+            Anchors
+          </h1>
+          <p className="font-sans text-sm text-on-surface-variant mt-1">
+            Global topic / location / event handles. Subscribe to follow them
+            across cells — no membership required.
+          </p>
+        </section>
 
-        <div className="flex gap-2">
+        {/* Search + kind */}
+        <div className="flex flex-col md:flex-row gap-3">
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search anchors..."
-            className="flex-1 px-3 py-2 text-sm border border-stone-200 rounded-lg bg-white focus:outline-none focus:border-stone-400"
+            placeholder="Search anchors…"
+            className="flex-1 px-4 py-3 rounded-md bg-surface-container-lowest text-sm text-on-surface placeholder:text-on-surface-variant focus:outline-none card-lift"
           />
           <select
             value={kind}
             onChange={(e) => setKind(e.target.value as (typeof KINDS)[number])}
-            className="px-3 py-2 text-sm border border-stone-200 rounded-lg bg-white"
+            className="px-4 py-3 rounded-md bg-surface-container-lowest text-sm text-on-surface focus:outline-none card-lift"
           >
             {KINDS.map((k) => (
               <option key={k} value={k}>
@@ -85,18 +91,22 @@ export default function AnchorBrowser() {
           </select>
         </div>
 
-        <div className="text-xs text-stone-500">
+        <div className="font-meta text-xs text-on-surface-variant">
           <Link href="/cells/settings" className="underline">
             View / edit your subscriptions →
           </Link>
         </div>
 
         {loading ? (
-          <p className="text-stone-400 text-center py-8">Loading anchors…</p>
+          <p className="font-meta text-sm text-on-surface-variant text-center py-12">
+            Loading anchors…
+          </p>
         ) : anchors.length === 0 ? (
-          <p className="text-stone-400 text-center py-8">No anchors match your filters.</p>
+          <p className="font-meta text-sm text-on-surface-variant text-center py-12">
+            No anchors match your filters.
+          </p>
         ) : (
-          <div className="space-y-1.5">
+          <div className="space-y-1.5 bg-surface-container-lowest rounded-md p-3 card-lift">
             {roots.map((a) => (
               <AnchorTreeRow
                 key={a.id}
@@ -126,11 +136,14 @@ function AnchorTreeRow({
     <div>
       <Link
         href={`/anchors/${encodeURIComponent(anchor.anchorId)}`}
-        className="flex items-center gap-2 hover:bg-stone-50 px-2 py-1.5 rounded-lg"
+        className="flex items-center gap-2 hover:bg-surface-container-low px-2 py-1.5 rounded-md transition-colors"
         style={{ marginLeft: depth * 16 }}
       >
-        <AnchorPill anchor={anchor} state={anchor.isSubscribed ? "subscribed" : "default"} />
-        <span className="text-xs text-stone-400">
+        <AnchorPill
+          anchor={anchor}
+          state={anchor.isSubscribed ? "subscribed" : "default"}
+        />
+        <span className="font-meta text-xs text-on-surface-variant">
           {anchor.issueCount} issues · {anchor.subscriberCount} subscribers
         </span>
       </Link>

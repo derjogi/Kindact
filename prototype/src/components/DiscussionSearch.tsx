@@ -36,23 +36,23 @@ export default function DiscussionSearch({ onSearch, onClear, isActive }: Discus
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Search discussions…"
-          className="w-full px-3 py-2 pl-8 text-sm border border-stone-200 rounded-lg focus:outline-none focus:border-stone-400"
+          className="input-line w-full pl-8 pr-3 py-2 text-sm focus:outline-none"
         />
-        <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-stone-400 text-xs">
+        <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant text-xs">
           🔍
         </span>
       </div>
       {isActive ? (
         <button
           onClick={handleClear}
-          className="px-3 py-2 text-sm text-stone-500 hover:text-stone-700 transition-colors"
+          className="px-3 py-2 text-sm text-on-surface-variant hover:text-primary-dim transition-colors"
         >
           Clear
         </button>
       ) : (
         <button
           onClick={handleSearch}
-          className="px-3 py-2 text-sm bg-stone-800 text-white rounded-lg hover:bg-stone-700 transition-colors"
+          className="btn-primary px-3 py-2 text-sm rounded-md transition-colors"
         >
           Search
         </button>
