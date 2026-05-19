@@ -1,0 +1,12 @@
+---
+manifest_version: "1"
+name: global-registry
+integrity:
+  network_seed: null
+  properties: null
+  origin_time: 1670000000000000
+  zomes:
+    - name: registry
+      bundled: ./zomes/registry/target/wasm32-unknown-unknown/release/kindact_registry.wasm
+coordinator:
+  zomes: []
