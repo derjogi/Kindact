@@ -112,9 +112,11 @@ These gate downstream specs but are intentionally not pre-resolved here. Indexed
 
 ## Plan
 
-1. [ ] Confirm the closed-loop vs. fiat-bridged decision (§8.1.1) so this ADR's assumptions remain valid.
-2. [ ] Prototype one realistic cross-cell scenario (Berlin housing or Manhattan Wind Turbine) end-to-end, conductor + UI + cells + bridge stub.
-3. [ ] If prototype validates, freeze this ADR and accept the spec set; if it invalidates, document why and revise.
+1. [x] Confirm the closed-loop vs. fiat-bridged decision (§8.1.1) so this ADR's assumptions remain valid.
+2. [x] Prototype one realistic cross-cell scenario (Berlin housing or Manhattan Wind Turbine) end-to-end, conductor + UI + cells + bridge stub.
+   - **Result**: Validated in `prototype-holochain/`. Discovery and jurisdictional enforcement work as specified.
+3. [x] If prototype validates, freeze this ADR and accept the spec set; if it invalidates, document why and revise.
+   - **Decision**: ADR approved. Proceeding with Hybrid architecture.
 
 ## Test
 

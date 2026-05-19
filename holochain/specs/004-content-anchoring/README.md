@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: implemented-pending-verification
 created: '2026-05-12'
 tags: [infrastructure, smart-contracts, holochain, dht]
 priority: critical
