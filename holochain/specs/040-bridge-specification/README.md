@@ -1,5 +1,5 @@
 ---
-status: planned
+status: implemented-pending-verification
 created: '2026-05-12'
 tags: [bridge, security, architecture, multi-sig, cross-chain]
 priority: critical
