@@ -1,22 +1,28 @@
 ---
-status: planned
+status: complete
 created: 2026-04-07
 priority: high
-derivation: ported
-ports_from: 018-015a-ui-dashboard
 tags:
 - frontend
 - ux
 - dashboard
 depends_on:
 - 015-frontend
+created_at: 2026-04-07T23:16:33.158820722Z
+updated_at: 2026-05-25T21:15:14.372713715Z
+completed_at: 2026-05-25T21:15:14.372713715Z
+transitions:
+- status: in-progress
+  at: 2026-05-25T11:18:03.189809010Z
+- status: complete
+  at: 2026-05-25T21:15:14.372713715Z
+derivation: ported
 related:
 - 030-extensibility-foundation
 - 034-information-architecture
 - 035-governance-data-visualization
 - 039-empty-loading-error-states
-created_at: 2026-04-07T23:16:33.158820722Z
-updated_at: 2026-04-07T23:22:02.202074861Z
+ports_from: 018-015a-ui-dashboard
 ---
 
 # 018 — UI: Dashboard & Discovery

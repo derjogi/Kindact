@@ -7,11 +7,12 @@ import {
   DeleteLink,
   DnaHash,
   EntryHash,
-  ExternalHash,
   Record,
   SignedActionHashed,
   Update,
 } from "@holochain/client";
+
+import { IssueStatus } from "../../housing/housing/types";
 
 export type WindTurbineSignal = {
   type: "EntryCreated";
@@ -36,4 +37,23 @@ export type WindTurbineSignal = {
   link_type: string;
 };
 
-export type EntryTypes = {};
+export type EntryTypes =
+  | { type: "Issue"; issue: IssueEntry }
+  | { type: "Comment"; comment: CommentEntry };
+
+export interface IssueEntry {
+  title: string;
+  description: string;
+  status: IssueStatus;
+}
+
+export interface CommentEntry {
+  issue_id: ActionHash;
+  author: AgentPubKey;
+  content: string;
+}
+
+export interface DiscoveryResult {
+  anchor_name: string;
+  issue_hashes: ActionHash[];
+}
