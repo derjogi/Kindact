@@ -10,7 +10,7 @@ The source of truth for the architecture is [`implementation/holochain-architect
 
 1. Run `lean-spec` from this folder (`cd holochain && lean-spec board`).
 2. Maintain the numbering convention. Specs that have a counterpart in `implementation/specs/` keep the same number. New specs are in the 040+ range.
-3. Each spec frontmatter MUST include a `derivation` field describing its relationship to the corresponding `implementation/` spec:
+3. Each spec frontmatter MUST include a `derivation` field describing its relationship to the corresponding `implementation/` spec, if there is one:
    - `ported` — copied with only minor wording adjustments
    - `changed` — same scope, materially different design under the hybrid
    - `new` — no counterpart in `implementation/`

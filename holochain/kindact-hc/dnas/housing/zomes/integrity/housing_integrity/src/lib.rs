@@ -17,16 +17,28 @@ pub struct BindingChallenge {
     pub reason: String,
 }
 
+/// Lightweight anchor entry used as the link base for `AllIssues`.
+/// Mirrors the `AnchorEntry` pattern from `registry_integrity`.
+#[hdk_entry_helper]
+#[derive(Clone)]
+pub struct AnchorEntry {
+    pub name: String,
+}
+
 #[hdk_entry_types]
 #[unit_enum(UnitEntryTypes)]
 pub enum EntryTypes {
     Issue(HousingIssue),
     Challenge(BindingChallenge),
+    Anchor(AnchorEntry),
 }
 
 #[hdk_link_types]
 pub enum LinkTypes {
-    // Placeholder for future link types
+    /// Anchor → housing issue. Lets any agent enumerate all housing issues.
+    AllIssues,
+    /// Issue → binding challenge. Lets the UI derive "Challenged" status
+    /// from the existence of any challenge link.
     IssueToChallenge,
 }
 

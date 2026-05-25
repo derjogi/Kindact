@@ -96,6 +96,8 @@ If you find yourself building any of these, stop and ask whether you've drifted 
 - "Guest contributor" is not a built-in Holochain primitive; you'll likely implement it as a per-issue cap grant from a Manhattan member.
 - Anchor subscription as "watch on the registry" may need polling in the toy version; full gossip-filter is heavier to implement.
 
+**Status update (spec [048](specs/048-prototype-cross-agent-issue-visibility/README.md))**: Cross-agent issue visibility is now wired end-to-end in `kindact-hc/`. Both cells expose anchor-backed `get_all_*` and per-issue `get_*_for_issue` externs, and the UI polls them every 3s (plus on every local write). The "Trigger Observer Binding Challenge" sandbox button now writes a real `BindingChallenge` link in the housing cell, so the receiving agent sees the issue flip to `Challenged` within one poll tick. Signal-based replacement of the poll is a follow-up.
+
 **Decision gate**: if you cannot get the cross-cell flow working in 3–4 weeks, the architecture's premises about Holochain ergonomics are likely too optimistic. Stop, document, and revisit before adding jurisdictional claims.
 
 ## Phase 2 — Berlin jurisdictional claim layer (Weeks 5–6)

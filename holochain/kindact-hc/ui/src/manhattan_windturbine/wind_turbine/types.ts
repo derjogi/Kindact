@@ -57,3 +57,8 @@ export interface DiscoveryResult {
   anchor_name: string;
   issue_hashes: ActionHash[];
 }
+
+/** Anchor entry mirroring `wind_turbine_integrity::AnchorEntry`. */
+export interface AnchorEntry {
+  name: string;
+}

@@ -17,16 +17,28 @@ pub struct CommentEntry {
     pub content: String,
 }
 
+/// Lightweight anchor entry used as the link base for `AllIssues`.
+/// Mirrors the `AnchorEntry` pattern from `registry_integrity` so all agents
+/// can deterministically hash to the same DHT location.
+#[hdk_entry_helper]
+#[derive(Clone)]
+pub struct AnchorEntry {
+    pub name: String,
+}
+
 #[hdk_entry_types]
 #[unit_enum(UnitEntryTypes)]
 pub enum EntryTypes {
     Issue(IssueEntry),
     Comment(CommentEntry),
+    Anchor(AnchorEntry),
 }
 
 #[hdk_link_types]
 pub enum LinkTypes {
-    // Placeholder for future link types
+    /// Anchor → issue. Lets any agent enumerate every issue in the cell.
+    AllIssues,
+    /// Issue → comment. Lets the UI fetch all comments for one issue.
     IssueToComment,
 }
 

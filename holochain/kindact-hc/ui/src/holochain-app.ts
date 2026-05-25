@@ -2,7 +2,10 @@ import {
   ActionHash,
   AgentPubKey,
   AppClient,
+  AppInfo,
   AppWebsocket,
+  CellId,
+  CellType,
   DnaHash,
   encodeHashToBase64,
 } from "@holochain/client";
@@ -17,6 +20,22 @@ import { sharedStyles } from "./shared-styles";
 import { CellEntry, AnchorLinkEntry, JurisdictionalClaimEntry } from "./global_registry/registry/types";
 import { HousingIssue, BindingChallenge, IssueStatus } from "./housing/housing/types";
 import { IssueEntry, CommentEntry } from "./manhattan_windturbine/wind_turbine/types";
+
+// Unified UI representation of an issue, regardless of which cell it lives in.
+interface UIIssue {
+  id: string; // base64(actionHash) in live mode, mock placeholder in mock mode
+  actionHash?: ActionHash;
+  cell: "manhattan" | "housing";
+  title: string;
+  description: string;
+  location: string;
+  status: IssueStatus;
+  hasGeotaggedEvidence: boolean;
+  creator: string;
+  comments: CommentEntry[]; // legacy; only used in mock mode
+  capSecret?: string;
+  challengeCount?: number; // populated from DHT for live housing issues
+}
 
 interface UINotification {
   id: string;
@@ -35,7 +54,8 @@ interface ActivityLog {
 
 interface DBState {
   issues: Array<{
-    id: string; // Base64 representation of action hash
+    id: string; // Base64 representation of action hash (or mock placeholder)
+    actionHash?: ActionHash; // Real on-chain hash when created via zome call
     cell: "manhattan" | "housing";
     title: string;
     description: string;
@@ -63,6 +83,8 @@ export class HolochainApp extends LitElement {
   @state() isMock = false;
   @state() agentPubKey: AgentPubKey | undefined;
   @state() agentB64 = "";
+  // Cached AppInfo so we don't re-await on every zome call and so extractCellId works synchronously.
+  private cachedAppInfo: AppInfo | undefined;
   
   // Agent Persona (For Live Mode, determined by agent index/pubkey. For Mock, toggled manually)
   @state() activeAgentName = "Elena";
@@ -80,9 +102,14 @@ export class HolochainApp extends LitElement {
   @state() searchQuery = "";
   @state() searchMatches: Array<{ title: string; matchScore: number; cell: string }> = [];
   @state() activeLenses: string[] = ["#general", "#new-york"];
-  @state() activeIssues: any[] = [];
+  @state() activeIssues: UIIssue[] = [];
   @state() expandedIssueId: string | null = null;
   @state() commentsMap: { [issueId: string]: CommentEntry[] } = {};
+
+  // Live DHT-derived issues. Populated by refreshFromDht() in live mode.
+  // Distinct from mockDb.issues, which only seeds the standalone preview.
+  @state() liveIssues: UIIssue[] = [];
+  private dhtPollInterval: any;
 
   // Form Modals
   @state() showCreateIssueModal = false;
@@ -158,12 +185,14 @@ export class HolochainApp extends LitElement {
         
         const appInfo = await this.client.appInfo();
         if (appInfo) {
+          this.cachedAppInfo = appInfo;
           this.agentPubKey = appInfo.agent_pub_key;
           this.agentB64 = encodeHashToBase64(appInfo.agent_pub_key);
           this.isMock = false;
           
           // Determine agent persona based on the injected launcher agent number or pubkey
           const agentNum = env.APP_INTERFACE_PORT % 10 || 1;
+          console.log("Agent Number: ", agentNum);
           if (agentNum === 1) {
             this.activeAgentName = "Elena";
             this.activeAgentRole = "Manhattan Resident";
@@ -210,6 +239,7 @@ export class HolochainApp extends LitElement {
   disconnectedCallback() {
     super.disconnectedCallback();
     if (this.walletTickerInterval) clearInterval(this.walletTickerInterval);
+    if (this.dhtPollInterval) clearInterval(this.dhtPollInterval);
   }
 
   // Wallet Demurrage countdown ticker
@@ -241,18 +271,110 @@ export class HolochainApp extends LitElement {
   // Load Real Data from Holochain Cells
   private async loadRealData() {
     try {
-      // A production hApp would execute Zome calls to gather issues in active cells.
-      // Since this is the initial UI integration stage of the prototype, we populate the initial feed
-      // from the cells or seed mock database if cell data is empty.
+      // Pull a first snapshot from both cells, then start the 3s poll.
+      await this.refreshFromDht();
+      this.dhtPollInterval = setInterval(() => {
+        this.refreshFromDht().catch((e) =>
+          console.warn("refreshFromDht poll failed:", e)
+        );
+      }, 3000);
       this.updateActiveIssues();
     } catch (e) {
       this.error = "Error loading Zome data: " + (e as Error).message;
     }
   }
 
+  /**
+   * Read every issue (and challenge count) from both cells via the
+   * `get_all_*` externs and rebuild `liveIssues`. Safe to call on a poll
+   * or after a local write.
+   */
+  private async refreshFromDht() {
+    if (this.isMock || !this.client) return;
+
+    const next: UIIssue[] = [];
+
+    // Wind turbine cell -----------------------------------------------------
+    try {
+      const turbineCell = this.extractCellId("manhattan_windturbine");
+      const windIssues: Array<[ActionHash, IssueEntry]> = await this.client.callZome({
+        cell_id: turbineCell,
+        zome_name: "wind_turbine",
+        fn_name: "get_all_issues",
+        payload: null,
+      });
+      for (const [hash, entry] of windIssues) {
+        next.push({
+          id: encodeHashToBase64(hash),
+          actionHash: hash,
+          cell: "manhattan",
+          title: entry.title,
+          description: entry.description,
+          location: "Manhattan",
+          status: entry.status,
+          hasGeotaggedEvidence: true,
+          creator: "",
+          comments: [],
+        });
+      }
+    } catch (e) {
+      console.warn("get_all_issues (wind_turbine) failed:", e);
+    }
+
+    // Housing cell ----------------------------------------------------------
+    try {
+      const housingCell = this.extractCellId("housing");
+      const housingIssues: Array<[ActionHash, HousingIssue]> = await this.client.callZome({
+        cell_id: housingCell,
+        zome_name: "housing",
+        fn_name: "get_all_housing_issues",
+        payload: null,
+      });
+
+      for (const [hash, entry] of housingIssues) {
+        // Derive Challenged status from the presence of any IssueToChallenge link.
+        let challengeCount = 0;
+        try {
+          const challenges: Array<[ActionHash, BindingChallenge]> = await this.client.callZome({
+            cell_id: housingCell,
+            zome_name: "housing",
+            fn_name: "get_challenges_for_issue",
+            payload: hash,
+          });
+          challengeCount = challenges.length;
+        } catch (e) {
+          console.warn("get_challenges_for_issue failed:", e);
+        }
+
+        next.push({
+          id: encodeHashToBase64(hash),
+          actionHash: hash,
+          cell: "housing",
+          title: entry.title,
+          description: entry.title, // housing entries have no description field
+          location: entry.location,
+          status: challengeCount > 0 ? "Challenged" : entry.status,
+          hasGeotaggedEvidence: entry.has_geotagged_evidence,
+          creator: "",
+          comments: [],
+          challengeCount,
+        });
+      }
+    } catch (e) {
+      console.warn("get_all_housing_issues failed:", e);
+    }
+
+    this.liveIssues = next;
+    this.updateActiveIssues();
+  }
+
   // Refresh feed based on lenses, search query, and cell states
   private updateActiveIssues() {
-    let sourceIssues = this.isMock ? this.mockDb.issues : this.mockDb.issues; // Fallback to mock issues if Zomes are empty
+    // In live mode the feed is derived purely from the DHT snapshot; in mock
+    // mode it falls back to the seeded mockDb so the standalone preview works.
+    const sourceIssues: UIIssue[] = this.isMock
+      ? (this.mockDb.issues as UIIssue[])
+      : this.liveIssues;
 
     // Apply Lens filtering (e.g. #wind-power, #housing)
     this.activeIssues = sourceIssues.filter(issue => {
@@ -354,12 +476,13 @@ export class HolochainApp extends LitElement {
         throw new Error("Geotagged evidence required for this jurisdiction (Berlin Housing Overlay Rule jc:berlin-housing-rules-v1).");
       }
 
+      let actionHash: ActionHash | undefined;
       if (!this.isMock) {
         // Execute Zome Call to local cells
         // e.g. create_issue or create_housing_issue
         if (this.newIssueLocation === "Berlin") {
           const housingCell = this.extractCellId("housing");
-          await this.client.callZome({
+          actionHash = await this.client.callZome({
             cell_id: housingCell,
             zome_name: "housing",
             fn_name: "create_housing_issue",
@@ -372,7 +495,7 @@ export class HolochainApp extends LitElement {
           });
         } else {
           const turbineCell = this.extractCellId("manhattan_windturbine");
-          await this.client.callZome({
+          actionHash = await this.client.callZome({
             cell_id: turbineCell,
             zome_name: "wind_turbine",
             fn_name: "create_issue",
@@ -385,22 +508,26 @@ export class HolochainApp extends LitElement {
         }
       }
 
-      // Add to simulated database feed
-      const newId = "uhCkkY" + Math.random().toString(36).substring(2, 10);
-      this.mockDb.issues = [
-        {
-          id: newId,
-          cell: this.newIssueLocation === "Berlin" ? "housing" : "manhattan",
-          title: this.newIssueTitle,
-          description: this.newIssueDesc,
-          location: this.newIssueLocation,
-          status: "Deliberating",
-          hasGeotaggedEvidence: this.newIssueHasEvidence,
-          creator: this.agentB64,
-          comments: []
-        },
-        ...this.mockDb.issues
-      ];
+      // In mock mode, seed the local feed manually since there is no DHT to
+      // re-read from. In live mode, refreshFromDht() below pulls the real
+      // entry back through `get_all_issues` / `get_all_housing_issues`.
+      if (this.isMock) {
+        const newId = "uhCkkY" + Math.random().toString(36).substring(2, 10);
+        this.mockDb.issues = [
+          {
+            id: newId,
+            cell: this.newIssueLocation === "Berlin" ? "housing" : "manhattan",
+            title: this.newIssueTitle,
+            description: this.newIssueDesc,
+            location: this.newIssueLocation,
+            status: "Deliberating",
+            hasGeotaggedEvidence: this.newIssueHasEvidence,
+            creator: this.agentB64,
+            comments: []
+          },
+          ...this.mockDb.issues
+        ];
+      }
 
       this.logActivity(this.activeAgentName, "created issue", `"${this.newIssueTitle}" in cell.`);
       this.addNotification("issue", `New issue created: "${this.newIssueTitle}"`);
@@ -411,7 +538,13 @@ export class HolochainApp extends LitElement {
       this.newIssueLocation = "Manhattan";
       this.newIssueHasEvidence = false;
       this.showCreateIssueModal = false;
-      this.updateActiveIssues();
+      // Pull the freshly-written issue (and any others gossiped in the meantime)
+      // back from the DHT so this agent sees authoritative state immediately.
+      if (!this.isMock) {
+        await this.refreshFromDht();
+      } else {
+        this.updateActiveIssues();
+      }
       
     } catch (e: any) {
       alert(e.message);
@@ -420,11 +553,20 @@ export class HolochainApp extends LitElement {
     }
   }
 
-  // Extract cell ID helper
-  private extractCellId(roleName: string): any {
-    const appInfo = (this as any).client.appInfo;
-    const cellInfo = appInfo.cell_info[roleName][0];
-    return "provisioned" in cellInfo ? cellInfo.provisioned.cell_id : cellInfo.cloned.cell_id;
+  // Extract cell ID helper. Reads from the cached AppInfo populated in firstUpdated().
+  private extractCellId(roleName: string): CellId {
+    if (!this.cachedAppInfo) {
+      throw new Error("AppInfo not loaded yet — cannot resolve cell for role " + roleName);
+    }
+    const cellsForRole = this.cachedAppInfo.cell_info[roleName];
+    if (!cellsForRole || cellsForRole.length === 0) {
+      throw new Error(`No cell found for role "${roleName}". Available roles: ${Object.keys(this.cachedAppInfo.cell_info).join(", ")}`);
+    }
+    const cellInfo = cellsForRole[0];
+    // @holochain/client encodes CellInfo as a tagged union: { type: "provisioned" | "cloned" | "stem", value: ... }
+    if (cellInfo.type === CellType.Provisioned) return cellInfo.value.cell_id;
+    if (cellInfo.type === CellType.Cloned) return cellInfo.value.cell_id;
+    throw new Error(`Cell for role "${roleName}" is a stem cell (no cell_id yet).`);
   }
 
   // CAP grant request for Guest write (Phase 1)
@@ -448,38 +590,60 @@ export class HolochainApp extends LitElement {
   private async submitComment(issueId: string, text: string) {
     if (!text.trim()) return;
 
+    // Look the issue up against whichever feed is the source of truth.
+    const source: UIIssue[] = this.isMock
+      ? (this.mockDb.issues as UIIssue[])
+      : this.liveIssues;
+    const issue = source.find((i) => i.id === issueId);
+    if (!issue) return;
+
     try {
       this.loading = true;
 
       if (!this.isMock) {
+        // Only the wind_turbine zome currently exposes post_comment; the housing zome
+        // does not have a comment extern. Surface that clearly instead of guessing.
+        if (issue.cell !== "manhattan") {
+          throw new Error(`Commenting is not supported for the ${issue.cell} cell yet.`);
+        }
+        if (!issue.actionHash) {
+          throw new Error("This issue has no on-chain action hash yet.");
+        }
+        if (!this.agentPubKey) {
+          throw new Error("Agent public key not available.");
+        }
         const turbineCell = this.extractCellId("manhattan_windturbine");
         await this.client.callZome({
           cell_id: turbineCell,
           zome_name: "wind_turbine",
           fn_name: "post_comment",
           payload: {
-            issue_id: null, // Stub or resolved hash
+            issue_id: issue.actionHash,
             author: this.agentPubKey,
             content: text
           }
         });
-      }
 
-      // Add to simulated local comments array
-      const issueIndex = this.mockDb.issues.findIndex(issue => issue.id === issueId);
-      if (issueIndex !== -1) {
-        this.mockDb.issues[issueIndex].comments = [
-          ...this.mockDb.issues[issueIndex].comments,
-          {
-            issue_id: null as any,
-            author: null as any,
-            content: text
-          }
-        ];
+        // Pull the freshly-linked comment back through get_comments_for_issue
+        // so this agent sees authoritative DHT state immediately.
+        await this.refreshCommentsForIssue(issue);
+      } else {
+        // Mock mode: maintain the local array as before.
+        const idx = this.mockDb.issues.findIndex((i) => i.id === issueId);
+        if (idx !== -1) {
+          this.mockDb.issues[idx].comments = [
+            ...this.mockDb.issues[idx].comments,
+            {
+              issue_id: (issue.actionHash ?? null) as any,
+              author: (this.agentPubKey ?? null) as any,
+              content: text,
+            },
+          ];
+        }
+        this.updateActiveIssues();
       }
 
       this.logActivity(this.activeAgentName, "comment posted", `Added contribution on issue.`);
-      this.updateActiveIssues();
 
     } catch (e: any) {
       alert("Zome call failed: " + e.message);
@@ -488,21 +652,84 @@ export class HolochainApp extends LitElement {
     }
   }
 
+  /**
+   * Fetch and cache the on-chain comments for a wind-turbine issue.
+   * Keyed by `UIIssue.id` so the expanded-card render can read them.
+   */
+  private async refreshCommentsForIssue(issue: UIIssue) {
+    if (this.isMock || !issue.actionHash || issue.cell !== "manhattan") return;
+    try {
+      const turbineCell = this.extractCellId("manhattan_windturbine");
+      const comments: Array<[ActionHash, CommentEntry]> = await this.client.callZome({
+        cell_id: turbineCell,
+        zome_name: "wind_turbine",
+        fn_name: "get_comments_for_issue",
+        payload: issue.actionHash,
+      });
+      this.commentsMap = {
+        ...this.commentsMap,
+        [issue.id]: comments.map(([, c]) => c),
+      };
+    } catch (e) {
+      console.warn("get_comments_for_issue failed:", e);
+    }
+  }
+
+  // Expand an issue card and, in live mode, lazy-load its DHT comments.
+  private async handleExpandIssue(issue: UIIssue) {
+    this.expandedIssueId = issue.id;
+    if (!this.isMock) {
+      await this.refreshCommentsForIssue(issue);
+    }
+  }
+
   // Submit Binding Challenge Dispute (Phase 2 Overlay observer)
-  private handleTriggerDispute(issueId: string) {
+  private async handleTriggerDispute(issueId: string) {
     this.loading = true;
-    
-    setTimeout(() => {
-      const issueIndex = this.mockDb.issues.findIndex(issue => issue.id === issueId);
-      if (issueIndex !== -1) {
-        this.mockDb.issues[issueIndex].status = "Challenged";
+
+    try {
+      if (!this.isMock) {
+        const source = this.liveIssues;
+        const issue = source.find((i) => i.id === issueId);
+        if (!issue) {
+          throw new Error("Issue not found in live feed.");
+        }
+        if (issue.cell !== "housing" || !issue.actionHash) {
+          throw new Error("Binding challenges are only supported for housing-cell issues.");
+        }
+        const housingCell = this.extractCellId("housing");
+        await this.client.callZome({
+          cell_id: housingCell,
+          zome_name: "housing",
+          fn_name: "challenge_issue_binding",
+          payload: {
+            issue_hash: issue.actionHash,
+            reason: "Observer dispute: jurisdictional scope mismatch.",
+          },
+        });
+        await this.refreshFromDht();
+      } else {
+        const idx = this.mockDb.issues.findIndex((i) => i.id === issueId);
+        if (idx !== -1) {
+          this.mockDb.issues[idx].status = "Challenged";
+        }
+        this.updateActiveIssues();
       }
 
-      this.logActivity("Berlin Observer", "disputed binding", `Submitted BindingChallenge. Geographic scope mismatched canonical tier.`);
-      this.addNotification("challenge", `ALERT: Berlin affordable unit conversion has been Challenged!`);
-      this.updateActiveIssues();
+      this.logActivity(
+        "Berlin Observer",
+        "disputed binding",
+        `Submitted BindingChallenge. Geographic scope mismatched canonical tier.`
+      );
+      this.addNotification(
+        "challenge",
+        `ALERT: Issue has been Challenged!`
+      );
+    } catch (e: any) {
+      alert("Challenge failed: " + e.message);
+    } finally {
       this.loading = false;
-    }, 1000);
+    }
   }
 
   // Render demurrage SVG curve dynamically
@@ -664,7 +891,10 @@ export class HolochainApp extends LitElement {
                 </button>
                 
                 <button class="sandbox-btn" @click=${() => {
-                  const housingIssue = this.mockDb.issues.find(i => i.location === "Berlin");
+                  const source: UIIssue[] = this.isMock
+                    ? (this.mockDb.issues as UIIssue[])
+                    : this.liveIssues;
+                  const housingIssue = source.find(i => i.location === "Berlin");
                   if (housingIssue) {
                     this.handleTriggerDispute(housingIssue.id);
                   } else {
@@ -703,8 +933,11 @@ export class HolochainApp extends LitElement {
                   <div class="ai-duplicate-text">
                     An issue resembling your query is already open in the <strong>${this.searchMatches[0].cell}</strong>: 
                     <span class="ai-duplicate-link" @click=${() => {
-                      const matched = this.mockDb.issues.find(i => i.title === this.searchMatches[0].title);
-                      if (matched) this.expandedIssueId = matched.id;
+                      const source: UIIssue[] = this.isMock
+                        ? (this.mockDb.issues as UIIssue[])
+                        : this.liveIssues;
+                      const matched = source.find(i => i.title === this.searchMatches[0].title);
+                      if (matched) this.handleExpandIssue(matched);
                     }}>"${this.searchMatches[0].title}"</span>. Please collaborate instead of creating duplicates.
                   </div>
                 </div>
@@ -730,7 +963,7 @@ export class HolochainApp extends LitElement {
                 const phaseBadgeClass = `badge-${issue.status.toLowerCase()}`;
                 
                 return html`
-                  <article class="issue-card ${isExpanded ? "expanded" : ""}" @click=${() => !isExpanded && (this.expandedIssueId = issue.id)}>
+                  <article class="issue-card ${isExpanded ? "expanded" : ""}" @click=${() => !isExpanded && this.handleExpandIssue(issue)}>
                     <div class="issue-card-header">
                       <h3 class="issue-title">${issue.title}</h3>
                       <span class="phase-badge ${phaseBadgeClass}">${issue.status}</span>
@@ -764,7 +997,7 @@ export class HolochainApp extends LitElement {
                       ` : ""}
 
                       <div class="comments-section">
-                        ${issue.comments.map((comment: any) => html`
+                        ${(this.isMock ? issue.comments : (this.commentsMap[issue.id] ?? [])).map((comment: any) => html`
                           <div class="comment-card">
                             <div class="comment-author-row">
                               <span class="comment-author-name">Contributor</span>
