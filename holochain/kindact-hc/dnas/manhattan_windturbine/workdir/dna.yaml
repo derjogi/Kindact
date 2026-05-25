@@ -13,4 +13,5 @@ coordinator:
   - name: wind_turbine
     hash: null
     path: ../../../target/wasm32-unknown-unknown/release/wind_turbine.wasm
-    dependencies: []
+    dependencies:
+    - name: wind_turbine_integrity

@@ -11,3 +11,4 @@ name = "wind_turbine_integrity"
 hdi = { workspace = true }
 serde = { workspace = true }
 holochain_serialized_bytes = { workspace = true }
+kindact_base = { workspace = true }

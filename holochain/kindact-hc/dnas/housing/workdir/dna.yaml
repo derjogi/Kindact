@@ -13,4 +13,5 @@ coordinator:
   - name: housing
     hash: null
     path: ../../../target/wasm32-unknown-unknown/release/housing.wasm
-    dependencies: []
+    dependencies:
+    - name: housing_integrity

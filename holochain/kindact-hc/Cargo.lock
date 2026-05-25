@@ -3197,6 +3197,8 @@ dependencies = [
  "hdk",
  "holochain",
  "holochain_serialized_bytes",
+ "housing_integrity",
+ "kindact_base",
  "pkcs8 0.11.0-rc.11",
  "serde",
  "tokio",
@@ -3208,6 +3210,7 @@ version = "0.0.1"
 dependencies = [
  "hdi",
  "holochain_serialized_bytes",
+ "kindact_base",
  "serde",
 ]
 
@@ -4077,6 +4080,15 @@ dependencies = [
  "futures-util",
  "once_cell",
  "wasm-bindgen",
+]
+
+[[package]]
+name = "kindact_base"
+version = "0.1.0"
+dependencies = [
+ "hdi",
+ "holochain_serialized_bytes",
+ "serde",
 ]
 
 [[package]]
@@ -8739,9 +8751,11 @@ dependencies = [
  "hdk",
  "holochain",
  "holochain_serialized_bytes",
+ "kindact_base",
  "pkcs8 0.11.0-rc.11",
  "serde",
  "tokio",
+ "wind_turbine_integrity",
 ]
 
 [[package]]
@@ -8750,6 +8764,7 @@ version = "0.0.1"
 dependencies = [
  "hdi",
  "holochain_serialized_bytes",
+ "kindact_base",
  "serde",
 ]
 
