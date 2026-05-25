@@ -1,0 +1,16 @@
+manifest_version: '0'
+name: manhattan_windturbine
+integrity:
+  network_seed: null
+  properties: null
+  zomes:
+  - name: wind_turbine_integrity
+    hash: null
+    path: ../../../target/wasm32-unknown-unknown/release/wind_turbine_integrity.wasm
+    dependencies: null
+coordinator:
+  zomes:
+  - name: wind_turbine
+    hash: null
+    path: ../../../target/wasm32-unknown-unknown/release/wind_turbine.wasm
+    dependencies: []
