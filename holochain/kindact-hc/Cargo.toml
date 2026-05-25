@@ -5,7 +5,7 @@ opt-level = "z"
 opt-level = "z"
 
 [workspace]
-members = ["dnas/*/zomes/coordinator/*", "dnas/*/zomes/integrity/*"]
+members = ["crates/*", "dnas/*/zomes/coordinator/*", "dnas/*/zomes/integrity/*"]
 resolver = "2"
 
 [workspace.dependencies]
@@ -19,8 +19,23 @@ tokio = "1.49"
 default-features = false
 version = "0.6.1"
 
+[workspace.dependencies.kindact_base]
+path = "crates/kindact_base"
+
 [workspace.dependencies.registry]
 path = "dnas/global_registry/zomes/coordinator/registry"
 
 [workspace.dependencies.registry_integrity]
 path = "dnas/global_registry/zomes/integrity/registry_integrity"
+
+[workspace.dependencies.wind_turbine]
+path = "dnas/manhattan_windturbine/zomes/coordinator/wind_turbine"
+
+[workspace.dependencies.wind_turbine_integrity]
+path = "dnas/manhattan_windturbine/zomes/integrity/wind_turbine_integrity"
+
+[workspace.dependencies.housing]
+path = "dnas/housing/zomes/coordinator/housing"
+
+[workspace.dependencies.housing_integrity]
+path = "dnas/housing/zomes/integrity/housing_integrity"

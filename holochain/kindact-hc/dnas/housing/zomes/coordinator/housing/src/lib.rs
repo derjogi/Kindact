@@ -1,28 +1,37 @@
 use hdk::prelude::*;
+use housing_integrity::*;
+use kindact_base::{validate_jurisdiction, JurisdictionalContext};
 
-// Called the first time a zome call is made to the cell containing this zome
 #[hdk_extern]
 pub fn init() -> ExternResult<InitCallbackResult> {
     Ok(InitCallbackResult::Pass)
 }
 
-// Don't modify this enum if you want the scaffolding tool to generate appropriate signals for your entries and links
+#[hdk_extern]
+pub fn create_housing_issue(issue: HousingIssue) -> ExternResult<ActionHash> {
+    if issue.location == "Berlin" {
+        let context = JurisdictionalContext {
+            location: Some(issue.location.clone()),
+            has_geotagged_evidence: issue.has_geotagged_evidence,
+        };
+
+        if let Err(e) = validate_jurisdiction(&context, "geotagged_evidence_required") {
+            return Err(wasm_error!(WasmErrorInner::Guest(e)));
+        }
+    }
+
+    create_entry(EntryTypes::Issue(issue))
+}
+
+#[hdk_extern]
+pub fn challenge_issue_binding(challenge: BindingChallenge) -> ExternResult<ActionHash> {
+    // In a real scenario, this would trigger a status change of the Issue to "Challenged".
+    create_entry(EntryTypes::Challenge(challenge))
+}
+
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(tag = "type")]
 pub enum Signal {}
 
-// Whenever an action is committed, we emit a signal to the UI elements to reactively update them
 #[hdk_extern(infallible)]
-pub fn post_commit(committed_actions: Vec<SignedActionHashed>) {
-    // Don't modify the for loop if you want the scaffolding tool to generate appropriate signals for your entries and links
-    for action in committed_actions {
-        if let Err(err) = signal_action(action) {
-            error!("Error signaling new action: {:?}", err);
-        }
-    }
-}
-
-// Don't modify this function if you want the scaffolding tool to generate appropriate signals for your entries and links
-fn signal_action(action: SignedActionHashed) -> ExternResult<()> {
-    Ok(())
-}
+pub fn post_commit(_committed_actions: Vec<SignedActionHashed>) {}
