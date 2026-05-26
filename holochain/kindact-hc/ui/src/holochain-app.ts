@@ -111,6 +111,24 @@ export class HolochainApp extends LitElement {
   @state() liveIssues: UIIssue[] = [];
   private dhtPollInterval: any;
 
+  // Persona picker (live mode only). hc-spin gives each window a random
+  // APP_INTERFACE_PORT and no stable agent index, and it also rebuilds
+  // `userData` under a fresh tmp dir on every run — so neither port-modulo
+  // nor localStorage can deterministically pick "which persona is this
+  // window". We just ask the operator in each window.
+  @state() personaPickerVisible = false;
+  private readonly personaOptions: Array<{
+    name: string;
+    role: string;
+    hint: string;
+    wallet: number;
+    lenses: string[];
+  }> = [
+    { name: "Elena",  role: "Manhattan Resident", hint: "New York, USA", wallet: 150.00, lenses: ["#general", "#new-york"] },
+    { name: "Marcus", role: "NYC Resident",       hint: "Brooklyn, USA", wallet: 240.50, lenses: ["#general", "#housing"] },
+    { name: "Amina",  role: "Nairobi Engineer",   hint: "Nairobi, Kenya", wallet:  85.00, lenses: ["#general", "#wind-power"] },
+  ];
+
   // Form Modals
   @state() showCreateIssueModal = false;
   @state() newIssueTitle = "";
@@ -189,34 +207,10 @@ export class HolochainApp extends LitElement {
           this.agentPubKey = appInfo.agent_pub_key;
           this.agentB64 = encodeHashToBase64(appInfo.agent_pub_key);
           this.isMock = false;
-          
-          // Determine agent persona based on the injected launcher agent number or pubkey
-          const agentNum = env.APP_INTERFACE_PORT % 10 || 1;
-          console.log("Agent Number: ", agentNum);
-          if (agentNum === 1) {
-            this.activeAgentName = "Elena";
-            this.activeAgentRole = "Manhattan Resident";
-            this.activeAgentHint = "New York, USA";
-            this.walletBalance = 150.00;
-            this.walletInitialBalance = 150.00;
-          } else if (agentNum === 2) {
-            this.activeAgentName = "Marcus";
-            this.activeAgentRole = "NYC Resident";
-            this.activeAgentHint = "Brooklyn, USA";
-            this.walletBalance = 240.50;
-            this.walletInitialBalance = 240.50;
-            this.activeLenses = ["#general", "#housing"];
-          } else {
-            this.activeAgentName = "Amina";
-            this.activeAgentRole = "Nairobi Engineer";
-            this.activeAgentHint = "Nairobi, Kenya";
-            this.walletBalance = 85.00;
-            this.walletInitialBalance = 85.00;
-            this.activeLenses = ["#general", "#wind-power"];
-          }
 
-          this.logActivity(this.activeAgentName, "connected", "Real Holochain Node WebSocket online.");
-          await this.loadRealData();
+          // Defer persona setup + DHT load until the operator picks a
+          // persona in this window. See `applyPersona` / `selectPersona`.
+          this.personaPickerVisible = true;
         } else {
           throw new Error("Could not fetch app info.");
         }
@@ -268,10 +262,42 @@ export class HolochainApp extends LitElement {
     ];
   }
 
+  // Apply the persona-config block (display name, role, wallet, default
+  // lenses). Pure state mutation — does not touch the DHT.
+  private applyPersona(name: string) {
+    const persona = this.personaOptions.find((p) => p.name === name);
+    if (!persona) return;
+    this.activeAgentName = persona.name;
+    this.activeAgentRole = persona.role;
+    this.activeAgentHint = persona.hint;
+    this.walletBalance = persona.wallet;
+    this.walletInitialBalance = persona.wallet;
+    this.walletStartTime = Date.now();
+    this.activeLenses = [...persona.lenses];
+  }
+
+  // Live-mode picker handler: pick → apply → load DHT data.
+  private async selectPersona(name: string) {
+    this.applyPersona(name);
+    this.personaPickerVisible = false;
+    this.logActivity(this.activeAgentName, "connected", "Real Holochain Node WebSocket online.");
+    this.loading = true;
+    try {
+      await this.loadRealData();
+    } finally {
+      this.loading = false;
+    }
+  }
+
   // Load Real Data from Holochain Cells
   private async loadRealData() {
     try {
-      // Pull a first snapshot from both cells, then start the 3s poll.
+      // Reconcile the agent's default lens set with what's actually on chain
+      // — any lens in `activeLenses` that isn't an active subscription gets
+      // written; nothing on chain gets deleted here (the user owns that).
+      await this.reconcileSubscriptionsFromLenses();
+
+      // Pull a first snapshot, then start the 3s poll.
       await this.refreshFromDht();
       this.dhtPollInterval = setInterval(() => {
         this.refreshFromDht().catch((e) =>
@@ -284,17 +310,85 @@ export class HolochainApp extends LitElement {
     }
   }
 
-  /**
-   * Read every issue (and challenge count) from both cells via the
-   * `get_all_*` externs and rebuild `liveIssues`. Safe to call on a poll
-   * or after a local write.
-   */
-  private async refreshFromDht() {
+  // ---------------------------------------------------------------------------
+  // Registry: subscriptions
+  // ---------------------------------------------------------------------------
+
+  /** All registry-recorded subscription anchors for the current agent. */
+  private async fetchSubscriptions(): Promise<string[]> {
+    if (this.isMock || !this.client) return [];
+    const registryCell = this.extractCellId("global_registry");
+    return await this.client.callZome({
+      cell_id: registryCell,
+      zome_name: "registry",
+      fn_name: "get_subscriptions",
+      payload: null,
+    });
+  }
+
+  /** Idempotent on-chain subscribe. */
+  private async subscribeToAnchor(anchor: string): Promise<void> {
     if (this.isMock || !this.client) return;
+    const registryCell = this.extractCellId("global_registry");
+    await this.client.callZome({
+      cell_id: registryCell,
+      zome_name: "registry",
+      fn_name: "subscribe",
+      payload: anchor,
+    });
+  }
 
-    const next: UIIssue[] = [];
+  /** Delete every matching SubscriptionEntry on the current agent's chain. */
+  private async unsubscribeFromAnchor(anchor: string): Promise<void> {
+    if (this.isMock || !this.client) return;
+    const registryCell = this.extractCellId("global_registry");
+    await this.client.callZome({
+      cell_id: registryCell,
+      zome_name: "registry",
+      fn_name: "unsubscribe",
+      payload: anchor,
+    });
+  }
 
-    // Wind turbine cell -----------------------------------------------------
+  /**
+   * On first connect, make sure every non-#general lens the agent has in
+   * memory is also recorded on the source chain. We never auto-unsubscribe
+   * from anchors that exist on chain but aren't in `activeLenses`; that
+   * would silently revert the user's prior choices on every reload.
+   */
+  private async reconcileSubscriptionsFromLenses(): Promise<void> {
+    if (this.isMock || !this.client) return;
+    let onChain: string[] = [];
+    try {
+      onChain = await this.fetchSubscriptions();
+    } catch (e) {
+      console.warn("fetchSubscriptions failed during reconcile:", e);
+      return;
+    }
+    for (const lens of this.activeLenses) {
+      if (lens === "#general") continue;
+      if (!onChain.includes(lens)) {
+        try {
+          await this.subscribeToAnchor(lens);
+        } catch (e) {
+          console.warn(`subscribe(${lens}) failed during reconcile:`, e);
+        }
+      }
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Discovery
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Enumerate every issue currently visible in either cell. Used as a
+   * decoder cache: anchor-driven discovery returns issue hashes and we look
+   * the full entries up in this map.
+   */
+  private async fetchAllPerCell(): Promise<UIIssue[]> {
+    const out: UIIssue[] = [];
+
     try {
       const turbineCell = this.extractCellId("manhattan_windturbine");
       const windIssues: Array<[ActionHash, IssueEntry]> = await this.client.callZome({
@@ -304,7 +398,7 @@ export class HolochainApp extends LitElement {
         payload: null,
       });
       for (const [hash, entry] of windIssues) {
-        next.push({
+        out.push({
           id: encodeHashToBase64(hash),
           actionHash: hash,
           cell: "manhattan",
@@ -321,7 +415,6 @@ export class HolochainApp extends LitElement {
       console.warn("get_all_issues (wind_turbine) failed:", e);
     }
 
-    // Housing cell ----------------------------------------------------------
     try {
       const housingCell = this.extractCellId("housing");
       const housingIssues: Array<[ActionHash, HousingIssue]> = await this.client.callZome({
@@ -330,9 +423,7 @@ export class HolochainApp extends LitElement {
         fn_name: "get_all_housing_issues",
         payload: null,
       });
-
       for (const [hash, entry] of housingIssues) {
-        // Derive Challenged status from the presence of any IssueToChallenge link.
         let challengeCount = 0;
         try {
           const challenges: Array<[ActionHash, BindingChallenge]> = await this.client.callZome({
@@ -345,8 +436,7 @@ export class HolochainApp extends LitElement {
         } catch (e) {
           console.warn("get_challenges_for_issue failed:", e);
         }
-
-        next.push({
+        out.push({
           id: encodeHashToBase64(hash),
           actionHash: hash,
           cell: "housing",
@@ -364,35 +454,106 @@ export class HolochainApp extends LitElement {
       console.warn("get_all_housing_issues failed:", e);
     }
 
-    this.liveIssues = next;
+    return out;
+  }
+
+  /**
+   * Subscription-driven discovery: ask the registry which anchors this
+   * agent follows, then for each anchor fetch the `AnchorLink`s. Returns
+   * the discovered issue IDs (Base64-encoded ActionHash strings).
+   */
+  private async discoverViaSubscriptions(): Promise<Set<string>> {
+    const result = new Set<string>();
+    if (this.isMock || !this.client) return result;
+
+    let subs: string[] = [];
+    try {
+      subs = await this.fetchSubscriptions();
+    } catch (e) {
+      console.warn("fetchSubscriptions failed during discovery:", e);
+      return result;
+    }
+
+    const registryCell = this.extractCellId("global_registry");
+    for (const anchor of subs) {
+      try {
+        const links: AnchorLinkEntry[] = await this.client.callZome({
+          cell_id: registryCell,
+          zome_name: "registry",
+          fn_name: "get_anchor_links_for_anchor",
+          payload: anchor,
+        });
+        for (const link of links) {
+          result.add(encodeHashToBase64(link.issue_id));
+        }
+      } catch (e) {
+        console.warn(`get_anchor_links_for_anchor(${anchor}) failed:`, e);
+      }
+    }
+    return result;
+  }
+
+  /**
+   * Rebuild `liveIssues` from the DHT. Two paths:
+   *
+   * - If `#general` is in `activeLenses`, fall back to per-cell enumeration
+   *   so the demo shows everything out of the box.
+   * - Otherwise, drive discovery purely from registry subscriptions — the
+   *   architecturally-honest path for [042].
+   */
+  private async refreshFromDht() {
+    if (this.isMock || !this.client) return;
+
+    const allByCell = await this.fetchAllPerCell();
+    const byId = new Map(allByCell.map((i) => [i.id, i]));
+
+    let discovered: UIIssue[];
+    if (this.activeLenses.includes("#general")) {
+      discovered = allByCell;
+    } else {
+      const ids = await this.discoverViaSubscriptions();
+      discovered = Array.from(ids)
+        .map((id) => byId.get(id))
+        .filter((i): i is UIIssue => i !== undefined);
+    }
+
+    this.liveIssues = discovered;
     this.updateActiveIssues();
   }
 
-  // Refresh feed based on lenses, search query, and cell states
+  // Refresh feed based on the current source of truth + search query.
+  //
+  // In LIVE mode, `liveIssues` already reflects subscription-driven discovery
+  // (see `refreshFromDht`), so lens filtering happens upstream via the
+  // registry. We only apply the search-query filter here.
+  //
+  // In MOCK mode, no registry exists, so we still keyword-match the lens set
+  // against the seeded mockDb.
   private updateActiveIssues() {
-    // In live mode the feed is derived purely from the DHT snapshot; in mock
-    // mode it falls back to the seeded mockDb so the standalone preview works.
     const sourceIssues: UIIssue[] = this.isMock
       ? (this.mockDb.issues as UIIssue[])
       : this.liveIssues;
 
-    // Apply Lens filtering (e.g. #wind-power, #housing)
     this.activeIssues = sourceIssues.filter(issue => {
-      // 1. Search Query Filter
+      // 1. Search Query Filter (always applies)
       if (this.searchQuery) {
         const query = this.searchQuery.toLowerCase();
         if (!issue.title.toLowerCase().includes(query) && !issue.description.toLowerCase().includes(query)) {
           return false;
         }
       }
-      
-      // 2. Lens Filter: Check if topic matches tags
-      if (this.activeLenses.includes("#general")) return true;
-      if (issue.title.toLowerCase().includes("wind") && this.activeLenses.includes("#wind-power")) return true;
-      if (issue.title.toLowerCase().includes("housing") && this.activeLenses.includes("#housing")) return true;
-      if (issue.location === "Berlin" && this.activeLenses.includes("Berlin")) return true;
 
-      return false;
+      // 2. Lens filter — mock mode only. Live mode has already filtered by
+      //    subscription at the DHT layer.
+      if (this.isMock) {
+        if (this.activeLenses.includes("#general")) return true;
+        if (issue.title.toLowerCase().includes("wind") && this.activeLenses.includes("#wind-power")) return true;
+        if (issue.title.toLowerCase().includes("housing") && this.activeLenses.includes("#housing")) return true;
+        if (issue.location === "Berlin" && this.activeLenses.includes("Berlin")) return true;
+        return false;
+      }
+
+      return true;
     });
   }
 
@@ -416,42 +577,44 @@ export class HolochainApp extends LitElement {
     this.updateActiveIssues();
   }
 
-  // Toggle Lens subscription
-  private toggleLens(lens: string) {
-    if (this.activeLenses.includes(lens)) {
-      this.activeLenses = this.activeLenses.filter(l => l !== lens);
-      this.logActivity(this.activeAgentName, "muted lens", `Unsubscribed from ${lens}`);
-    } else {
+  // Toggle Lens subscription. In live mode, writes/deletes a
+  // `SubscriptionEntry` on the agent's `global_registry` source chain so the
+  // discovery feed reshapes accordingly. `#general` is a client-side
+  // "show-everything" flag and is intentionally NOT persisted on chain.
+  private async toggleLens(lens: string) {
+    const subscribing = !this.activeLenses.includes(lens);
+
+    if (subscribing) {
       this.activeLenses = [...this.activeLenses, lens];
       this.logActivity(this.activeAgentName, "followed lens", `Subscribed to ${lens}`);
+    } else {
+      this.activeLenses = this.activeLenses.filter(l => l !== lens);
+      this.logActivity(this.activeAgentName, "muted lens", `Unsubscribed from ${lens}`);
     }
-    this.updateActiveIssues();
+
+    if (!this.isMock && lens !== "#general") {
+      try {
+        if (subscribing) {
+          await this.subscribeToAnchor(lens);
+        } else {
+          await this.unsubscribeFromAnchor(lens);
+        }
+      } catch (e) {
+        console.warn(`toggleLens: registry update for ${lens} failed:`, e);
+      }
+    }
+
+    if (!this.isMock) {
+      await this.refreshFromDht();
+    } else {
+      this.updateActiveIssues();
+    }
   }
 
   // Switch persona manually (In Standalone Mock Preview only)
   private handleAgentSwitch(agent: string) {
     if (!this.isMock) return; // Only allow switching in mockup fallback mode
-    
-    this.activeAgentName = agent;
-    this.walletStartTime = Date.now();
-    
-    if (agent === "Elena") {
-      this.activeAgentRole = "Manhattan Resident";
-      this.activeAgentHint = "New York, USA";
-      this.walletInitialBalance = 100.00;
-      this.activeLenses = ["#general", "#new-york"];
-    } else if (agent === "Marcus") {
-      this.activeAgentRole = "NYC Resident";
-      this.activeAgentHint = "Brooklyn, USA";
-      this.walletInitialBalance = 240.50;
-      this.activeLenses = ["#general", "#housing"];
-    } else if (agent === "Amina") {
-      this.activeAgentRole = "Nairobi Engineer";
-      this.activeAgentHint = "Nairobi, Kenya";
-      this.walletInitialBalance = 85.00;
-      this.activeLenses = ["#general", "#wind-power"];
-    }
-    
+    this.applyPersona(agent);
     this.logActivity(this.activeAgentName, "perspective swapped", `Switched active dashboard view to ${agent}.`);
     this.updateActiveIssues();
   }
@@ -476,10 +639,22 @@ export class HolochainApp extends LitElement {
         throw new Error("Geotagged evidence required for this jurisdiction (Berlin Housing Overlay Rule jc:berlin-housing-rules-v1).");
       }
 
+      // Discovery tags. Anything the user typed wins; otherwise we seed
+      // sensible per-cell defaults so the issue is actually discoverable.
+      const userTags = this.newIssueTags
+        .split(/[\s,]+/)
+        .map((t) => t.trim())
+        .filter((t) => t.length > 0);
+      const tags = userTags.length > 0
+        ? userTags
+        : this.newIssueLocation === "Berlin"
+          ? ["#housing", this.newIssueLocation]
+          : ["#wind-power", "#new-york"];
+
       let actionHash: ActionHash | undefined;
       if (!this.isMock) {
-        // Execute Zome Call to local cells
-        // e.g. create_issue or create_housing_issue
+        // Execute Zome Call to local cells. Both cells now take a wrapper
+        // input { issue, tags } so the registry can publish anchor links.
         if (this.newIssueLocation === "Berlin") {
           const housingCell = this.extractCellId("housing");
           actionHash = await this.client.callZome({
@@ -487,10 +662,13 @@ export class HolochainApp extends LitElement {
             zome_name: "housing",
             fn_name: "create_housing_issue",
             payload: {
-              title: this.newIssueTitle,
-              location: this.newIssueLocation,
-              status: "Deliberating",
-              has_geotagged_evidence: this.newIssueHasEvidence
+              issue: {
+                title: this.newIssueTitle,
+                location: this.newIssueLocation,
+                status: "Deliberating",
+                has_geotagged_evidence: this.newIssueHasEvidence
+              },
+              tags
             }
           });
         } else {
@@ -500,9 +678,12 @@ export class HolochainApp extends LitElement {
             zome_name: "wind_turbine",
             fn_name: "create_issue",
             payload: {
-              title: this.newIssueTitle,
-              description: this.newIssueDesc,
-              status: "Deliberating"
+              issue: {
+                title: this.newIssueTitle,
+                description: this.newIssueDesc,
+                status: "Deliberating"
+              },
+              tags
             }
           });
         }
@@ -537,6 +718,7 @@ export class HolochainApp extends LitElement {
       this.newIssueDesc = "";
       this.newIssueLocation = "Manhattan";
       this.newIssueHasEvidence = false;
+      this.newIssueTags = "#wind-power";
       this.showCreateIssueModal = false;
       // Pull the freshly-written issue (and any others gossiped in the meantime)
       // back from the DHT so this agent sees authoritative state immediately.
@@ -1082,6 +1264,36 @@ export class HolochainApp extends LitElement {
         </div>
       </div>
 
+      <!-- Persona Picker Modal (live mode, before any DHT reads) -->
+      ${this.personaPickerVisible ? html`
+        <div class="form-backdrop">
+          <div class="creator-modal">
+            <div class="modal-header">
+              <h2>Choose this window's persona</h2>
+            </div>
+            <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 1rem; line-height: 1.5;">
+              Each Holochain agent window needs a Kindact persona. <code>hc-spin</code> doesn't tell us which agent index this window is, so pick a different persona in each window to keep the demo coherent.
+              <br/><br/>
+              Your on-chain agent key:
+              <code style="display: block; font-size: 0.7rem; word-break: break-all; margin-top: 4px; color: var(--text-muted);">${this.agentB64}</code>
+            </p>
+            <div class="sandbox-btn-grid">
+              ${this.personaOptions.map((p) => html`
+                <button class="sandbox-btn" @click=${() => this.selectPersona(p.name)}>
+                  <span>
+                    <strong>${p.name}</strong> — ${p.role}
+                    <div style="font-size: 0.72rem; color: var(--text-muted);">
+                      ${p.hint} · lenses: ${p.lenses.join(", ")}
+                    </div>
+                  </span>
+                  <span class="sandbox-btn-arrow">➔</span>
+                </button>
+              `)}
+            </div>
+          </div>
+        </div>
+      ` : ""}
+
       <!-- Create Issue Glassmorphic Form Modal -->
       ${this.showCreateIssueModal ? html`
         <div class="form-backdrop">
@@ -1108,6 +1320,14 @@ export class HolochainApp extends LitElement {
                 <option value="Brooklyn">Brooklyn</option>
                 <option value="Berlin">Berlin</option>
               </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Discovery Tags (space or comma separated)</label>
+              <input class="form-input" placeholder="#wind-power #new-york" .value=${this.newIssueTags} @input=${(e: Event) => this.newIssueTags = (e.target as HTMLInputElement).value} />
+              <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">
+                Each tag becomes an anchor in the Global Registry. Subscribers to any of these tags will discover this issue.
+              </div>
             </div>
 
             <div class="form-group checkbox-row">

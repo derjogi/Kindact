@@ -3,10 +3,31 @@ use housing_integrity::*;
 use kindact_base::{validate_jurisdiction, JurisdictionalContext};
 
 const ALL_ISSUES_ANCHOR: &str = "all_housing_issues";
+const REGISTRY_ROLE: &str = "global_registry";
+const REGISTRY_ZOME: &str = "registry";
+const REGISTRY_PUBLISH_FN: &str = "publish_anchor_link";
+const CELL_ROLE: &str = "housing";
 
 #[hdk_extern]
 pub fn init() -> ExternResult<InitCallbackResult> {
     Ok(InitCallbackResult::Pass)
+}
+
+/// Wrapper input that lets the UI attach discovery tags at create time.
+/// Tags become `AnchorLinkEntry`s in `global_registry`.
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct CreateHousingIssueInput {
+    pub issue: HousingIssue,
+    pub tags: Vec<String>,
+}
+
+/// Mirror of `registry::PublishAnchorLinkInput`. The serde shape must
+/// stay in sync.
+#[derive(Serialize, Deserialize, Debug, Clone)]
+struct PublishAnchorLinkInput {
+    anchor_name: String,
+    cell_role: String,
+    issue_id: ActionHash,
 }
 
 /// Ensure the "all_housing_issues" anchor exists and return its EntryHash.
@@ -21,8 +42,37 @@ fn ensure_all_issues_anchor() -> ExternResult<EntryHash> {
     Ok(anchor_hash)
 }
 
+/// Cross-cell call into `global_registry::publish_anchor_link` for each tag.
+fn publish_to_registry(tags: &[String], issue_hash: &ActionHash) -> ExternResult<()> {
+    for tag in tags {
+        let trimmed = tag.trim();
+        if trimmed.is_empty() {
+            continue;
+        }
+        let payload = PublishAnchorLinkInput {
+            anchor_name: trimmed.to_string(),
+            cell_role: CELL_ROLE.to_string(),
+            issue_id: issue_hash.clone(),
+        };
+        let response = call(
+            CallTargetCell::OtherRole(REGISTRY_ROLE.to_string()),
+            REGISTRY_ZOME,
+            REGISTRY_PUBLISH_FN.into(),
+            None,
+            payload,
+        )?;
+        if !matches!(response, ZomeCallResponse::Ok(_)) {
+            return Err(wasm_error!(WasmErrorInner::Guest(format!(
+                "publish_anchor_link rejected for tag {trimmed}: {response:?}"
+            ))));
+        }
+    }
+    Ok(())
+}
+
 #[hdk_extern]
-pub fn create_housing_issue(issue: HousingIssue) -> ExternResult<ActionHash> {
+pub fn create_housing_issue(input: CreateHousingIssueInput) -> ExternResult<ActionHash> {
+    let issue = input.issue;
     if issue.location == "Berlin" {
         let context = JurisdictionalContext {
             location: Some(issue.location.clone()),
@@ -37,6 +87,7 @@ pub fn create_housing_issue(issue: HousingIssue) -> ExternResult<ActionHash> {
     let issue_hash = create_entry(EntryTypes::Issue(issue))?;
     let anchor_hash = ensure_all_issues_anchor()?;
     create_link(anchor_hash, issue_hash.clone(), LinkTypes::AllIssues, ())?;
+    publish_to_registry(&input.tags, &issue_hash)?;
     Ok(issue_hash)
 }
 

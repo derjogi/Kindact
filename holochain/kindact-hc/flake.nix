@@ -19,6 +19,11 @@
         packages = (with pkgs; [
           nodejs_22
           binaryen
+          # Needed for `cargo test`: each zome coordinator transitively pulls
+          # the full holochain conductor as a dev-dependency, which links
+          # openssl via reqwest/native-tls.
+          openssl
+          pkg-config
         ]);
 
         shellHook = ''

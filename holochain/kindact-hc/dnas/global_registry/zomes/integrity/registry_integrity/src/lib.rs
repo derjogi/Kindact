@@ -13,11 +13,14 @@ pub struct AnchorEntry {
     pub name: String,
 }
 
+/// A cross-cell discovery pointer: "this issue, in this cell role, is filed
+/// under this anchor." The UI groups by `cell_role` to know which cell to
+/// dereference (e.g. `"manhattan_windturbine"` → `wind_turbine` zome).
 #[hdk_entry_helper]
 #[derive(Clone)]
 pub struct AnchorLinkEntry {
     pub anchor_name: String,
-    pub cell_id: ActionHash,
+    pub cell_role: String,
     pub issue_id: ActionHash,
 }
 

@@ -147,8 +147,8 @@ Global Registry validators accept (cell DNA conformant, anchors valid, scope mat
 
 ## Plan
 
-1. [ ] Implement `anchor` and `anchor_link` entry types in Global Registry DNA.
-2. [ ] Implement subscription source-chain entries and conductor-side gossip filter.
+1. [x] Implement `anchor` and `anchor_link` entry types in Global Registry DNA. *(prototype slice in [049](../049-prototype-anchor-subscription-discovery/README.md); `cell_role` substituted for `cellId` to match toy provisioning)*
+2. [~] Implement subscription source-chain entries and conductor-side gossip filter. *(source-chain entries shipped in [049](../049-prototype-anchor-subscription-discovery/README.md); UI polls every 3s instead of using a gossip filter — replace with `post_commit` signals later)*
 3. [ ] Implement anchor hierarchy walking for subscription matching.
 4. [ ] Implement merge and deprecation flows (governed by meta-governance).
 5. [ ] Author seed anchor set covering common Kindact topics and admin levels.

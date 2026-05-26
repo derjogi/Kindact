@@ -2,6 +2,10 @@ use hdk::prelude::*;
 use wind_turbine_integrity::*;
 
 const ALL_ISSUES_ANCHOR: &str = "all_issues";
+const REGISTRY_ROLE: &str = "global_registry";
+const REGISTRY_ZOME: &str = "registry";
+const REGISTRY_PUBLISH_FN: &str = "publish_anchor_link";
+const CELL_ROLE: &str = "manhattan_windturbine";
 
 #[hdk_extern]
 pub fn init() -> ExternResult<InitCallbackResult> {
@@ -12,6 +16,24 @@ pub fn init() -> ExternResult<InitCallbackResult> {
 pub struct DiscoveryResult {
     pub anchor_name: String,
     pub issue_hashes: Vec<ActionHash>,
+}
+
+/// Wrapper input that lets the UI attach discovery tags at create time.
+/// Tags become `AnchorLinkEntry`s in `global_registry`, so other agents
+/// subscribed to any of these tags will discover the new issue.
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct CreateIssueInput {
+    pub issue: IssueEntry,
+    pub tags: Vec<String>,
+}
+
+/// Mirror of `registry::PublishAnchorLinkInput`. Duplicated here to avoid
+/// cross-DNA Rust dependency. The serde shape must stay in sync.
+#[derive(Serialize, Deserialize, Debug, Clone)]
+struct PublishAnchorLinkInput {
+    anchor_name: String,
+    cell_role: String,
+    issue_id: ActionHash,
 }
 
 /// Ensure the "all_issues" anchor exists and return its EntryHash.
@@ -26,11 +48,41 @@ fn ensure_all_issues_anchor() -> ExternResult<EntryHash> {
     Ok(anchor_hash)
 }
 
+/// Cross-cell call into `global_registry::publish_anchor_link` for each tag,
+/// so subscribers to any of those anchors will discover the issue.
+fn publish_to_registry(tags: &[String], issue_hash: &ActionHash) -> ExternResult<()> {
+    for tag in tags {
+        let trimmed = tag.trim();
+        if trimmed.is_empty() {
+            continue;
+        }
+        let payload = PublishAnchorLinkInput {
+            anchor_name: trimmed.to_string(),
+            cell_role: CELL_ROLE.to_string(),
+            issue_id: issue_hash.clone(),
+        };
+        let response = call(
+            CallTargetCell::OtherRole(REGISTRY_ROLE.to_string()),
+            REGISTRY_ZOME,
+            REGISTRY_PUBLISH_FN.into(),
+            None,
+            payload,
+        )?;
+        if !matches!(response, ZomeCallResponse::Ok(_)) {
+            return Err(wasm_error!(WasmErrorInner::Guest(format!(
+                "publish_anchor_link rejected for tag {trimmed}: {response:?}"
+            ))));
+        }
+    }
+    Ok(())
+}
+
 #[hdk_extern]
-pub fn create_issue(issue: IssueEntry) -> ExternResult<ActionHash> {
-    let issue_hash = create_entry(EntryTypes::Issue(issue))?;
+pub fn create_issue(input: CreateIssueInput) -> ExternResult<ActionHash> {
+    let issue_hash = create_entry(EntryTypes::Issue(input.issue))?;
     let anchor_hash = ensure_all_issues_anchor()?;
     create_link(anchor_hash, issue_hash.clone(), LinkTypes::AllIssues, ())?;
+    publish_to_registry(&input.tags, &issue_hash)?;
     Ok(issue_hash)
 }
 

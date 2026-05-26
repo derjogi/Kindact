@@ -53,7 +53,14 @@ export interface AnchorEntry {
 
 export interface AnchorLinkEntry {
   anchor_name: string;
-  cell_id: ActionHash;
+  cell_role: string;
+  issue_id: ActionHash;
+}
+
+/// Wire format for `registry::publish_anchor_link`.
+export interface PublishAnchorLinkInput {
+  anchor_name: string;
+  cell_role: string;
   issue_id: ActionHash;
 }
 
