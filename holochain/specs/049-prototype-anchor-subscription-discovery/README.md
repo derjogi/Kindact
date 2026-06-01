@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: complete
 created: 2026-05-30
 priority: high
 tags:
@@ -12,14 +12,17 @@ tags:
 - registry
 - subscriptions
 created_at: 2026-05-30T21:43:57.975489951Z
-updated_at: 2026-06-01T02:53:53.729455684Z
+updated_at: 2026-06-01T03:35:02.926029400Z
+completed_at: 2026-06-01T03:35:02.926029400Z
+transitions:
+- status: complete
+  at: 2026-06-01T03:35:02.926029400Z
 related:
 - 042-anchor-and-subscription-model
 - 048-prototype-cross-agent-issue-visibility
 - 030-cell-architecture-and-registry
 derivation: new
 ---
-
 # 049 — Prototype Anchor Subscription Discovery
 
 > **Status**: in-progress · **Derivation**: new · **Scope**: `holochain/kindact-hc/` prototype only — implements a thin slice of [042-anchor-and-subscription-model](../042-anchor-and-subscription-model/README.md) on top of the [048](../048-prototype-cross-agent-issue-visibility/README.md) baseline. Not a production architecture spec.
@@ -137,9 +140,9 @@ Manual two-agent validation (`AGENTS=2 npm run start`):
 - [x] Elena (Manhattan) creates a wind-turbine issue with default tags. Amina (subscribed to `#wind-power`) sees it in her feed within one poll tick (≤3s).
 - [x] Amina toggles off `#wind-power`. Within one poll tick her feed no longer includes the wind-turbine issue. Elena's feed (subscribed to `#new-york`) still does.
 - [x] Elena creates a Berlin housing issue tagged `#housing,Berlin`. Marcus (subscribed to `#housing`) sees it; Amina (not subscribed) does not.
-- [ ] Subscriptions persist across restart: stop both agents, restart, verify each agent's subscription set survives via `registry::get_subscriptions`.
-- [ ] Existing 048 tests still pass — comments round-trip, observer challenge flips status to `Challenged`.
-- [ ] `npm run test` (existing cargo tests) still passes.
+- [x] Subscriptions persist across restart: stop both agents, restart, verify each agent's subscription set survives via `registry::get_subscriptions`.
+- [x] Existing 048 tests still pass — comments round-trip, observer challenge flips status to `Challenged`.
+- [x] `npm run test` (existing cargo tests) still passes.
 
 ## Open questions
 
