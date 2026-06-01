@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: complete
 created: 2026-05-25
 priority: high
 tags:
@@ -10,17 +10,19 @@ tags:
 - zomes
 - hybrid
 created_at: 2026-05-25T22:12:11.275458689Z
-updated_at: 2026-05-26T21:19:20.652865271Z
+updated_at: 2026-06-01T03:36:18.067774132Z
+completed_at: 2026-06-01T03:36:18.067774132Z
 transitions:
 - status: in-progress
   at: 2026-05-26T21:19:20.652865271Z
+- status: complete
+  at: 2026-06-01T03:36:18.067774132Z
+derivation: new
 related:
 - 041-base-dna-specification
 - 042-anchor-and-subscription-model
 - 044-cross-cell-validation-and-trust
-derivation: new
 ---
-
 # 048 — Prototype Cross-Agent Issue Visibility
 
 > **Status**: Planned · **Derivation**: new · **Scope**: `holochain/kindact-hc/` prototype only — not a production architecture spec.
@@ -129,12 +131,12 @@ Today `status` is a string field on the entry. With the changes above, `Challeng
 
 Manual two-agent validation (`AGENTS=2 npm run start`):
 
-- [ ] Elena creates a Manhattan wind-turbine issue → Amina sees it in her feed within one poll tick (≤3s).
-- [ ] Amina creates a Berlin housing issue → Elena sees it within one poll tick.
-- [ ] Elena posts a comment on Amina's Manhattan issue (after requesting guest cap access) → Amina sees the comment on expand.
-- [ ] Elena clicks "Trigger Observer Binding Challenge" on a Berlin issue → Amina sees the issue's status flip to `Challenged` within one poll tick.
-- [ ] Restart both agents; previously-created issues persist (DHT is gossiped, not in-memory).
-- [ ] `npm run test` (existing cargo tests) still passes.
+- [x] Elena creates a Manhattan wind-turbine issue → Amina sees it in her feed within one poll tick (≤3s).
+- [x] Amina creates a Berlin housing issue → Elena sees it within one poll tick.
+- [x] Elena posts a comment on Amina's Manhattan issue (after requesting guest cap access) → Amina sees the comment on expand.
+- [x] Elena clicks "Trigger Observer Binding Challenge" on a Berlin issue → Amina sees the issue's status flip to `Challenged` within one poll tick.
+- [x] Restart both agents; previously-created issues persist (DHT is gossiped, not in-memory).
+- [x] `npm run test` (existing cargo tests) still passes.
 
 ## Notes / Open questions
 
