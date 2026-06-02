@@ -42,9 +42,23 @@ export type EntryTypes =
   | { type: "Subscription"; subscription: SubscriptionEntry }
   | { type: "JurisdictionalClaim"; claim: JurisdictionalClaimEntry };
 
+/// Directory entry for a Kindact community cell (spec 050).
 export interface CellEntry {
+  name: string;
+  role_name: string;
+  network_seed: string;
   dna_hash: DnaHash;
+  creator: AgentPubKey;
   status: string;
+}
+
+/// Wire format for `registry::register_cell`. The coordinator stamps
+/// `creator` and `status` itself.
+export interface RegisterCellInput {
+  name: string;
+  role_name: string;
+  network_seed: string;
+  dna_hash: DnaHash;
 }
 
 export interface AnchorEntry {
@@ -54,6 +68,7 @@ export interface AnchorEntry {
 export interface AnchorLinkEntry {
   anchor_name: string;
   cell_role: string;
+  cell_dna_hash: DnaHash;
   issue_id: ActionHash;
 }
 
@@ -61,6 +76,7 @@ export interface AnchorLinkEntry {
 export interface PublishAnchorLinkInput {
   anchor_name: string;
   cell_role: string;
+  cell_dna_hash: DnaHash;
   issue_id: ActionHash;
 }
 

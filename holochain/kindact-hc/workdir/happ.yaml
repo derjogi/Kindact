@@ -23,7 +23,8 @@ roles:
       network_seed: null
       properties: null
     installed_hash: null
-    clone_limit: 0
+    # Clones of this role represent user-created community cells (spec 050).
+    clone_limit: 16
 - name: housing
   provisioning:
     strategy: create

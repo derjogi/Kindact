@@ -27,6 +27,7 @@ pub struct CreateHousingIssueInput {
 struct PublishAnchorLinkInput {
     anchor_name: String,
     cell_role: String,
+    cell_dna_hash: DnaHash,
     issue_id: ActionHash,
 }
 
@@ -44,6 +45,9 @@ fn ensure_all_issues_anchor() -> ExternResult<EntryHash> {
 
 /// Cross-cell call into `global_registry::publish_anchor_link` for each tag.
 fn publish_to_registry(tags: &[String], issue_hash: &ActionHash) -> ExternResult<()> {
+    // Stamp the cell's DNA hash so UI subscribers can route the dereference
+    // back to the correct local cell (spec 050).
+    let cell_dna_hash = dna_info()?.hash;
     for tag in tags {
         let trimmed = tag.trim();
         if trimmed.is_empty() {
@@ -52,6 +56,7 @@ fn publish_to_registry(tags: &[String], issue_hash: &ActionHash) -> ExternResult
         let payload = PublishAnchorLinkInput {
             anchor_name: trimmed.to_string(),
             cell_role: CELL_ROLE.to_string(),
+            cell_dna_hash: cell_dna_hash.clone(),
             issue_id: issue_hash.clone(),
         };
         let response = call(

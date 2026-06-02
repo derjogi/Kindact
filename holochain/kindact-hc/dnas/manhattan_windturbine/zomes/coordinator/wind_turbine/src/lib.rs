@@ -33,6 +33,7 @@ pub struct CreateIssueInput {
 struct PublishAnchorLinkInput {
     anchor_name: String,
     cell_role: String,
+    cell_dna_hash: DnaHash,
     issue_id: ActionHash,
 }
 
@@ -51,6 +52,10 @@ fn ensure_all_issues_anchor() -> ExternResult<EntryHash> {
 /// Cross-cell call into `global_registry::publish_anchor_link` for each tag,
 /// so subscribers to any of those anchors will discover the issue.
 fn publish_to_registry(tags: &[String], issue_hash: &ActionHash) -> ExternResult<()> {
+    // `dna_info().hash` is stable across every agent that joined this clone
+    // (same DNA + same modifiers ⇒ same hash). The UI uses it to route the
+    // dereference to the correct local cell.
+    let cell_dna_hash = dna_info()?.hash;
     for tag in tags {
         let trimmed = tag.trim();
         if trimmed.is_empty() {
@@ -59,6 +64,7 @@ fn publish_to_registry(tags: &[String], issue_hash: &ActionHash) -> ExternResult
         let payload = PublishAnchorLinkInput {
             anchor_name: trimmed.to_string(),
             cell_role: CELL_ROLE.to_string(),
+            cell_dna_hash: cell_dna_hash.clone(),
             issue_id: issue_hash.clone(),
         };
         let response = call(

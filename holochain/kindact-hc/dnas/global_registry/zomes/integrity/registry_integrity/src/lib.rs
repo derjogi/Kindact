@@ -1,9 +1,23 @@
 use hdi::prelude::*;
 
+/// Directory record for a Kindact cell. In the prototype every entry is a
+/// Tier-3 user-created community cell (see spec 050); production tiers from
+/// spec 030 are not modelled yet.
 #[hdk_entry_helper]
 #[derive(Clone)]
 pub struct CellEntry {
+    /// Human-readable label, e.g. `"Brooklyn Cyclists"`.
+    pub name: String,
+    /// Role to clone under in `workdir/happ.yaml`, e.g. `"manhattan_windturbine"`.
+    pub role_name: String,
+    /// Disambiguator handed to `createCloneCell` — peers that pick the same
+    /// seed end up on the same DHT.
+    pub network_seed: String,
+    /// Stable cross-agent identifier. Equal to the cloned cell's DNA hash.
     pub dna_hash: DnaHash,
+    /// Who first registered the cell.
+    pub creator: AgentPubKey,
+    /// Lifecycle marker. The prototype only writes `"active"`.
     pub status: String,
 }
 
@@ -13,14 +27,18 @@ pub struct AnchorEntry {
     pub name: String,
 }
 
-/// A cross-cell discovery pointer: "this issue, in this cell role, is filed
-/// under this anchor." The UI groups by `cell_role` to know which cell to
-/// dereference (e.g. `"manhattan_windturbine"` → `wind_turbine` zome).
+/// A cross-cell discovery pointer: "this issue, in this cell role, in this
+/// specific DHT, is filed under this anchor."
+///
+/// `cell_role` is the role-name routing hint (matches `happ.yaml`).
+/// `cell_dna_hash` disambiguates clones — multiple cells share a role but
+/// each clone has a unique DNA hash.
 #[hdk_entry_helper]
 #[derive(Clone)]
 pub struct AnchorLinkEntry {
     pub anchor_name: String,
     pub cell_role: String,
+    pub cell_dna_hash: DnaHash,
     pub issue_id: ActionHash,
 }
 
@@ -54,6 +72,8 @@ pub enum EntryTypes {
 #[hdk_link_types]
 pub enum LinkTypes {
     AnchorToIssue,
+    /// Anchor → CellEntry. Lets every agent enumerate the cell directory.
+    AllCells,
 }
 
 #[hdk_extern]

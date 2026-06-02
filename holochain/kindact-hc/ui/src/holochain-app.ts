@@ -17,9 +17,14 @@ import { clientContext } from "./contexts";
 import { sharedStyles } from "./shared-styles";
 
 // Types from our subfolders
-import { CellEntry, AnchorLinkEntry, JurisdictionalClaimEntry } from "./global_registry/registry/types";
+import { CellEntry, AnchorLinkEntry, JurisdictionalClaimEntry, RegisterCellInput } from "./global_registry/registry/types";
 import { HousingIssue, BindingChallenge, IssueStatus } from "./housing/housing/types";
 import { IssueEntry, CommentEntry } from "./manhattan_windturbine/wind_turbine/types";
+
+// Role names from happ.yaml (spec 050).
+const ROLE_WIND_TURBINE = "manhattan_windturbine";
+const ROLE_HOUSING = "housing";
+const ROLE_REGISTRY = "global_registry";
 
 // Unified UI representation of an issue, regardless of which cell it lives in.
 interface UIIssue {
@@ -35,6 +40,33 @@ interface UIIssue {
   comments: CommentEntry[]; // legacy; only used in mock mode
   capSecret?: string;
   challengeCount?: number; // populated from DHT for live housing issues
+  // Origin cell — populated for live wind_turbine issues so the UI can
+  // route comment writes to the correct clone (spec 050).
+  cellDnaB64?: string;
+  cellName?: string;
+}
+
+/// One joined wind_turbine-role cell in the local conductor (provisioned or
+/// cloned). Built from `cell_info` on every appInfo refresh.
+interface JoinedCell {
+  cellId: CellId;
+  dnaB64: string;
+  role: string;
+  name: string;
+  isProvisioned: boolean;
+}
+
+/// Registry entry as seen by the UI (action hash + decoded `CellEntry`).
+interface DiscoverableCell {
+  actionHash: ActionHash;
+  actionHashB64: string;
+  name: string;
+  roleName: string;
+  networkSeed: string;
+  dnaHash: DnaHash;
+  dnaB64: string;
+  creator: AgentPubKey;
+  creatorB64: string;
 }
 
 interface UINotification {
@@ -136,6 +168,17 @@ export class HolochainApp extends LitElement {
   @state() newIssueLocation = "Manhattan";
   @state() newIssueHasEvidence = false;
   @state() newIssueTags = "#wind-power";
+  // Target cell for a new wind_turbine-role issue. `"housing"` is a
+  // sentinel that routes to the (single, provisioned) housing cell instead.
+  @state() newIssueTargetDnaB64 = "";
+
+  // Communities (spec 050)
+  @state() registeredCells: DiscoverableCell[] = [];
+  @state() joinedCells: JoinedCell[] = [];
+  @state() showCreateCellModal = false;
+  @state() newCellName = "";
+  @state() creatingCell = false;
+  @state() joiningCellDnaB64: string | null = null;
 
   // CAP Token Handshake State
   @state() activeCapSecrets: { [issueId: string]: string } = {};
@@ -292,12 +335,25 @@ export class HolochainApp extends LitElement {
   // Load Real Data from Holochain Cells
   private async loadRealData() {
     try {
+      // Seed the joined-cell list before anything else — every other path
+      // looks up cells by DNA hash via `joinedCells`.
+      await this.refreshAppInfoAndJoinedCells();
+
       // Reconcile the agent's default lens set with what's actually on chain
       // — any lens in `activeLenses` that isn't an active subscription gets
       // written; nothing on chain gets deleted here (the user owns that).
       await this.reconcileSubscriptionsFromLenses();
 
-      // Pull a first snapshot, then start the 3s poll.
+      // Default the create-issue target to the provisioned wind_turbine cell.
+      const provisioned = this.windTurbineCells().find((c) => c.isProvisioned);
+      if (provisioned) {
+        this.newIssueTargetDnaB64 = provisioned.dnaB64;
+      }
+
+      // Pull initial registry snapshot.
+      await this.fetchRegisteredCells();
+
+      // Pull a first issue snapshot, then start the 3s poll.
       await this.refreshFromDht();
       this.dhtPollInterval = setInterval(() => {
         this.refreshFromDht().catch((e) =>
@@ -378,45 +434,206 @@ export class HolochainApp extends LitElement {
   }
 
   // ---------------------------------------------------------------------------
+  // Communities (spec 050): registry directory + clone-cell management
+  // ---------------------------------------------------------------------------
+
+  /// Refresh the cached `AppInfo` and rebuild the `joinedCells` list from
+  /// `cell_info`. Call this after any `createCloneCell` so the new clone
+  /// becomes visible to dropdowns and the "Joined" badge.
+  private async refreshAppInfoAndJoinedCells() {
+    if (this.isMock || !this.client) return;
+    const appInfo = await this.client.appInfo();
+    if (!appInfo) return;
+    this.cachedAppInfo = appInfo;
+
+    const cells: JoinedCell[] = [];
+    for (const [role, infos] of Object.entries(appInfo.cell_info)) {
+      for (const info of infos) {
+        if (info.type === CellType.Provisioned) {
+          cells.push({
+            cellId: info.value.cell_id,
+            dnaB64: encodeHashToBase64(info.value.cell_id[0]),
+            role,
+            name: info.value.name || role,
+            isProvisioned: true,
+          });
+        } else if (info.type === CellType.Cloned) {
+          cells.push({
+            cellId: info.value.cell_id,
+            dnaB64: encodeHashToBase64(info.value.cell_id[0]),
+            role,
+            name: info.value.name || info.value.clone_id,
+            isProvisioned: false,
+          });
+        }
+      }
+    }
+    this.joinedCells = cells;
+  }
+
+  /// Read every cell in the registry directory.
+  private async fetchRegisteredCells(): Promise<void> {
+    if (this.isMock || !this.client) return;
+    try {
+      const registryCell = this.extractCellId(ROLE_REGISTRY);
+      const entries: Array<[ActionHash, CellEntry]> = await this.client.callZome({
+        cell_id: registryCell,
+        zome_name: "registry",
+        fn_name: "get_all_cells",
+        payload: null,
+      });
+      this.registeredCells = entries.map(([actionHash, cell]) => ({
+        actionHash,
+        actionHashB64: encodeHashToBase64(actionHash),
+        name: cell.name,
+        roleName: cell.role_name,
+        networkSeed: cell.network_seed,
+        dnaHash: cell.dna_hash,
+        dnaB64: encodeHashToBase64(cell.dna_hash),
+        creator: cell.creator,
+        creatorB64: encodeHashToBase64(cell.creator),
+      }));
+    } catch (e) {
+      console.warn("get_all_cells failed:", e);
+    }
+  }
+
+  /// Look up a joined cell by its DNA hash. Used to resolve `cell_dna_hash`
+  /// routing keys from anchor links back to a local `CellId`.
+  private joinedCellByDnaB64(dnaB64: string): JoinedCell | undefined {
+    return this.joinedCells.find((c) => c.dnaB64 === dnaB64);
+  }
+
+  /// Create a brand-new community cell (clone of the wind_turbine role) and
+  /// register it in the global directory so other agents can discover it.
+  private async createCommunityCell() {
+    const name = this.newCellName.trim();
+    if (!name || this.isMock || !this.client) return;
+    this.creatingCell = true;
+    try {
+      const networkSeed = "kindact-community-" + crypto.randomUUID();
+      const cloned = await this.client.createCloneCell({
+        role_name: ROLE_WIND_TURBINE,
+        modifiers: { network_seed: networkSeed },
+        name,
+      });
+
+      const dnaHash = cloned.cell_id[0];
+      const registryCell = this.extractCellId(ROLE_REGISTRY);
+      const input: RegisterCellInput = {
+        name,
+        role_name: ROLE_WIND_TURBINE,
+        network_seed: networkSeed,
+        dna_hash: dnaHash,
+      };
+      await this.client.callZome({
+        cell_id: registryCell,
+        zome_name: "registry",
+        fn_name: "register_cell",
+        payload: input,
+      });
+
+      await this.refreshAppInfoAndJoinedCells();
+      await this.fetchRegisteredCells();
+      this.logActivity(this.activeAgentName, "created community", `"${name}" cell published to registry.`);
+      this.addNotification("issue", `Created community cell "${name}".`);
+      this.newCellName = "";
+      this.showCreateCellModal = false;
+      // Pull through any issues already gossiped from the new cell (none yet,
+      // but keeps state in sync).
+      await this.refreshFromDht();
+    } catch (e: any) {
+      alert("Create community failed: " + e.message);
+    } finally {
+      this.creatingCell = false;
+    }
+  }
+
+  /// Join an already-registered community cell by cloning its DNA with the
+  /// same network seed.
+  private async joinCommunityCell(cell: DiscoverableCell) {
+    if (this.isMock || !this.client) return;
+    this.joiningCellDnaB64 = cell.dnaB64;
+    try {
+      const cloned = await this.client.createCloneCell({
+        role_name: cell.roleName,
+        modifiers: { network_seed: cell.networkSeed },
+        name: cell.name,
+      });
+      // Sanity check: same role + same seed must yield the registry's
+      // declared DNA hash. A mismatch means the descriptor lied (different
+      // base DNA, different modifier hint, etc.). Better to fail loudly
+      // than silently end up on a different DHT.
+      const clonedDnaB64 = encodeHashToBase64(cloned.cell_id[0]);
+      if (clonedDnaB64 !== cell.dnaB64) {
+        throw new Error(
+          `Joined clone DNA hash mismatch — expected ${cell.dnaB64}, got ${clonedDnaB64}.`
+        );
+      }
+      await this.refreshAppInfoAndJoinedCells();
+      this.logActivity(this.activeAgentName, "joined community", `"${cell.name}".`);
+      this.addNotification("access", `Joined community cell "${cell.name}".`);
+      await this.refreshFromDht();
+    } catch (e: any) {
+      alert("Join failed: " + e.message);
+    } finally {
+      this.joiningCellDnaB64 = null;
+    }
+  }
+
+  /// All joined wind_turbine-role cells (provisioned + clones). Used by the
+  /// create-issue target-cell dropdown and the per-cell issue enumeration.
+  private windTurbineCells(): JoinedCell[] {
+    return this.joinedCells.filter((c) => c.role === ROLE_WIND_TURBINE);
+  }
+
+  // ---------------------------------------------------------------------------
   // Discovery
   // ---------------------------------------------------------------------------
 
   /**
-   * Enumerate every issue currently visible in either cell. Used as a
+   * Enumerate every issue currently visible in any joined cell. Used as a
    * decoder cache: anchor-driven discovery returns issue hashes and we look
    * the full entries up in this map.
+   *
+   * Iterates every wind_turbine-role cell (provisioned + clones) so issues
+   * authored in community cells are reachable (spec 050).
    */
   private async fetchAllPerCell(): Promise<UIIssue[]> {
     const out: UIIssue[] = [];
 
-    try {
-      const turbineCell = this.extractCellId("manhattan_windturbine");
-      const windIssues: Array<[ActionHash, IssueEntry]> = await this.client.callZome({
-        cell_id: turbineCell,
-        zome_name: "wind_turbine",
-        fn_name: "get_all_issues",
-        payload: null,
-      });
-      for (const [hash, entry] of windIssues) {
-        out.push({
-          id: encodeHashToBase64(hash),
-          actionHash: hash,
-          cell: "manhattan",
-          title: entry.title,
-          description: entry.description,
-          location: "Manhattan",
-          status: entry.status,
-          hasGeotaggedEvidence: true,
-          creator: "",
-          comments: [],
+    for (const cell of this.windTurbineCells()) {
+      try {
+        const windIssues: Array<[ActionHash, IssueEntry]> = await this.client.callZome({
+          cell_id: cell.cellId,
+          zome_name: "wind_turbine",
+          fn_name: "get_all_issues",
+          payload: null,
         });
+        for (const [hash, entry] of windIssues) {
+          out.push({
+            id: encodeHashToBase64(hash),
+            actionHash: hash,
+            cell: "manhattan",
+            title: entry.title,
+            description: entry.description,
+            location: cell.name,
+            status: entry.status,
+            hasGeotaggedEvidence: true,
+            creator: "",
+            comments: [],
+            cellDnaB64: cell.dnaB64,
+            cellName: cell.name,
+          });
+        }
+      } catch (e) {
+        console.warn(`get_all_issues failed for cell ${cell.name}:`, e);
       }
-    } catch (e) {
-      console.warn("get_all_issues (wind_turbine) failed:", e);
     }
 
     try {
-      const housingCell = this.extractCellId("housing");
+      const housingCell = this.extractCellId(ROLE_HOUSING);
+      const housingDnaB64 = encodeHashToBase64(housingCell[0]);
       const housingIssues: Array<[ActionHash, HousingIssue]> = await this.client.callZome({
         cell_id: housingCell,
         zome_name: "housing",
@@ -448,6 +665,8 @@ export class HolochainApp extends LitElement {
           creator: "",
           comments: [],
           challengeCount,
+          cellDnaB64: housingDnaB64,
+          cellName: "Housing",
         });
       }
     } catch (e) {
@@ -460,10 +679,10 @@ export class HolochainApp extends LitElement {
   /**
    * Subscription-driven discovery: ask the registry which anchors this
    * agent follows, then for each anchor fetch the `AnchorLink`s. Returns
-   * the discovered issue IDs (Base64-encoded ActionHash strings).
+   * the discovered links so callers can route by `cell_dna_hash` (spec 050).
    */
-  private async discoverViaSubscriptions(): Promise<Set<string>> {
-    const result = new Set<string>();
+  private async discoverViaSubscriptions(): Promise<AnchorLinkEntry[]> {
+    const result: AnchorLinkEntry[] = [];
     if (this.isMock || !this.client) return result;
 
     let subs: string[] = [];
@@ -474,7 +693,7 @@ export class HolochainApp extends LitElement {
       return result;
     }
 
-    const registryCell = this.extractCellId("global_registry");
+    const registryCell = this.extractCellId(ROLE_REGISTRY);
     for (const anchor of subs) {
       try {
         const links: AnchorLinkEntry[] = await this.client.callZome({
@@ -484,7 +703,7 @@ export class HolochainApp extends LitElement {
           payload: anchor,
         });
         for (const link of links) {
-          result.add(encodeHashToBase64(link.issue_id));
+          result.push(link);
         }
       } catch (e) {
         console.warn(`get_anchor_links_for_anchor(${anchor}) failed:`, e);
@@ -499,10 +718,18 @@ export class HolochainApp extends LitElement {
    * - If `#general` is in `activeLenses`, fall back to per-cell enumeration
    *   so the demo shows everything out of the box.
    * - Otherwise, drive discovery purely from registry subscriptions — the
-   *   architecturally-honest path for [042].
+   *   architecturally-honest path for [042]. Issues whose origin cell this
+   *   agent has joined are dereferenced and rendered fully; issues from
+   *   un-joined cells are surfaced as a "Join to view" placeholder so the
+   *   user can discover the cell via the Communities panel.
    */
   private async refreshFromDht() {
     if (this.isMock || !this.client) return;
+
+    // Refresh appInfo every tick so newly-joined clones become visible
+    // without needing a manual reload. Cheap call on the local conductor.
+    await this.refreshAppInfoAndJoinedCells();
+    await this.fetchRegisteredCells();
 
     const allByCell = await this.fetchAllPerCell();
     const byId = new Map(allByCell.map((i) => [i.id, i]));
@@ -511,10 +738,41 @@ export class HolochainApp extends LitElement {
     if (this.activeLenses.includes("#general")) {
       discovered = allByCell;
     } else {
-      const ids = await this.discoverViaSubscriptions();
-      discovered = Array.from(ids)
-        .map((id) => byId.get(id))
-        .filter((i): i is UIIssue => i !== undefined);
+      const links = await this.discoverViaSubscriptions();
+      const seen = new Set<string>();
+      discovered = [];
+      for (const link of links) {
+        const id = encodeHashToBase64(link.issue_id);
+        if (seen.has(id)) continue;
+        seen.add(id);
+
+        const full = byId.get(id);
+        if (full) {
+          discovered.push(full);
+          continue;
+        }
+        // We don't have the issue locally — most likely the origin cell
+        // hasn't been joined. Surface it as a placeholder so the user can
+        // see what they'd unlock by joining.
+        const dnaB64 = encodeHashToBase64(link.cell_dna_hash);
+        const joined = this.joinedCellByDnaB64(dnaB64);
+        const registered = this.registeredCells.find((c) => c.dnaB64 === dnaB64);
+        const cellName = joined?.name ?? registered?.name ?? "Unknown cell";
+        discovered.push({
+          id,
+          actionHash: link.issue_id,
+          cell: link.cell_role === ROLE_HOUSING ? "housing" : "manhattan",
+          title: `(issue from "${cellName}" — join to view)`,
+          description: `Subscribed via #${link.anchor_name}. The origin cell isn't joined yet, so issue details aren't available locally.`,
+          location: cellName,
+          status: "Deliberating",
+          hasGeotaggedEvidence: false,
+          creator: "",
+          comments: [],
+          cellDnaB64: dnaB64,
+          cellName,
+        });
+      }
     }
 
     this.liveIssues = discovered;
@@ -653,10 +911,10 @@ export class HolochainApp extends LitElement {
 
       let actionHash: ActionHash | undefined;
       if (!this.isMock) {
-        // Execute Zome Call to local cells. Both cells now take a wrapper
-        // input { issue, tags } so the registry can publish anchor links.
+        // Execute Zome Call to local cells. Both cells take a wrapper input
+        // { issue, tags } so the registry can publish anchor links.
         if (this.newIssueLocation === "Berlin") {
-          const housingCell = this.extractCellId("housing");
+          const housingCell = this.extractCellId(ROLE_HOUSING);
           actionHash = await this.client.callZome({
             cell_id: housingCell,
             zome_name: "housing",
@@ -672,9 +930,18 @@ export class HolochainApp extends LitElement {
             }
           });
         } else {
-          const turbineCell = this.extractCellId("manhattan_windturbine");
+          // Resolve the user-selected target wind_turbine cell. Falls back
+          // to the provisioned one if the dropdown has somehow drifted.
+          let target = this.joinedCellByDnaB64(this.newIssueTargetDnaB64);
+          if (!target || target.role !== ROLE_WIND_TURBINE) {
+            target = this.windTurbineCells().find((c) => c.isProvisioned)
+              ?? this.windTurbineCells()[0];
+          }
+          if (!target) {
+            throw new Error("No joined wind_turbine cell available.");
+          }
           actionHash = await this.client.callZome({
-            cell_id: turbineCell,
+            cell_id: target.cellId,
             zome_name: "wind_turbine",
             fn_name: "create_issue",
             payload: {
@@ -794,9 +1061,14 @@ export class HolochainApp extends LitElement {
         if (!this.agentPubKey) {
           throw new Error("Agent public key not available.");
         }
-        const turbineCell = this.extractCellId("manhattan_windturbine");
+        const targetCellId = this.cellIdForIssue(issue);
+        if (!targetCellId) {
+          throw new Error(
+            `Cannot post — origin cell for this issue is not joined locally. Join it from the Communities panel.`
+          );
+        }
         await this.client.callZome({
-          cell_id: turbineCell,
+          cell_id: targetCellId,
           zome_name: "wind_turbine",
           fn_name: "post_comment",
           payload: {
@@ -834,16 +1106,40 @@ export class HolochainApp extends LitElement {
     }
   }
 
+  /// Resolve the local `CellId` for an issue, routing wind_turbine issues
+  /// to their origin clone (spec 050). Returns undefined when the origin
+  /// cell isn't joined yet.
+  private cellIdForIssue(issue: UIIssue): CellId | undefined {
+    if (issue.cell === "housing") {
+      try {
+        return this.extractCellId(ROLE_HOUSING);
+      } catch {
+        return undefined;
+      }
+    }
+    if (issue.cellDnaB64) {
+      return this.joinedCellByDnaB64(issue.cellDnaB64)?.cellId;
+    }
+    // Legacy: no origin tag (e.g. mock issues). Fall back to the
+    // provisioned wind_turbine cell.
+    try {
+      return this.extractCellId(ROLE_WIND_TURBINE);
+    } catch {
+      return undefined;
+    }
+  }
+
   /**
    * Fetch and cache the on-chain comments for a wind-turbine issue.
    * Keyed by `UIIssue.id` so the expanded-card render can read them.
    */
   private async refreshCommentsForIssue(issue: UIIssue) {
     if (this.isMock || !issue.actionHash || issue.cell !== "manhattan") return;
+    const targetCellId = this.cellIdForIssue(issue);
+    if (!targetCellId) return;
     try {
-      const turbineCell = this.extractCellId("manhattan_windturbine");
       const comments: Array<[ActionHash, CommentEntry]> = await this.client.callZome({
-        cell_id: turbineCell,
+        cell_id: targetCellId,
         zome_name: "wind_turbine",
         fn_name: "get_comments_for_issue",
         payload: issue.actionHash,
@@ -1053,6 +1349,56 @@ export class HolochainApp extends LitElement {
               </div>
             </div>
 
+            <!-- Communities (spec 050): dynamic cell create / join / discover -->
+            <div class="glass-panel">
+              <div class="panel-title">
+                <span>Communities</span>
+                <button class="lens-btn" title="Create a new community cell"
+                  @click=${() => { this.showCreateCellModal = true; this.newCellName = ""; }}>
+                  ＋
+                </button>
+              </div>
+              <p style="font-size: 0.78rem; color: var(--text-muted); margin: 0 0 10px; line-height: 1.4;">
+                Every community is a real Holochain cell with its own DHT.
+                Joining clones the DNA into your conductor.
+              </p>
+              ${this.isMock ? html`
+                <div style="font-size: 0.78rem; color: var(--text-muted);">
+                  Demo preview only — communities are a live-conductor feature.
+                </div>
+              ` : this.registeredCells.length === 0 ? html`
+                <div style="font-size: 0.78rem; color: var(--text-muted);">
+                  No communities registered yet. Be the first — click ＋ to create one.
+                </div>
+              ` : html`
+                <div class="lens-list">
+                  ${this.registeredCells.map((cell) => {
+                    const joined = !!this.joinedCellByDnaB64(cell.dnaB64);
+                    const joining = this.joiningCellDnaB64 === cell.dnaB64;
+                    return html`
+                      <div class="lens-item ${joined ? "active" : ""}">
+                        <div class="lens-meta" style="flex-direction: column; align-items: flex-start; gap: 2px;">
+                          <span>${cell.name}</span>
+                          <span style="font-size: 0.68rem; color: var(--text-muted);">
+                            ${joined ? "Joined" : "Not joined"} · ${cell.networkSeed.substring(0, 22)}…
+                          </span>
+                        </div>
+                        ${joined ? html`
+                          <span class="lens-badge active">✓</span>
+                        ` : html`
+                          <button class="secondary-btn" style="padding: 4px 10px; font-size: 0.75rem;"
+                            ?disabled=${joining}
+                            @click=${() => this.joinCommunityCell(cell)}>
+                            ${joining ? "Joining…" : "Join"}
+                          </button>
+                        `}
+                      </div>
+                    `;
+                  })}
+                </div>
+              `}
+            </div>
+
             <!-- Simulation Observer triggers (Sandbox deck Phase 2 validation) -->
             <div class="glass-panel sandbox-deck-widget">
               <span class="sandbox-badge">Observer Deck</span>
@@ -1156,6 +1502,9 @@ export class HolochainApp extends LitElement {
                     <div class="issue-meta-row">
                       <div class="issue-tags">
                         <span class="tag-pill">📍 ${issue.location}</span>
+                        ${issue.cellName ? html`
+                          <span class="tag-pill">🛰️ ${issue.cellName}</span>
+                        ` : ""}
                         <span class="tag-pill">🏷️ ${issue.location === "Berlin" ? "#housing" : "#wind-power"}</span>
                       </div>
                       <span>Creator: ${issue.creator.substring(0, 10)}...</span>
@@ -1318,9 +1667,31 @@ export class HolochainApp extends LitElement {
               <select class="form-input" style="height: auto;" .value=${this.newIssueLocation} @change=${(e: Event) => this.newIssueLocation = (e.target as HTMLSelectElement).value}>
                 <option value="Manhattan">Manhattan</option>
                 <option value="Brooklyn">Brooklyn</option>
-                <option value="Berlin">Berlin</option>
+                <option value="Berlin">Berlin (housing cell)</option>
               </select>
+              <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">
+                "Berlin" routes to the housing cell with jurisdictional rules.
+                Any other choice posts into the selected community cell.
+              </div>
             </div>
+
+            ${this.newIssueLocation !== "Berlin" && !this.isMock ? html`
+              <div class="form-group">
+                <label class="form-label">Target Community Cell</label>
+                <select class="form-input" style="height: auto;"
+                  .value=${this.newIssueTargetDnaB64}
+                  @change=${(e: Event) => this.newIssueTargetDnaB64 = (e.target as HTMLSelectElement).value}>
+                  ${this.windTurbineCells().map((c) => html`
+                    <option value=${c.dnaB64}>
+                      ${c.name}${c.isProvisioned ? " (default)" : ""}
+                    </option>
+                  `)}
+                </select>
+                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">
+                  Pick a community cell you've joined. Create or join more from the Communities panel.
+                </div>
+              </div>
+            ` : ""}
 
             <div class="form-group">
               <label class="form-label">Discovery Tags (space or comma separated)</label>
@@ -1338,6 +1709,38 @@ export class HolochainApp extends LitElement {
             <div class="modal-footer">
               <button class="secondary-btn" @click=${() => this.showCreateIssueModal = false}>Cancel</button>
               <button class="primary-btn" @click=${this.createIssueSubmit}>Publish Issue</button>
+            </div>
+          </div>
+        </div>
+      ` : ""}
+
+      <!-- Create Community Cell modal (spec 050) -->
+      ${this.showCreateCellModal ? html`
+        <div class="form-backdrop">
+          <div class="creator-modal">
+            <div class="modal-header">
+              <h2>Create Community Cell</h2>
+              <button class="lens-btn" style="font-size: 1.25rem;" @click=${() => this.showCreateCellModal = false}>✕</button>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem; line-height: 1.5;">
+              Spawns a fresh Holochain DNA clone, gives it its own DHT,
+              and registers it in the global directory so other agents
+              can discover and join it.
+            </p>
+            <div class="form-group">
+              <label class="form-label">Community Name</label>
+              <input class="form-input"
+                placeholder="e.g. Brooklyn Cyclists"
+                .value=${this.newCellName}
+                @input=${(e: Event) => this.newCellName = (e.target as HTMLInputElement).value} />
+            </div>
+            <div class="modal-footer">
+              <button class="secondary-btn" @click=${() => this.showCreateCellModal = false}>Cancel</button>
+              <button class="primary-btn"
+                ?disabled=${this.creatingCell || !this.newCellName.trim()}
+                @click=${() => this.createCommunityCell()}>
+                ${this.creatingCell ? "Creating…" : "Create & Register"}
+              </button>
             </div>
           </div>
         </div>
