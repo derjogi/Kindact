@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: complete
 created: 2026-06-02
 priority: high
 tags:
@@ -10,18 +10,20 @@ tags:
 - clone-cells
 - hybrid
 created_at: 2026-06-02T22:16:47.728749727Z
-updated_at: 2026-06-02T22:16:47.728749727Z
+updated_at: 2026-06-03T23:33:03.294999397Z
+completed_at: 2026-06-03T23:33:03.294999397Z
 transitions:
 - status: in-progress
   at: 2026-06-02T22:16:47.728749727Z
-derivation: new
+- status: complete
+  at: 2026-06-03T23:33:03.294999397Z
 related:
 - 030-cell-architecture-and-registry
 - 042-anchor-and-subscription-model
 - 048-prototype-cross-agent-issue-visibility
 - 049-prototype-anchor-subscription-discovery
+derivation: new
 ---
-
 # 050 — Prototype Dynamic Cell Creation and Join
 
 > **Status**: planned · **Derivation**: new · **Scope**: `holochain/kindact-hc/` prototype only. Implements the bare minimum of the [030 Cell Architecture & Registry](../030-cell-architecture-and-registry/README.md) Tier-3 ("user-created cells") lifecycle so the prototype can demonstrate end-to-end cell create → register → discover → join, without standing up the full canonical/uncurated namespace or meta-governance promotion.
@@ -188,19 +190,19 @@ In [`holochain-app.ts`](../../kindact-hc/ui/src/holochain-app.ts):
 
 Manual two-agent validation (`AGENTS=2 npm run start`, choose different personas in each window):
 
-- [ ] Elena (window 1) clicks the ＋ on the Communities panel, names the cell "Brooklyn Cyclists", submits. The cell appears in her Communities panel badged "Joined".
-- [ ] Within one poll tick (≤3s) Marcus (window 2) sees "Brooklyn Cyclists" in his Communities panel, badged "Not joined", with a "Join" button.
-- [ ] Marcus clicks Join. Badge flips to "Joined" without a page reload.
-- [ ] Elena opens "+ New Issue", picks "Brooklyn Cyclists" as the target cell, leaves the location as "Manhattan" (so the housing path is skipped), tags `#wind-power` (a lens both agents can toggle from the sidebar), publishes.
-- [ ] Marcus toggles `#wind-power` on. The issue appears in his discovery feed within one poll tick. The issue card identifies "Brooklyn Cyclists" via the 🛰️ pill.
-- [ ] Marcus expands the issue and posts a comment. Elena sees the comment within one poll tick.
-- [ ] Amina (third persona, if `AGENTS=3 npm run start`) subscribes to `#wind-power` but does **not** click Join on "Brooklyn Cyclists". She sees the issue rendered as a "(issue from "Brooklyn Cyclists" — join to view)" placeholder; clicking Join then fetches the full content within one poll tick.
-- [ ] Restart `hc-spin` (`AGENTS=2 npm run start` again). The registry's `Brooklyn Cyclists` entry is **not** expected to persist (`hc-spin` rebuilds storage each run); document this as a known limitation rather than a regression.
+- [x] Elena (window 1) clicks the ＋ on the Communities panel, names the cell "Brooklyn Cyclists", submits. The cell appears in her Communities panel badged "Joined".
+- [x] Within one poll tick (≤3s) Marcus (window 2) sees "Brooklyn Cyclists" in his Communities panel, badged "Not joined", with a "Join" button.
+- [x] Marcus clicks Join. Badge flips to "Joined" without a page reload.
+- [x] Elena opens "+ New Issue", picks "Brooklyn Cyclists" as the target cell, leaves the location as "Manhattan" (so the housing path is skipped), tags `#wind-power` (a lens both agents can toggle from the sidebar), publishes.
+- [x] Marcus toggles `#wind-power` on. The issue appears in his discovery feed within one poll tick. The issue card identifies "Brooklyn Cyclists" via the 🛰️ pill.
+- [x] Marcus expands the issue and posts a comment. Elena sees the comment within one poll tick.
+- [x] Amina (third persona, if `AGENTS=3 npm run start`) subscribes to `#wind-power` but does **not** click Join on "Brooklyn Cyclists". She sees the issue rendered as a "(issue from "Brooklyn Cyclists" — join to view)" placeholder; clicking Join then fetches the full content within one poll tick.
+- [x] Restart `hc-spin` (`AGENTS=2 npm run start` again). The registry's `Brooklyn Cyclists` entry is **not** expected to persist (`hc-spin` rebuilds storage each run); document this as a known limitation rather than a regression.
 
 Automated:
 
-- [ ] `cargo test -p registry` passes the existing `subscriptions_survive_conductor_restart` plus a new `cells_round_trip_across_restart` (writes via `register_cell`, restarts conductor, reads via `get_all_cells`, asserts the same descriptor survives).
-- [ ] `npm run build:happ` produces a clean `kindact-hc.happ`.
+- [x] `cargo test -p registry` passes the existing `subscriptions_survive_conductor_restart` plus a new `cells_round_trip_across_restart` (writes via `register_cell`, restarts conductor, reads via `get_all_cells`, asserts the same descriptor survives).
+- [x] `npm run build:happ` produces a clean `kindact-hc.happ`.
 
 ## Notes
 

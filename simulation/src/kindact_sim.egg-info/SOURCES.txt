@@ -1,6 +1,7 @@
 README.md
 pyproject.toml
 src/kindact_sim/__init__.py
+src/kindact_sim/agent_config.py
 src/kindact_sim/confidence.py
 src/kindact_sim/config.py
 src/kindact_sim/mechanisms.py
@@ -14,6 +15,7 @@ src/kindact_sim.egg-info/SOURCES.txt
 src/kindact_sim.egg-info/dependency_links.txt
 src/kindact_sim.egg-info/requires.txt
 src/kindact_sim.egg-info/top_level.txt
+tests/test_agent_config.py
 tests/test_confidence.py
 tests/test_integration.py
 tests/test_mechanisms.py
