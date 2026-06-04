@@ -27,6 +27,9 @@ Thumbs.db
 !.vscode/extensions.json
 .idea/
 
+# Simulation results
+results/
+
 # Logs
 *.log
 npm-debug.log*

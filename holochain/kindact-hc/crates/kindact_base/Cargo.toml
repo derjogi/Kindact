@@ -1,0 +1,12 @@
+[package]
+name = "kindact_base"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "kindact_base"
+
+[dependencies]
+hdi = { workspace = true }
+serde = { workspace = true }
+holochain_serialized_bytes = { workspace = true }

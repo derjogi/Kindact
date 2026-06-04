@@ -19,6 +19,7 @@ This workspace contains multiple sub-projects, each with its own `specs/` direct
 - **`prototype/`** – Prototype application
 - **`simulation/`** – Economic simulation
 - **`implementation/`** – On-chain / smart-contract implementation
+- **`holochain/`** – Holochain implementation alternative - now the main focus
 - **`website/`** – Public website
 
 **Always run lean-spec from the sub-folder that is mainly affected by the change or investigation.** Each sub-project manages its own specs independently.
@@ -27,6 +28,7 @@ This workspace contains multiple sub-projects, each with its own `specs/` direct
 |---|---|
 | Simulation scenarios, parameters, agents | `simulation/` |
 | Smart contracts, on-chain modules | `implementation/` |
+| Holochain implementation | `holochain/` |
 | Prototype features, UI, core ledger | `prototype/` |
 | Website pages, content, design | `website/` |
 | Cross-cutting / project-wide concerns | root (`.`) |
@@ -42,31 +44,9 @@ For **MCP tools**, pass the sub-folder path as the working directory / project c
 
 ## 🔧 How to Manage Specs
 
-### Primary Method: MCP Tools (Recommended)
+### lean-spec CLI Commands
 
-If you have LeanSpec MCP tools available, **ALWAYS use them**:
-
-| Action | MCP Tool | Description |
-|--------|----------|-------------|
-| See project status | `board` | Kanban view + project health metrics |
-| List all specs | `list` | Filterable list with metadata |
-| Search specs | `search` | Semantic search across all content |
-| View a spec | `view` | Full content with formatting |
-| Create new spec | `create` | Auto-sequences, proper structure |
-| Update spec | `update` | Validates transitions, timestamps |
-| Link specs | `link` | Add relationships (depends_on, related) |
-| Unlink specs | `unlink` | Remove relationships |
-| Check dependencies | `deps` | Visual dependency graph |
-
-**Why MCP over CLI?**
-- ✅ Direct tool integration (no shell execution needed)
-- ✅ Structured responses (better for AI reasoning)
-- ✅ Real-time validation (immediate feedback)
-- ✅ Context-aware (understands project state)
-
-### Fallback: CLI Commands
-
-If MCP tools are not available, use CLI commands:
+Use CLI commands:
 
 ```bash
 lean-spec board              # Project overview

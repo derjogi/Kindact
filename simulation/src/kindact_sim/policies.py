@@ -3,13 +3,43 @@ from kindact_sim.types import Agent, AgentType, Hypercert, Phase
 from kindact_sim.scenarios import SCENARIOS, apply_events
 
 
+def compute_dynamic_issue_rate(
+    n_active_users: int,
+    total_issues: int,
+    base_rate: float = 2.0,
+    issues_per_user_target: float = 5.0,
+) -> float:
+    """Compute issues/user/month based on platform saturation.
+
+    Early (few issues): users create their own → high rate (~base_rate).
+    Growing: new issues satisfy multiple users ("sharing") → rate declines.
+    Saturated: old issues lose relevance slowly, trickle of new ones.
+
+    Uses sublinear scaling on total_issues to model that older issues
+    gradually lose relevance as the community evolves.
+    """
+    if n_active_users == 0:
+        return base_rate
+
+    # Sublinear effective pool: older issues lose relevance
+    effective_pool = total_issues ** 0.85
+
+    # How saturated are users' interests?
+    desired = n_active_users * issues_per_user_target
+    saturation = min(1.0, effective_pool / desired) if desired > 0 else 0.0
+
+    # High rate when unsaturated, drops to ~5% of base at full saturation
+    rate = base_rate * (1.0 - saturation * 0.95)
+    return max(base_rate * 0.05, rate)
+
+
 def agent_decisions(_params: dict, substep: int, sH: list, s: dict, **kwargs) -> dict:
     rng: np.random.Generator = _params['rng']
 
     # Apply scenario events for this timestep
     scenario_name = _params.get('_scenario_name')
     if scenario_name and scenario_name in SCENARIOS:
-        params = apply_events(SCENARIOS[scenario_name], _params, s['timestep'])
+        params = apply_events(SCENARIOS[scenario_name], _params, s['timestep'], state=s)
     else:
         params = dict(_params)
 
@@ -20,8 +50,17 @@ def agent_decisions(_params: dict, substep: int, sH: list, s: dict, **kwargs) ->
     supply: float = s['supply']
 
     reward = params['reward_per_issue']
-    issues_rate = params['issues_per_user_month']
+    base_issue_rate = params['issues_per_user_month']
     verification_q = params['verification_quality']
+
+    # Dynamic issue creation rate based on platform saturation
+    n_active = sum(1 for a in agents if a.activity_level >= 0.1)
+    total_issues_so_far = s.get('total_issues_created', 0)
+    issues_rate = compute_dynamic_issue_rate(
+        n_active, total_issues_so_far,
+        base_rate=base_issue_rate,
+        issues_per_user_target=params.get('issues_per_user_target', 5.0),
+    )
     access_fee_fraction = params.get('access_fee_fraction', 0.05)
     access_fee_amount = params.get('access_fee_amount', 10.0)
 
@@ -50,8 +89,10 @@ def agent_decisions(_params: dict, substep: int, sH: list, s: dict, **kwargs) ->
     desired_redemptions = 0.0
     reserve_purchases = 0.0
     fraud_minting = 0.0
+    issues_created_count = 0
     agent_updates: list[tuple[int, float]] = []
 
+    exchange_open = phase != Phase.BOOTSTRAP and reserve >= 100_000
     daily_redeem_cap = 0.01 * reserve
 
     for idx, agent in enumerate(agents):
@@ -65,14 +106,13 @@ def agent_decisions(_params: dict, substep: int, sH: list, s: dict, **kwargs) ->
         access_fee_burn += fee
 
         # Any panicking agent (regardless of type) tries to cash out
+        # But only if exchange is open (post-bootstrap + sufficient reserve)
         if agent.is_panicking and agent.agent_type != AgentType.PANICKER:
-            if agent.balance > fee:
+            if agent.balance > fee and exchange_open:
                 desired = agent.balance - fee
-                redeem_amount = 0.0
-                if phase != Phase.BOOTSTRAP:
-                    redeem_amount = min(desired, daily_redeem_cap - redemptions)
-                    redeem_amount = max(0, redeem_amount)
                 desired_redemptions += desired
+                redeem_amount = min(desired, daily_redeem_cap - redemptions)
+                redeem_amount = max(0, redeem_amount)
                 redemptions += redeem_amount
                 agent_updates.append((agent.id, -fee - redeem_amount))
             else:
@@ -83,6 +123,7 @@ def agent_decisions(_params: dict, substep: int, sH: list, s: dict, **kwargs) ->
             # Willingness to work for $CC depends on acceptance_willingness
             effective_rate = issues_rate * max(0.2, agent.acceptance_willingness)
             n_issues = rng.poisson(effective_rate)
+            issues_created_count += n_issues
             minted = n_issues * reward
             work_minting += minted
             agent_updates.append((agent.id, minted - fee))
@@ -91,7 +132,7 @@ def agent_decisions(_params: dict, substep: int, sH: list, s: dict, **kwargs) ->
             # Trade income scales with merchant's willingness to accept $CC
             trade_income = rng.uniform(0, 20) * agent.acceptance_willingness
             redeem_amount = 0.0
-            if phase != Phase.BOOTSTRAP and reserve >= 100_000 and agent.balance > 0:
+            if exchange_open and agent.balance > 0:
                 redeem_frac = rng.uniform(0.1, 0.4)
                 desired = agent.balance * redeem_frac
                 desired_redemptions += desired
@@ -103,7 +144,7 @@ def agent_decisions(_params: dict, substep: int, sH: list, s: dict, **kwargs) ->
         elif agent.agent_type == AgentType.SPECULATOR:
             demurrage = s['demurrage_rate']
             reserve_readiness = min(1.0, (reserve / 100_000) ** 0.5) if reserve > 0 else 0.0
-            can_redeem = phase != Phase.BOOTSTRAP and reserve >= 100_000
+            can_redeem = exchange_open
             if agent.confidence > 0.6 and exchange_rate < 0.8:
                 expected_appreciation = (1.0 - exchange_rate)
                 if expected_appreciation > demurrage * 3:
@@ -136,24 +177,23 @@ def agent_decisions(_params: dict, substep: int, sH: list, s: dict, **kwargs) ->
                 agent_updates.append((agent.id, -fee))
 
         elif agent.agent_type == AgentType.PANICKER:
-            if agent.is_panicking and agent.balance > 0:
+            if agent.is_panicking and agent.balance > 0 and exchange_open:
                 desired = agent.balance
                 desired_redemptions += desired
-                redeem_amount = 0.0
-                if phase != Phase.BOOTSTRAP:
-                    redeem_amount = min(desired, daily_redeem_cap - redemptions)
-                    redeem_amount = max(0, redeem_amount)
+                redeem_amount = min(desired, daily_redeem_cap - redemptions)
+                redeem_amount = max(0, redeem_amount)
                 redemptions += redeem_amount
                 agent_updates.append((agent.id, -fee - redeem_amount))
             else:
                 n_issues = rng.poisson(issues_rate * 0.5)
+                issues_created_count += n_issues
                 minted = n_issues * reward
                 work_minting += minted
                 agent_updates.append((agent.id, minted - fee))
 
     # Add whale dump redemption if event is active
     whale_redeem = params.get('_whale_redeem', 0)
-    if whale_redeem > 0 and phase != Phase.BOOTSTRAP:
+    if whale_redeem > 0 and exchange_open:
         desired_redemptions += whale_redeem
         redemptions += min(whale_redeem, daily_redeem_cap - redemptions)
 
@@ -175,7 +215,9 @@ def agent_decisions(_params: dict, substep: int, sH: list, s: dict, **kwargs) ->
     sold_count = sum(1 for h in portfolio if h.sold)
     network_scale = min(1.0, (n_agents / 500) ** 0.5)
     track_record = sold_count / (sold_count + 10)
-    platform_attractiveness = network_scale * track_record
+    # Platform attractiveness ramps slowly: baseline allows rare early sales,
+    # track record builds trust over time
+    platform_attractiveness = network_scale * (0.1 + 0.9 * track_record)
 
     # Maturity-dependent price curve
     maturity_factor = min(1.0, (timestep / 24) ** 0.5) if timestep > 0 else 0.0
@@ -183,36 +225,75 @@ def agent_decisions(_params: dict, substep: int, sH: list, s: dict, **kwargs) ->
 
     # No external sales in early months
     if timestep < no_sale_months:
-        sale_prob = 0.0
+        expected_sales = 0.0
     else:
-        sale_prob = base_sale_prob * platform_attractiveness
+        # Demand-driven: expected monthly sales = base_sale_prob × attractiveness.
+        # This is independent of unsold pool size — it models buyer demand.
+        expected_sales = base_sale_prob * platform_attractiveness
 
     unsold = [h for h in portfolio if not h.sold]
-    for h in unsold:
-        if rng.random() < sale_prob:
-            actual_price = base_price * float(rng.uniform(0.7, 1.3))
-            hypercert_fiat_sales += actual_price
-            h.sold = True
-            h.sale_price = actual_price
-
-    # Community purchases — believers investing in their own ecosystem
-    still_unsold = [h for h in unsold if not h.sold]
-    if still_unsold:
-        for agent in agents:
-            if agent.agent_type == AgentType.IMPACT_BUYER and agent.confidence > 0.4:
-                buy_prob = 0.03 * agent.confidence
-            elif agent.agent_type == AgentType.CONTRIBUTOR and agent.confidence > 0.7:
-                buy_prob = 0.01 * (agent.confidence - 0.5)
-            else:
-                continue
-            if rng.random() < buy_prob and still_unsold:
-                h = still_unsold.pop(0)
-                actual_price = base_price * float(rng.uniform(0.5, 1.0))
+    if unsold and expected_sales > 0:
+        n_market_sales = rng.poisson(expected_sales)
+        n_market_sales = min(n_market_sales, len(unsold))
+        if n_market_sales > 0:
+            chosen = rng.choice(len(unsold), size=n_market_sales, replace=False)
+            for idx in chosen:
+                h = unsold[idx]
+                # Lognormal pricing: most HCs are small bundled issues,
+                # some are large standalone projects (right-skewed)
+                price_multiplier = float(rng.lognormal(0, 0.6))
+                price_multiplier = max(0.3, min(5.0, price_multiplier))
+                actual_price = base_price * price_multiplier
                 hypercert_fiat_sales += actual_price
                 h.sold = True
                 h.sale_price = actual_price
 
+    # Community purchases — believers investing in their own ecosystem
+    # Cap at 1 community purchase per month (rare, conviction-driven)
+    still_unsold = [h for h in portfolio if not h.sold]
+    if still_unsold:
+        community_buyers = []
+        for agent in agents:
+            if agent.agent_type == AgentType.IMPACT_BUYER and agent.confidence > 0.4:
+                buy_prob = 0.015 * agent.confidence
+            elif agent.agent_type == AgentType.CONTRIBUTOR and agent.confidence > 0.7:
+                buy_prob = 0.005 * (agent.confidence - 0.5)
+            else:
+                continue
+            if rng.random() < buy_prob:
+                community_buyers.append(agent)
+        if community_buyers:
+            buyer = community_buyers[int(rng.integers(len(community_buyers)))]
+            h = still_unsold[int(rng.integers(len(still_unsold)))]
+            price_multiplier = float(rng.lognormal(-0.2, 0.5))
+            price_multiplier = max(0.2, min(3.0, price_multiplier))
+            actual_price = base_price * price_multiplier
+            hypercert_fiat_sales += actual_price
+            h.sold = True
+            h.sale_price = actual_price
+
     new_agents_count = max(0, int(rng.poisson(params['growth_rate'])))
+
+    # --- Collect per-agent-type stats for the event log ---
+    type_counts = {}
+    type_panicking = {}
+    type_confidence_sum = {}
+    type_confidence_count = {}
+    for agent in agents:
+        t = agent.agent_type.value
+        type_counts[t] = type_counts.get(t, 0) + 1
+        if agent.is_panicking:
+            type_panicking[t] = type_panicking.get(t, 0) + 1
+        type_confidence_sum[t] = type_confidence_sum.get(t, 0.0) + agent.confidence
+        type_confidence_count[t] = type_confidence_count.get(t, 0) + 1
+
+    n_panicking_total = sum(1 for a in agents if a.is_panicking)
+    n_dormant = sum(1 for a in agents if a.activity_level < 0.1)
+    confidences = [a.confidence for a in agents]
+    confidence_min = min(confidences) if confidences else 0.0
+    confidence_max = max(confidences) if confidences else 0.0
+
+    hc_sold_count = sum(1 for h in portfolio if h.sold and h.sale_price > 0)
 
     return {
         'work_minting': work_minting,
@@ -224,4 +305,16 @@ def agent_decisions(_params: dict, substep: int, sH: list, s: dict, **kwargs) ->
         'fraud_minting': fraud_minting,
         'new_agents_count': new_agents_count,
         'agent_updates': agent_updates,
+        # Detailed stats for the event log
+        '_type_counts': type_counts,
+        '_type_panicking': type_panicking,
+        '_n_panicking_total': n_panicking_total,
+        '_n_dormant': n_dormant,
+        '_confidence_min': confidence_min,
+        '_confidence_max': confidence_max,
+        '_confidence_shock_applied': confidence_shock is not None,
+        '_whale_dump_applied': whale_dump is not None,
+        '_hc_sold_count': hc_sold_count,
+        'issues_created_count': issues_created_count,
+        '_effective_issue_rate': round(issues_rate, 3),
     }

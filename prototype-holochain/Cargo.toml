@@ -5,6 +5,7 @@ members = [
     "dnas/global-registry/zomes/registry",
     "dnas/manhattan-windturbine/zomes/wind_turbine",
     "dnas/housing/zomes/housing",
+    "bridge-service",
 ]
 resolver = "2"
 

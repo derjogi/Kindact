@@ -1,5 +1,5 @@
 ---
-status: implemented-pending-verification
+status: in-progress
 created: '2026-05-12'
 tags: [holochain, dna, validation, foundational]
 priority: critical
