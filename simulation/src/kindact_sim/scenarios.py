@@ -1,6 +1,8 @@
 from dataclasses import dataclass, field
 from typing import Any
 
+from kindact_sim.types import Phase
+
 
 @dataclass
 class ScenarioConfig:
@@ -9,15 +11,47 @@ class ScenarioConfig:
     timesteps: int
     params: dict[str, Any]
     events: dict[int, list[dict]] = field(default_factory=dict)
+    conditional_events: list[dict] = field(default_factory=list)
     description: str = ""
 
 
-def apply_events(scenario: ScenarioConfig, base_params: dict, timestep: int) -> dict:
+def _check_condition(condition: str, state: dict) -> bool:
+    """Evaluate a named condition against current simulation state."""
+    if condition == 'exchange_open':
+        return (state.get('phase', Phase.BOOTSTRAP) != Phase.BOOTSTRAP
+                and state.get('reserve_fiat', 0) >= 100_000)
+    return False
+
+
+def apply_events(scenario: ScenarioConfig, base_params: dict, timestep: int,
+                 state: dict | None = None) -> dict:
     params = dict(base_params)
-    if timestep not in scenario.events:
+
+    # Collect all events to apply this step
+    all_events = list(scenario.events.get(timestep, []))
+
+    # Conditional events: fire once when condition is met or fallback timestep reached
+    if state is not None:
+        for cond_event in scenario.conditional_events:
+            fired_key = f"_fired_{cond_event['type']}"
+            if base_params.get(fired_key):
+                continue
+            condition = cond_event.get('condition')
+            fallback = cond_event.get('fallback_timestep')
+            trigger = False
+            if condition and _check_condition(condition, state):
+                trigger = True
+            if fallback is not None and timestep >= fallback:
+                trigger = True
+            if trigger:
+                all_events.append(cond_event)
+                # Mutate base_params so the flag persists across timesteps
+                base_params[fired_key] = True
+
+    if not all_events:
         return params
 
-    for event in scenario.events[timestep]:
+    for event in all_events:
         etype = event['type']
         if etype == 'hypercert_crash':
             params['hypercert_sale_prob'] = 0.01
@@ -80,7 +114,7 @@ _DEFAULT_PARAMS = {
     'issues_per_user_month': 2.0,
     'verification_quality': 0.9,
     'growth_rate': 15,
-    'hypercert_sale_prob': 0.1,
+    'hypercert_sale_prob': 3.0,
     'hypercert_min_price': 100.0,
     'hypercert_max_price': 2000.0,
     'hypercert_no_sale_months': 5,
@@ -102,8 +136,14 @@ SCENARIOS: dict[str, ScenarioConfig] = {
         n_users=50,
         timesteps=36,
         params=dict(_DEFAULT_PARAMS),
-        events={18: [{"type": "bank_run", "shock_pct": 0.4}]},
-        description="At month 18, 40% of agents panic and try to cash out.",
+        events={},
+        conditional_events=[{
+            "type": "bank_run",
+            "shock_pct": 0.7,
+            "condition": "exchange_open",
+            "fallback_timestep": 20,
+        }],
+        description="Bank run fires as soon as exchange opens or at month 20, whichever is earlier.",
     ),
     "hypercert_crash": ScenarioConfig(
         name="hypercert_crash",

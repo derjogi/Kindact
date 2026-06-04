@@ -13,6 +13,7 @@ def _make_state(**overrides):
         'phase': Phase.GROWTH, 'agents': [], 'total_minted': 200_000,
         'demurrage_rate': 0.01, 'r_target': 1_000_000, 'hypercert_portfolio': [],
         'redemption_queue': [], 'timestep': 5, 'total_burned': 0.0, 'events_log': [],
+        '_policy_signals': {},
     }
     base.update(overrides)
     return base
@@ -59,15 +60,15 @@ def test_exchange_rate_trend_affects_confidence():
                   months_holding=0)
     # State where reserve/supply gives a much lower exchange rate than the stored one
     # and also pair with failed redemptions so other signals don't compensate
+    signals = _make_input(new_agents_count=0, agent_updates=[],
+                          redemptions=100, desired_redemptions=5000)
     s = _make_state(
         agents=[agent],
         supply=200_000, reserve_fiat=1_000, exchange_rate=0.8,  # old rate was 0.8
-        r_target=1_000_000,
+        r_target=1_000_000, _policy_signals=signals,
     )
-    inp = _make_input(new_agents_count=0, agent_updates=[],
-                      redemptions=100, desired_redemptions=5000)
     params = {'rng': np.random.default_rng(42)}
-    _, new_agents = update_agents(params, 1, [], s, inp)
+    _, new_agents = update_agents(params, 1, [], s, {})
     # New rate from reserve=1k, supply=200k is near 0 vs old rate 0.8 → big negative trend
     # Plus failed redemptions → confidence should drop
     assert new_agents[0].confidence < 0.5
@@ -77,50 +78,68 @@ def test_exchange_rate_trend_positive_raises_confidence():
     """When exchange rate rises, agent confidence should increase."""
     agent = Agent(id=0, agent_type=AgentType.CONTRIBUTOR, balance=100.0, confidence=0.5)
     # State where reserve/supply gives a higher exchange rate than the stored one
+    signals = _make_input(new_agents_count=0, agent_updates=[], redemptions=0, desired_redemptions=0)
     s = _make_state(
         agents=[agent],
         supply=200_000, reserve_fiat=800_000, exchange_rate=0.1,  # old rate was 0.1
-        r_target=1_000_000,
+        r_target=1_000_000, _policy_signals=signals,
     )
-    inp = _make_input(new_agents_count=0, agent_updates=[], redemptions=0, desired_redemptions=0)
     params = {'rng': np.random.default_rng(42)}
-    _, new_agents = update_agents(params, 1, [], s, inp)
+    _, new_agents = update_agents(params, 1, [], s, {})
     assert new_agents[0].confidence > 0.5
 
 
 def test_redemption_success_rate_affects_confidence():
-    """When desired redemptions exceed actual (cap hit), confidence drops."""
+    """Partial redemption (rate-limited) is a small positive signal, not negative."""
     agent = Agent(id=0, agent_type=AgentType.CONTRIBUTOR, balance=100.0, confidence=0.6)
-    s = _make_state(
-        agents=[agent],
-        supply=200_000, reserve_fiat=50_000, exchange_rate=0.25,
-        r_target=1_000_000,
-    )
     # desired=10000 but only 1000 fulfilled → success_rate = 0.1
-    inp = _make_input(
+    # Under new logic, any non-zero fulfillment is a positive signal
+    signals = _make_input(
         new_agents_count=0, agent_updates=[],
         redemptions=1000, desired_redemptions=10000,
     )
+    s = _make_state(
+        agents=[agent],
+        supply=200_000, reserve_fiat=50_000, exchange_rate=0.25,
+        r_target=1_000_000, _policy_signals=signals,
+    )
     params = {'rng': np.random.default_rng(42)}
-    _, new_agents = update_agents(params, 1, [], s, inp)
+    _, new_agents = update_agents(params, 1, [], s, {})
+    assert new_agents[0].confidence >= 0.6
+
+
+def test_zero_redemption_fulfillment_drops_confidence():
+    """When redemptions are desired but none fulfilled, confidence drops."""
+    agent = Agent(id=0, agent_type=AgentType.CONTRIBUTOR, balance=100.0, confidence=0.6)
+    signals = _make_input(
+        new_agents_count=0, agent_updates=[],
+        redemptions=0, desired_redemptions=10000,
+    )
+    s = _make_state(
+        agents=[agent],
+        supply=200_000, reserve_fiat=50_000, exchange_rate=0.25,
+        r_target=1_000_000, _policy_signals=signals,
+    )
+    params = {'rng': np.random.default_rng(42)}
+    _, new_agents = update_agents(params, 1, [], s, {})
     assert new_agents[0].confidence < 0.6
 
 
 def test_no_redemption_demand_is_not_treated_as_perfect_success():
-    """Absent redemption demand, confidence should not jump just because nobody tried to redeem."""
+    """Absent redemption demand, confidence should not jump significantly."""
     agent = Agent(id=0, agent_type=AgentType.CONTRIBUTOR, balance=100.0, confidence=0.5)
-    s = _make_state(
-        agents=[agent],
-        supply=200_000, reserve_fiat=50_000, exchange_rate=0.25,
-        r_target=1_000_000,
-    )
-    inp = _make_input(
+    signals = _make_input(
         new_agents_count=0, agent_updates=[],
         redemptions=0, desired_redemptions=0,
     )
+    s = _make_state(
+        agents=[agent],
+        supply=200_000, reserve_fiat=50_000, exchange_rate=0.25,
+        r_target=1_000_000, _policy_signals=signals,
+    )
     params = {'rng': np.random.default_rng(42)}
-    _, new_agents = update_agents(params, 1, [], s, inp)
-    assert new_agents[0].confidence <= 0.5
+    _, new_agents = update_agents(params, 1, [], s, {})
+    assert new_agents[0].confidence < 0.52  # at most a tiny familiarity bump
 
 
 def test_acceptance_willingness_rises_with_exchange_rate():
@@ -128,18 +147,18 @@ def test_acceptance_willingness_rises_with_exchange_rate():
     agent = Agent(id=0, agent_type=AgentType.CONTRIBUTOR, balance=100.0, confidence=0.5,
                   intrinsic_motivation=0.5)
     # Low exchange rate scenario
+    signals = _make_input(new_agents_count=0, agent_updates=[])
     s_low = _make_state(agents=[agent], supply=200_000, reserve_fiat=1_000,
-                        exchange_rate=0.01, r_target=1_000_000)
-    inp = _make_input(new_agents_count=0, agent_updates=[])
+                        exchange_rate=0.01, r_target=1_000_000, _policy_signals=signals)
     params = {'rng': np.random.default_rng(42)}
-    _, agents_low = update_agents(params, 1, [], s_low, inp)
+    _, agents_low = update_agents(params, 1, [], s_low, {})
 
     # High exchange rate scenario
     agent2 = Agent(id=0, agent_type=AgentType.CONTRIBUTOR, balance=100.0, confidence=0.5,
                    intrinsic_motivation=0.5)
     s_high = _make_state(agents=[agent2], supply=200_000, reserve_fiat=500_000,
-                         exchange_rate=0.5, r_target=1_000_000)
-    _, agents_high = update_agents(params, 1, [], s_high, inp)
+                         exchange_rate=0.5, r_target=1_000_000, _policy_signals=signals)
+    _, agents_high = update_agents(params, 1, [], s_high, {})
 
     assert agents_high[0].acceptance_willingness > agents_low[0].acceptance_willingness
 
@@ -179,11 +198,11 @@ def test_low_confidence_agent_becomes_dormant():
     """An agent with sustained low confidence should see activity_level drop."""
     agent = Agent(id=0, agent_type=AgentType.MERCHANT, balance=10.0, confidence=0.1,
                   intrinsic_motivation=0.2, activity_level=0.5)
+    signals = _make_input(new_agents_count=0, agent_updates=[], work_minting=0)
     s = _make_state(agents=[agent], supply=200_000, reserve_fiat=1_000,
-                    exchange_rate=0.01, r_target=1_000_000)
-    inp = _make_input(new_agents_count=0, agent_updates=[], work_minting=0)
+                    exchange_rate=0.01, r_target=1_000_000, _policy_signals=signals)
     params = {'rng': np.random.default_rng(42)}
-    _, updated = update_agents(params, 1, [], s, inp)
+    _, updated = update_agents(params, 1, [], s, {})
     assert updated[0].activity_level < 0.5  # should have dropped
 
 
@@ -191,11 +210,11 @@ def test_high_motivation_resists_dormancy():
     """An agent with high intrinsic motivation should resist going dormant."""
     agent = Agent(id=0, agent_type=AgentType.CONTRIBUTOR, balance=10.0, confidence=0.3,
                   intrinsic_motivation=0.9, activity_level=0.8)
+    signals = _make_input(new_agents_count=0, agent_updates=[], work_minting=100)
     s = _make_state(agents=[agent], supply=200_000, reserve_fiat=1_000,
-                    exchange_rate=0.01, r_target=1_000_000)
-    inp = _make_input(new_agents_count=0, agent_updates=[], work_minting=100)
+                    exchange_rate=0.01, r_target=1_000_000, _policy_signals=signals)
     params = {'rng': np.random.default_rng(42)}
-    _, updated = update_agents(params, 1, [], s, inp)
+    _, updated = update_agents(params, 1, [], s, {})
     assert updated[0].activity_level > 0.5  # motivation keeps them active
 
 
@@ -203,20 +222,20 @@ def test_agent_exits_after_prolonged_dormancy():
     """Agents dormant for 3+ months should be removed."""
     agent = Agent(id=0, agent_type=AgentType.CONTRIBUTOR, balance=10.0, confidence=0.05,
                   intrinsic_motivation=0.05, activity_level=0.01, months_dormant=2)
+    signals = _make_input(new_agents_count=0, agent_updates=[], work_minting=0)
     s = _make_state(agents=[agent], supply=200_000, reserve_fiat=1_000,
-                    exchange_rate=0.01, r_target=1_000_000)
-    inp = _make_input(new_agents_count=0, agent_updates=[], work_minting=0)
+                    exchange_rate=0.01, r_target=1_000_000, _policy_signals=signals)
     params = {'rng': np.random.default_rng(42)}
-    _, updated = update_agents(params, 1, [], s, inp)
+    _, updated = update_agents(params, 1, [], s, {})
     # months_dormant was 2, activity stays <0.1, increments to 3 → agent removed
     assert len(updated) == 0
 
 
 def test_redemption_queue_tracks_unfulfilled():
     """When desired > actual, unfulfilled amount is queued."""
-    s = _make_state(timestep=5, redemption_queue=[])
-    inp = {'desired_redemptions': 5000, 'redemptions': 1000}
-    _, queue = update_redemption_queue({}, 1, [], s, inp)
+    signals = {'desired_redemptions': 5000, 'redemptions': 1000}
+    s = _make_state(timestep=5, redemption_queue=[], _policy_signals=signals)
+    _, queue = update_redemption_queue({}, 1, [], s, {})
     assert len(queue) == 1
     assert queue[0]['amount'] == 4000
     assert queue[0]['timestep'] == 5
@@ -224,9 +243,9 @@ def test_redemption_queue_tracks_unfulfilled():
 
 def test_redemption_queue_empty_when_fully_served():
     """No queue entry when all redemptions are fulfilled."""
-    s = _make_state(timestep=5, redemption_queue=[])
-    inp = {'desired_redemptions': 1000, 'redemptions': 1000}
-    _, queue = update_redemption_queue({}, 1, [], s, inp)
+    signals = {'desired_redemptions': 1000, 'redemptions': 1000}
+    s = _make_state(timestep=5, redemption_queue=[], _policy_signals=signals)
+    _, queue = update_redemption_queue({}, 1, [], s, {})
     assert len(queue) == 0
 
 
@@ -236,9 +255,9 @@ def test_redemption_queue_expires_old_entries():
         {'timestep': 1, 'amount': 500},
         {'timestep': 3, 'amount': 300},
     ]
-    s = _make_state(timestep=5, redemption_queue=old_entries)
-    inp = {'desired_redemptions': 0, 'redemptions': 0}
-    _, queue = update_redemption_queue({}, 1, [], s, inp)
+    signals = {'desired_redemptions': 0, 'redemptions': 0}
+    s = _make_state(timestep=5, redemption_queue=old_entries, _policy_signals=signals)
+    _, queue = update_redemption_queue({}, 1, [], s, {})
     # timestep 1 is 4 months ago (>= 3), should be expired
     # timestep 3 is 2 months ago (< 3), should remain
     assert len(queue) == 1

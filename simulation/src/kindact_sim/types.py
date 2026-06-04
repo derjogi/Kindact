@@ -17,7 +17,7 @@ class Phase(Enum):
     MATURITY = "maturity"
 
 
-@dataclass
+@dataclass(slots=True)
 class Agent:
     id: int
     agent_type: AgentType
@@ -34,7 +34,7 @@ class Agent:
     months_dormant: int = 0
 
 
-@dataclass
+@dataclass(slots=True)
 class Hypercert:
     id: int
     value_estimate: float

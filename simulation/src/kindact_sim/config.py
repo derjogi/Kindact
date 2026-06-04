@@ -7,8 +7,9 @@ from kindact_sim.policies import agent_decisions
 from kindact_sim.mechanisms import (
     update_supply, update_reserve, update_exchange_rate,
     update_phase, update_total_minted, update_total_burned,
+    update_total_issues,
     update_agents, update_hypercerts, update_redemption_queue,
-    update_timestep, update_events_log,
+    update_timestep, update_events_log, store_policy_signals,
 )
 from kindact_sim.scenarios import SCENARIOS, ScenarioConfig
 from kindact_sim.agent_config import AgentConfig
@@ -16,7 +17,8 @@ from kindact_sim.agent_config import AgentConfig
 
 def build_experiment(scenario_name: str, n_runs: int = 1, seed: int = 42,
                      agent_config: AgentConfig | None = None,
-                     timesteps: int | None = None) -> Experiment:
+                     timesteps: int | None = None,
+                     progress_cb=None) -> Experiment:
     if agent_config is None:
         agent_config = AgentConfig()
     scenario = SCENARIOS[scenario_name]
@@ -28,6 +30,8 @@ def build_experiment(scenario_name: str, n_runs: int = 1, seed: int = 42,
     params['rng'] = np.random.default_rng(seed)
     params['_scenario_name'] = scenario_name
     params['_agent_config'] = agent_config
+    params['_progress_cb'] = progress_cb
+    params['_total_timesteps'] = scenario_timesteps
 
     partial_state_update_blocks = [
         {
@@ -39,7 +43,10 @@ def build_experiment(scenario_name: str, n_runs: int = 1, seed: int = 42,
                 'reserve_fiat': update_reserve,
                 'total_minted': update_total_minted,
                 'total_burned': update_total_burned,
+                'total_issues_created': update_total_issues,
                 'hypercert_portfolio': update_hypercerts,
+                'events_log': update_events_log,
+                '_policy_signals': store_policy_signals,
             },
         },
         {
@@ -49,7 +56,6 @@ def build_experiment(scenario_name: str, n_runs: int = 1, seed: int = 42,
                 'phase': update_phase,
                 'agents': update_agents,
                 'redemption_queue': update_redemption_queue,
-                'events_log': update_events_log,
                 'timestep': update_timestep,
             },
         },

@@ -62,6 +62,10 @@ def update_total_minted(_params, substep, sH, s, _input, **kwargs):
     return ('total_minted', s['total_minted'] + _input.get('work_minting', 0) + _input.get('fraud_minting', 0))
 
 
+def update_total_issues(_params, substep, sH, s, _input, **kwargs):
+    return ('total_issues_created', s['total_issues_created'] + _input.get('issues_created_count', 0))
+
+
 def update_total_burned(_params, substep, sH, s, _input, **kwargs):
     burned = _input.get('access_fee_burn', 0) + _input.get('redemptions', 0)
     demurrage_burn = s['supply'] * s['demurrage_rate']
@@ -73,20 +77,25 @@ def update_agents(_params, substep, sH, s, _input, **kwargs):
     evasion_pct = _params.get('_demurrage_evasion_pct', 0.0)
     agents = apply_demurrage(s['agents'], s['demurrage_rate'], evasion_pct=evasion_pct, rng=rng)
 
-    updates = {aid: delta for aid, delta in _input.get('agent_updates', [])}
+    # Policy signals are stored in state by the first PSUB block
+    signals = s.get('_policy_signals', {})
+    updates = {aid: delta for aid, delta in signals.get('agent_updates', [])}
     for a in agents:
         if a.id in updates:
             a.balance = max(0, a.balance + updates[a.id])
         a.months_holding += 1
 
-    # Compute actual exchange rate trend from previous vs current state
+    # Compute relative exchange rate trend (percentage change)
     new_rate = compute_exchange_rate(s['reserve_fiat'], s['supply'], s['r_target'])
     old_rate = s['exchange_rate']
-    exchange_rate_trend = new_rate - old_rate
+    if old_rate > 0.001:
+        exchange_rate_trend = (new_rate - old_rate) / old_rate
+    else:
+        exchange_rate_trend = 0.0
 
     # Compute redemption success rate from desired vs actual
-    desired = _input.get('desired_redemptions', 0)
-    actual = _input.get('redemptions', 0)
+    desired = signals.get('desired_redemptions', 0)
+    actual = signals.get('redemptions', 0)
     success_rate = None if desired == 0 else actual / desired
 
     for a in agents:
@@ -109,7 +118,7 @@ def update_agents(_params, substep, sH, s, _input, **kwargs):
         ))
 
     # Update activity_level based on confidence, earnings, and motivation
-    earned_this_step = _input.get('work_minting', 0)
+    earned_this_step = signals.get('work_minting', 0)
     has_earnings = earned_this_step > 0
     for a in agents:
         earned_signal = 0.3 if (has_earnings and a.agent_type in (AgentType.CONTRIBUTOR, AgentType.PANICKER)) else -0.1
@@ -131,7 +140,7 @@ def update_agents(_params, substep, sH, s, _input, **kwargs):
     # Their balance decays via demurrage but effectively leaves circulation
     agents = [a for a in agents if a.months_dormant < 3]
 
-    n_new = _input.get('new_agents_count', 0)
+    n_new = signals.get('new_agents_count', 0)
     if n_new > 0:
         max_id = max((a.id for a in agents), default=-1)
         agent_config = _params.get('_agent_config')
@@ -158,7 +167,7 @@ def update_agents(_params, substep, sH, s, _input, **kwargs):
 
 def update_hypercerts(_params, substep, sH, s, _input, **kwargs):
     rng: np.random.Generator = _params.get('rng', np.random.default_rng())
-    portfolio = copy.deepcopy(s['hypercert_portfolio'])
+    portfolio = list(s['hypercert_portfolio'])
     work_minted = _input.get('work_minting', 0)
     n_new = int(work_minted / 100)
     max_id = max((h.id for h in portfolio), default=-1)
@@ -172,8 +181,9 @@ def update_hypercerts(_params, substep, sH, s, _input, **kwargs):
 
 
 def update_redemption_queue(_params, substep, sH, s, _input, **kwargs):
-    desired = _input.get('desired_redemptions', 0)
-    actual = _input.get('redemptions', 0)
+    signals = s.get('_policy_signals', {})
+    desired = signals.get('desired_redemptions', 0)
+    actual = signals.get('redemptions', 0)
     unfulfilled = max(0, desired - actual)
     queue = list(s['redemption_queue'])
     if unfulfilled > 0:
@@ -183,22 +193,109 @@ def update_redemption_queue(_params, substep, sH, s, _input, **kwargs):
     return ('redemption_queue', queue)
 
 
+def store_policy_signals(_params, substep, sH, s, _input, **kwargs):
+    """Store first-block policy signals so the second block can access them."""
+    return ('_policy_signals', dict(_input))
+
+
 def update_timestep(_params, substep, sH, s, _input, **kwargs):
-    return ('timestep', s['timestep'] + 1)
+    new_t = s['timestep'] + 1
+    cb = _params.get('_progress_cb')
+    if cb is not None:
+        cb(new_t, _params.get('_total_timesteps', new_t))
+    return ('timestep', new_t)
+
+
+def _build_event_entry(_params, s, _input):
+    """Build the per-timestep event log entry (shared by mechanism and external collector)."""
+    t = s['timestep']
+
+    # --- Phase transition detection ---
+    old_phase = s['phase']
+    new_minted = s['total_minted'] + _input.get('work_minting', 0) + _input.get('fraud_minting', 0)
+    new_reserve = s['reserve_fiat'] + _input.get('reserve_purchases', 0) + _input.get('hypercert_fiat_sales', 0) - _input.get('redemptions', 0) * s['exchange_rate']
+    new_phase = compute_phase(new_minted, max(0, new_reserve), s['r_target'])
+
+    # --- Build detailed timestep summary ---
+    work_minting = _input.get('work_minting', 0)
+    fraud_minting = _input.get('fraud_minting', 0)
+    access_fee_burn = _input.get('access_fee_burn', 0)
+    redemptions = _input.get('redemptions', 0)
+    desired_redemptions = _input.get('desired_redemptions', 0)
+    reserve_purchases = _input.get('reserve_purchases', 0)
+    hypercert_fiat_sales = _input.get('hypercert_fiat_sales', 0)
+    new_agents_count = _input.get('new_agents_count', 0)
+
+    n_agents = len(s['agents'])
+    supply = s['supply']
+    reserve = s['reserve_fiat']
+
+    # Reserve change breakdown
+    reserve_delta = reserve_purchases + hypercert_fiat_sales - redemptions * s['exchange_rate']
+
+    entry = {
+        'timestep': t,
+        'event': 'step_summary',
+        'phase': new_phase.value,
+        # Population
+        'n_agents': n_agents,
+        'new_joined': new_agents_count,
+        'n_dormant': _input.get('_n_dormant', 0),
+        # Confidence
+        'avg_confidence': sum(a.confidence for a in s['agents']) / n_agents if n_agents > 0 else 0,
+        'confidence_min': _input.get('_confidence_min', 0),
+        'confidence_max': _input.get('_confidence_max', 0),
+        # Panic
+        'n_panicking': _input.get('_n_panicking_total', 0),
+        'panicking_by_type': _input.get('_type_panicking', {}),
+        # Monetary flows
+        'work_minting': round(work_minting, 2),
+        'fraud_minting': round(fraud_minting, 2),
+        'access_fee_burn': round(access_fee_burn, 2),
+        'redemptions': round(redemptions, 2),
+        'desired_redemptions': round(desired_redemptions, 2),
+        'unfulfilled_redemptions': round(max(0, desired_redemptions - redemptions), 2),
+        # Reserve
+        'reserve_before': round(reserve, 2),
+        'reserve_delta': round(reserve_delta, 2),
+        'reserve_in_purchases': round(reserve_purchases, 2),
+        'reserve_in_hypercerts': round(hypercert_fiat_sales, 2),
+        'reserve_out_redemptions': round(redemptions * s['exchange_rate'], 2),
+        # Supply
+        'supply_before': round(supply, 2),
+        # Hypercerts
+        'hc_sold_count': _input.get('_hc_sold_count', 0),
+        # Issue creation
+        'issues_created': _input.get('issues_created_count', 0),
+        'effective_issue_rate': _input.get('_effective_issue_rate', 0),
+        # Agent type breakdown
+        'agent_types': _input.get('_type_counts', {}),
+    }
+
+    # Notable events as separate entries
+    notable = []
+    if new_phase != old_phase:
+        notable.append(f'Phase transition: {old_phase.value} → {new_phase.value}')
+    exchange_open = new_phase != Phase.BOOTSTRAP and reserve >= 100_000
+    if exchange_open and supply > 0 and reserve / supply < 0.05:
+        notable.append(f'⚠️ Reserve floor hit (backing {reserve/supply:.1%} < 5%)')
+    if _input.get('_confidence_shock_applied'):
+        notable.append('🔴 Confidence shock (bank run event)')
+    if _input.get('_whale_dump_applied'):
+        notable.append('🐋 Whale dump event')
+    if exchange_open and desired_redemptions > 0 and redemptions < desired_redemptions * 0.5:
+        notable.append(f'⚠️ Redemption bottleneck: only {redemptions:.0f} of {desired_redemptions:.0f} desired fulfilled')
+    if fraud_minting > work_minting * 0.1 and fraud_minting > 0:
+        notable.append(f'🚨 Significant fraud: {fraud_minting:.0f} $CC fraudulently minted ({fraud_minting/max(1,work_minting):.0%} of work minting)')
+    if hypercert_fiat_sales > 0:
+        notable.append(f'💰 Hypercert sales: ${hypercert_fiat_sales:,.0f} ({_input.get("_hc_sold_count", 0)} sold)')
+
+    entry['notable_events'] = notable
+    return entry
 
 
 def update_events_log(_params, substep, sH, s, _input, **kwargs):
-    log = list(s['events_log'])
-    t = s['timestep']
-    old_phase = s['phase']
-    new_phase = compute_phase(
-        s['total_minted'] + _input.get('work_minting', 0),
-        s['reserve_fiat'], s['r_target']
-    )
-    if new_phase != old_phase:
-        log.append({'timestep': t, 'event': f'Phase transition: {old_phase.value} -> {new_phase.value}'})
-    supply = s['supply']
-    reserve = s['reserve_fiat']
-    if supply > 0 and reserve / supply < 0.05:
-        log.append({'timestep': t, 'event': 'Reserve floor hit (backing < 5%)'})
-    return ('events_log', log)
+    entry = _build_event_entry(_params, s, _input)
+    # Only store the current step's entry in cadCAD state (not the full history).
+    # The full log is reassembled from per-row entries in run_simulation().
+    return ('events_log', [entry])

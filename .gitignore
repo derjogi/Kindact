@@ -10,6 +10,7 @@ dist/
 .vercel/
 .next/
 .venv/
+generated/
 
 # Environment
 .env

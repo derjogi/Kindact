@@ -4,6 +4,8 @@ from plotly.subplots import make_subplots
 import pandas as pd
 import numpy as np
 import copy
+from pathlib import Path
+from datetime import datetime
 
 from kindact_sim.run import run_simulation
 from kindact_sim.scenarios import SCENARIOS
@@ -18,22 +20,41 @@ st.title("🌱 Kindact Economy Simulator")
 ALL_AGENT_TYPES = [t.value for t in AgentType]
 
 # --- Sidebar Controls ---
+_rp = st.session_state.pop('_restored_params', {})
+_rac = st.session_state.pop('_restored_agent_config', {})
+if _rac.get('population_mix'):
+    st.session_state['agent_pop_mix'] = _rac['population_mix']
+    for _atype in ALL_AGENT_TYPES:
+        st.session_state[f"pop_{_atype}"] = float(_rac['population_mix'].get(_atype, 0.0))
+if _rac.get('flux_schedule'):
+    st.session_state['agent_flux'] = _rac['flux_schedule']
+
 with st.sidebar:
     st.header("Scenario")
+    scenario_names = list(SCENARIOS.keys())
     scenario_name = st.selectbox(
         "Preset scenario",
-        options=list(SCENARIOS.keys()),
+        options=scenario_names,
+        index=scenario_names.index(_rp['scenario_name']) if _rp.get('scenario_name') in scenario_names else 0,
         format_func=lambda x: f"{x} — {SCENARIOS[x].description[:60]}...",
     )
 
     st.header("Parameters")
-    demurrage = st.slider("Demurrage rate (%/month)", 0.1, 5.0, 1.0, 0.1) / 100
-    reward = st.slider("Reward per issue ($CC)", 10, 200, 50, 10)
-    issues_rate = st.slider("Issues per user/month", 0.5, 5.0, 2.0, 0.5)
-    growth_rate = st.slider("New users/month (avg)", 0, 50, 15, 1)
-    verification_q = st.slider("Verification quality", 0.5, 1.0, 0.9, 0.05)
-    hypercert_prob = st.slider("Hypercert sale probability", 0.0, 0.5, 0.1, 0.01)
-    hypercert_price = st.slider("Avg Hypercert price ($)", 100, 5000, 1000, 100)
+    demurrage = st.slider("Demurrage rate (%/month)", 0.1, 5.0, _rp.get('demurrage', 1.0) * 100 if 'demurrage' in _rp else 1.0, 0.1) / 100
+    reward = st.slider("Reward per issue ($CC)", 10, 200, _rp.get('reward', 50), 10)
+    issues_rate = st.slider("Issues per user/month", 0.5, 5.0, _rp.get('issues_rate', 2.0), 0.5)
+    growth_rate = st.slider("New users/month (avg)", 0, 50, _rp.get('growth_rate', 15), 1)
+    verification_q = st.slider("Verification quality", 0.5, 1.0, _rp.get('verification_q', 0.9), 0.05)
+    hypercert_prob = st.slider(
+        "HC monthly demand",
+        0.1, 100.0,
+        _rp.get('hypercert_prob', 3.0),
+        0.1,
+        help="Expected hypercert sales per month at full platform attractiveness. "
+             "Actual sales = this × platform attractiveness (which ramps with network size and track record). "
+             "Low values (0.1–1): very rare sales. Medium (2–5): steady trickle. High (10–100): active market.",
+    )
+    hypercert_price = st.slider("Avg Hypercert price ($)", 100, 5000, _rp.get('hypercert_price', 1000), 100)
 
     # --- Agent Configuration ---
     st.header("Agent Population")
@@ -133,17 +154,73 @@ with st.sidebar:
             st.success(f"Saved to {path.name}")
 
     st.header("Simulation")
-    n_runs = st.slider("Monte Carlo runs", 1, 100, 1)
-    seed = st.number_input("Random seed", value=42, step=1)
-    timesteps = st.slider("Simulation horizon (months)", 12, 240, min(240, SCENARIOS[scenario_name].timesteps), 12)
+    n_runs = st.slider("Monte Carlo runs", 1, 100, _rp.get('n_runs', 1))
+    seed = st.number_input("Random seed", value=_rp.get('seed', 42), step=1)
+    timesteps = st.slider("Simulation horizon (months)", 12, 240, _rp.get('timesteps', min(240, SCENARIOS[scenario_name].timesteps)), 12)
 
     run_button = st.button("▶ Run Simulation", type="primary", use_container_width=True)
+
+    # --- Save / Load Results ---
+    st.header("Results Storage")
+    results_dir = Path(__file__).parent / "results"
+    results_dir.mkdir(exist_ok=True)
+
+    with st.expander("💾 Save / Load Results", expanded=False):
+        save_label = st.text_input("Result name", value=f"{scenario_name}_{datetime.now():%Y%m%d_%H%M}")
+        if st.button("💾 Save current results"):
+            if 'df' in st.session_state:
+                import pickle
+                bundle = {
+                    'df': st.session_state['df'],
+                    'params': {
+                        'scenario_name': scenario_name,
+                        'demurrage': demurrage,
+                        'reward': reward,
+                        'issues_rate': issues_rate,
+                        'growth_rate': growth_rate,
+                        'verification_q': verification_q,
+                        'hypercert_prob': hypercert_prob,
+                        'hypercert_price': hypercert_price,
+                        'n_runs': n_runs,
+                        'seed': seed,
+                        'timesteps': timesteps,
+                    },
+                    'agent_config': {
+                        'population_mix': st.session_state.get('agent_pop_mix', {}),
+                        'flux_schedule': st.session_state.get('agent_flux', []),
+                    },
+                }
+                path = results_dir / f"{save_label}.pkl"
+                with open(path, 'wb') as f:
+                    pickle.dump(bundle, f)
+                st.success(f"Saved to {path.name}")
+            else:
+                st.warning("No results to save — run a simulation first.")
+
+        saved_results = sorted(results_dir.glob("*.pkl"), key=lambda p: p.stat().st_mtime, reverse=True)
+        if saved_results:
+            selected_result = st.selectbox("Load saved result", options=saved_results, format_func=lambda p: p.stem)
+            if st.button("📂 Load"):
+                import pickle
+                with open(selected_result, 'rb') as f:
+                    bundle = pickle.load(f)
+                # Restore results
+                st.session_state['df'] = bundle['df']
+                st.session_state['n_runs'] = bundle.get('params', {}).get('n_runs', 1)
+                st.session_state['scenario_name'] = bundle.get('params', {}).get('scenario_name', '')
+                # Store for next rerun (applied before widgets render)
+                st.session_state['_restored_params'] = bundle.get('params', {})
+                st.session_state['_restored_agent_config'] = bundle.get('agent_config', {})
+                st.rerun()
+        else:
+            st.info("No saved results yet.")
 
 
 def _run_custom(scenario_name: str, n_runs: int, seed: int,
                 demurrage_rate: float, param_overrides: dict,
                 agent_config: AgentConfig | None = None,
-                timesteps: int | None = None) -> pd.DataFrame:
+                timesteps: int | None = None,
+                progress_cb=None) -> pd.DataFrame:
     """Run simulation with custom parameter and state overrides."""
     custom_scenario = copy.deepcopy(SCENARIOS[scenario_name])
     custom_scenario.params.update(param_overrides)
@@ -165,7 +242,7 @@ def _run_custom(scenario_name: str, n_runs: int, seed: int,
     config_mod.build_genesis_state = _patched_genesis
     try:
         df = run_simulation('_custom', n_runs=n_runs, seed=seed, agent_config=agent_config,
-                            timesteps=timesteps)
+                            timesteps=timesteps, progress_cb=progress_cb)
     finally:
         config_mod.build_genesis_state = orig_fn
         SCENARIOS.pop('_custom', None)
@@ -189,10 +266,24 @@ if run_button:
         flux_schedule=st.session_state['agent_flux'],
     )
 
-    with st.spinner("Running simulation..."):
-        df = _run_custom(scenario_name, n_runs=n_runs, seed=int(seed),
-                         demurrage_rate=float(demurrage), param_overrides=param_overrides,
-                         agent_config=agent_config, timesteps=int(timesteps))
+    progress_bar = st.progress(0, text="Starting simulation...")
+    progress_state = {'steps_done': 0}
+    total_steps = int(timesteps) * n_runs
+
+    def _on_progress(timestep, total_timesteps):
+        progress_state['steps_done'] += 1
+        frac = min(progress_state['steps_done'] / total_steps, 1.0)
+        run_num = (progress_state['steps_done'] - 1) // total_timesteps + 1
+        if n_runs > 1:
+            progress_bar.progress(frac, text=f"Run {run_num}/{n_runs} — month {timestep}/{total_timesteps}")
+        else:
+            progress_bar.progress(frac, text=f"Month {timestep} / {total_timesteps}")
+
+    df = _run_custom(scenario_name, n_runs=n_runs, seed=int(seed),
+                     demurrage_rate=float(demurrage), param_overrides=param_overrides,
+                     agent_config=agent_config, timesteps=int(timesteps),
+                     progress_cb=_on_progress)
+    progress_bar.empty()
 
     st.session_state['df'] = df
     st.session_state['scenario_name'] = scenario_name
@@ -290,15 +381,85 @@ if 'df' in st.session_state:
             fig6.update_layout(height=350, margin=dict(t=30, b=30), yaxis_title="Queued $CC")
             st.plotly_chart(fig6, use_container_width=True)
 
-    # --- Event Log ---
-    st.subheader("Event Log")
+    # --- Detailed Event Log ---
+    st.subheader("📋 Detailed Event Log")
     run_df = df[df['run'] == df['run'].iloc[0]] if 'run' in df.columns and df['run'].nunique() > 1 else df
-    all_events = []
-    for _, row in run_df.iterrows():
-        if isinstance(row.get('events_log'), list):
-            all_events.extend(row['events_log'])
+    # events_log is cumulative — only take the final row's log to avoid duplication
+    last_log = run_df.iloc[-1].get('events_log') if len(run_df) > 0 else None
+    all_events = list(last_log) if isinstance(last_log, list) else []
+
     if all_events:
-        st.dataframe(pd.DataFrame(all_events), use_container_width=True)
+        # Separate step summaries from legacy events
+        step_summaries = [e for e in all_events if e.get('event') == 'step_summary']
+
+        if step_summaries:
+            # Notable events banner
+            notable_events = []
+            for s_entry in step_summaries:
+                for note in s_entry.get('notable_events', []):
+                    notable_events.append({'Month': s_entry['timestep'], 'Event': note})
+            if notable_events:
+                st.markdown("#### ⚡ Notable Events")
+                st.dataframe(pd.DataFrame(notable_events), use_container_width=True, hide_index=True)
+
+            # Detailed per-timestep table
+            st.markdown("#### 📊 Per-Month Summary")
+            summary_rows = []
+            for s_entry in step_summaries:
+                panicking_detail = ', '.join(
+                    f"{t}: {c}" for t, c in s_entry.get('panicking_by_type', {}).items()
+                ) or '—'
+                type_breakdown = ', '.join(
+                    f"{t}: {c}" for t, c in s_entry.get('agent_types', {}).items()
+                )
+                summary_rows.append({
+                    'Month': s_entry['timestep'],
+                    'Phase': s_entry.get('phase', ''),
+                    'Agents': s_entry.get('n_agents', 0),
+                    '+Joined': s_entry.get('new_joined', 0),
+                    'Dormant': s_entry.get('n_dormant', 0),
+                    'Avg Conf': round(s_entry.get('avg_confidence', 0), 3),
+                    'Conf Range': f"{s_entry.get('confidence_min', 0):.2f}–{s_entry.get('confidence_max', 0):.2f}",
+                    'Panicking': s_entry.get('n_panicking', 0),
+                    'Panic Detail': panicking_detail,
+                    'Minted': f"{s_entry.get('work_minting', 0):,.0f}",
+                    'Fraud': f"{s_entry.get('fraud_minting', 0):,.0f}",
+                    'Burned': f"{s_entry.get('access_fee_burn', 0):,.0f}",
+                    'Redeemed': f"{s_entry.get('redemptions', 0):,.0f}",
+                    'Wanted→Got': f"{s_entry.get('desired_redemptions', 0):,.0f}→{s_entry.get('redemptions', 0):,.0f}",
+                    'Reserve Δ': f"{s_entry.get('reserve_delta', 0):+,.0f}",
+                    '  +Purchases': f"{s_entry.get('reserve_in_purchases', 0):,.0f}",
+                    '  +Hypercerts': f"{s_entry.get('reserve_in_hypercerts', 0):,.0f}",
+                    '  −Redemptions': f"{s_entry.get('reserve_out_redemptions', 0):,.0f}",
+                    'HC Sold': s_entry.get('hc_sold_count', 0),
+                })
+            summary_df = pd.DataFrame(summary_rows)
+            st.dataframe(summary_df, use_container_width=True, hide_index=True, height=400)
+
+            # Agent type breakdown over time
+            st.markdown("#### 🎭 Agent Type Breakdown")
+            type_rows = []
+            for s_entry in step_summaries:
+                row_data = {'Month': s_entry['timestep']}
+                row_data.update(s_entry.get('agent_types', {}))
+                type_rows.append(row_data)
+            if type_rows:
+                type_df = pd.DataFrame(type_rows).fillna(0)
+                # Plot as stacked area
+                agent_type_cols = [c for c in type_df.columns if c != 'Month']
+                if agent_type_cols:
+                    fig_types = go.Figure()
+                    for col in agent_type_cols:
+                        fig_types.add_trace(go.Scatter(
+                            x=type_df['Month'], y=type_df[col],
+                            name=col.replace('_', ' ').title(),
+                            stackgroup='one',
+                        ))
+                    fig_types.update_layout(height=350, margin=dict(t=30, b=30),
+                                           yaxis_title="Count", xaxis_title="Month")
+                    st.plotly_chart(fig_types, use_container_width=True)
+        else:
+            st.dataframe(pd.DataFrame(all_events), use_container_width=True)
     else:
         st.info("No events logged.")
 else:
