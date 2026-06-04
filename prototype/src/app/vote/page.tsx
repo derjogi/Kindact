@@ -23,7 +23,9 @@ export default function QuickVotePage() {
   if (loading) {
     return (
       <Layout>
-        <div className="text-center py-16 text-stone-400">Loading…</div>
+        <div className="text-center py-16 font-meta text-sm text-on-surface-variant">
+          Loading…
+        </div>
       </Layout>
     );
   }
@@ -33,10 +35,12 @@ export default function QuickVotePage() {
   if (unvoted.length === 0) {
     return (
       <Layout>
-        <div className="text-center py-16 space-y-4">
-          <div className="text-4xl">🗳️</div>
-          <h2 className="text-lg font-medium text-stone-800">All caught up!</h2>
-          <p className="text-sm text-stone-500">
+        <div className="text-center py-16 space-y-3">
+          <div className="text-5xl">🗳️</div>
+          <h2 className="font-display text-2xl font-semibold text-on-surface">
+            All caught up!
+          </h2>
+          <p className="font-meta text-sm text-on-surface-variant">
             No issues awaiting your vote.
           </p>
         </div>
@@ -46,15 +50,19 @@ export default function QuickVotePage() {
 
   const issue = unvoted[currentIndex % unvoted.length];
   const approveCount =
-    (issue.decisionState as Record<string, unknown> | undefined)?.approveCount as number | undefined ?? 0;
+    ((issue.decisionState as Record<string, unknown> | undefined)
+      ?.approveCount as number | undefined) ?? 0;
   const rejectCount =
-    (issue.decisionState as Record<string, unknown> | undefined)?.rejectCount as number | undefined ?? 0;
+    ((issue.decisionState as Record<string, unknown> | undefined)
+      ?.rejectCount as number | undefined) ?? 0;
   const total = approveCount + rejectCount;
   const pct = total > 0 ? Math.round((approveCount / total) * 100) : 0;
 
-  const metrics = (issue.metrics as { dimension: string; value: string }[] | undefined) ?? [];
+  const metrics =
+    (issue.metrics as { dimension: string; value: string }[] | undefined) ?? [];
   const aiSummaryContent =
-    (issue.aiSummary as Record<string, unknown> | undefined)?.content as string | undefined ?? "";
+    ((issue.aiSummary as Record<string, unknown> | undefined)
+      ?.content as string | undefined) ?? "";
 
   const handleVote = async (vote: "approve" | "reject") => {
     setVoting(true);
@@ -71,33 +79,48 @@ export default function QuickVotePage() {
 
   return (
     <Layout>
-      <div className="space-y-4">
-        <h1 className="text-xl font-semibold text-stone-900">
-          Quick Vote{" "}
-          <span className="text-sm font-normal text-stone-400">
-            ({unvoted.length} awaiting)
-          </span>
-        </h1>
+      <div className="space-y-5">
+        {/* Editorial header */}
+        <section className="p-6 bg-surface-container-lowest rounded-md border-l-4 border-status-voting card-lift">
+          <p className="font-meta text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">
+            Quick Vote
+          </p>
+          <h1 className="font-display text-3xl font-bold text-on-surface">
+            Pending Decisions
+            <span className="font-sans text-base font-normal text-on-surface-variant ml-2">
+              ({unvoted.length} awaiting)
+            </span>
+          </h1>
+        </section>
 
-        <div className="bg-white rounded-lg border border-stone-200 p-5 space-y-4">
-          <h2 className="text-lg font-medium text-stone-900">
-            {issue.title as string}
-          </h2>
-          <p className="text-sm text-stone-600">{issue.summary as string}</p>
+        <article className="bg-surface-container-lowest rounded-md p-6 space-y-5 card-lift">
+          <header className="space-y-2">
+            <div className="inline-flex items-center gap-1.5 font-meta text-xs text-on-surface-variant">
+              <span className="w-2 h-2 rounded-full bg-status-voting" />
+              Voting open
+            </div>
+            <h2 className="font-display text-2xl font-bold text-on-surface leading-tight">
+              {issue.title as string}
+            </h2>
+            <p className="font-sans text-base leading-[1.6] text-on-surface-variant">
+              {issue.summary as string}
+            </p>
+          </header>
 
-          <div className="text-sm text-stone-700 leading-relaxed prose prose-sm prose-stone max-w-none">
+          <div className="prose prose-sm max-w-none text-on-surface">
             <ReactMarkdown>{aiSummaryContent}</ReactMarkdown>
           </div>
 
-          <div className="flex flex-wrap gap-3 text-sm text-stone-500">
+          <div className="flex flex-wrap gap-3 font-meta text-xs text-on-surface-variant">
             {metrics.map((m) => (
               <span key={m.dimension}>
-                {m.dimension}: <strong>{m.value}</strong>
+                {m.dimension}:{" "}
+                <strong className="text-on-surface">{m.value}</strong>
               </span>
             ))}
           </div>
 
-          <div className="text-sm text-stone-400">
+          <div className="font-meta text-sm text-on-surface-variant">
             {pct}% approval ({total} votes)
           </div>
 
@@ -106,36 +129,36 @@ export default function QuickVotePage() {
             <button
               onClick={() => handleVote("approve")}
               disabled={voting}
-              className="flex-1 py-2 text-sm font-medium rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 disabled:opacity-50"
+              className="flex-1 py-2.5 text-sm font-medium rounded-md bg-primary-container text-on-primary-container hover:bg-surface-container-high transition-colors disabled:opacity-50"
             >
               👍 Approve
             </button>
             <button
               onClick={() => handleVote("reject")}
               disabled={voting}
-              className="flex-1 py-2 text-sm font-medium rounded-lg bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 disabled:opacity-50"
+              className="flex-1 py-2.5 text-sm font-medium rounded-md bg-surface-container-low text-on-surface hover:bg-surface-container transition-colors disabled:opacity-50"
             >
               👎 Reject
             </button>
           </div>
 
-          <div className="flex justify-between pt-2">
+          <div className="flex justify-between pt-1">
             <Link
               href={`/issues/${issue.id}`}
-              className="text-sm text-stone-500 hover:text-stone-700"
+              className="font-meta text-sm text-on-surface-variant hover:text-primary-dim"
             >
               📖 Read full issue
             </Link>
             {unvoted.length > 1 && (
               <button
                 onClick={() => setCurrentIndex((i) => i + 1)}
-                className="text-sm text-stone-500 hover:text-stone-700"
+                className="font-meta text-sm text-on-surface-variant hover:text-primary-dim"
               >
                 Skip →
               </button>
             )}
           </div>
-        </div>
+        </article>
       </div>
     </Layout>
   );

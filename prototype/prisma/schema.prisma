@@ -152,10 +152,13 @@ model Issue {
   scope       IssueScope
   tags        String[]    @default([])
   creatorId   String      @map("creator_id")
+  cellId      String?     @map("cell_id")
   participants Int        @default(0)
   createdAt   DateTime    @default(now()) @map("created_at")
   updatedAt   DateTime    @updatedAt @map("updated_at")
 
+  cell          Cell?              @relation(fields: [cellId], references: [id])
+  anchorLinks   AnchorLink[]
   rewardIntent  RewardIntent?
   revisions     IssueRevision[]
   comments      Comment[]
@@ -175,6 +178,7 @@ model Issue {
   @@map("issues")
   @@index([status])
   @@index([scope])
+  @@index([cellId])
   @@index([createdAt])
 }
 
@@ -650,4 +654,153 @@ model NotificationPreference {
 
   @@unique([userId, eventType])
   @@map("notification_preferences")
+}
+
+// ─── 026: Cells (Holochain-aligned) ─────────────────────────────────────────
+
+enum CellTier {
+  canonical
+  promoted
+  uncurated
+}
+
+enum CellLifecycle {
+  active
+  archived
+}
+
+enum CellMembershipKind {
+  member
+  guest
+}
+
+model Cell {
+  id          String        @id @default(uuid())
+  // Holochain-style stable identifier (e.g. "kindact:berlin", "uncurated/<did>/<name>")
+  cellId      String        @unique @map("cell_id_str")
+  displayName String        @map("display_name")
+  description String        @default("")
+  tier        CellTier      @default(uncurated)
+  scopeLevel  String        @default("topic") @map("scope_level") // city/region/national/global/topic/project/event
+  locationRefs String[]     @default([]) @map("location_refs")    // e.g. h3 cells, place names
+  topicTags   String[]      @default([]) @map("topic_tags")
+  membraneRead  String      @default("public") @map("membrane_read")    // public | scope_verified | invite_only
+  membraneWrite String      @default("scope_verified") @map("membrane_write")
+  scopeProofTypes String[]  @default([]) @map("scope_proof_types")
+  jurisdictionalClaims String[] @default([]) @map("jurisdictional_claims")
+  governanceEngine     String  @default("approval_voting") @map("governance_engine")
+  forkedFromId String?      @map("forked_from_id")
+  creatorId   String        @map("creator_id")
+  lifecycle   CellLifecycle @default(active)
+  createdAt   DateTime      @default(now()) @map("created_at")
+  lastActivityAt DateTime   @default(now()) @map("last_activity_at")
+
+  forkedFrom  Cell?            @relation("CellForks", fields: [forkedFromId], references: [id])
+  forks       Cell[]           @relation("CellForks")
+  memberships CellMembership[]
+  issues      Issue[]
+
+  @@map("cells")
+  @@index([tier])
+  @@index([lifecycle])
+}
+
+model CellMembership {
+  id        String              @id @default(uuid())
+  cellId    String              @map("cell_id")
+  userId    String              @map("user_id")
+  kind      CellMembershipKind  @default(member)
+  // For guest contributors, the issue this membership is scoped to (per holochain/044).
+  issueId   String?             @map("issue_id")
+  joinedAt  DateTime            @default(now()) @map("joined_at")
+  leftAt    DateTime?           @map("left_at")
+
+  cell Cell @relation(fields: [cellId], references: [id])
+
+  @@map("cell_memberships")
+  @@index([cellId, userId])
+  @@index([userId])
+}
+
+// ─── 027: Anchors (cross-cell discovery) ────────────────────────────────────
+
+enum AnchorKind {
+  topic
+  location
+  event
+  cell
+}
+
+enum AnchorStatus {
+  active
+  deprecated
+  merged
+}
+
+model AnchorRecord {
+  id            String        @id @default(uuid())
+  // Stable global identifier, e.g. "anchor:#wind-power"
+  anchorId      String        @unique @map("anchor_id_str")
+  kind          AnchorKind
+  displayName   String        @map("display_name")
+  description   String        @default("")
+  synonyms      String[]      @default([])
+  // Adjacency-list parent links — many parents allowed (a child can roll up to multiple).
+  parentIds     String[]      @default([]) @map("parent_ids")
+  status        AnchorStatus  @default(active)
+  mergedIntoId  String?       @map("merged_into_id")
+  creatorId     String        @map("creator_id")
+  createdAt     DateTime      @default(now()) @map("created_at")
+
+  links         AnchorLink[]
+  subscriptions AnchorSubscription[]
+
+  @@map("anchor_records")
+  @@index([kind])
+  @@index([status])
+}
+
+model AnchorLink {
+  id        String   @id @default(uuid())
+  anchorId  String   @map("anchor_id")
+  issueId   String   @map("issue_id")
+  // Mirrors the holochain scope_vector hint: where the issue is in scope-space.
+  scopeLevel String? @map("scope_level")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  anchor AnchorRecord @relation(fields: [anchorId], references: [id])
+  issue  Issue        @relation(fields: [issueId], references: [id])
+
+  @@unique([anchorId, issueId])
+  @@map("anchor_links")
+  @@index([issueId])
+}
+
+model AnchorSubscription {
+  id           String   @id @default(uuid())
+  userId       String   @map("user_id")
+  anchorId     String   @map("anchor_id")
+  // Optional client-side filter overlay
+  scopeLevels  String[] @default([]) @map("scope_levels")
+  languages    String[] @default([]) @map("languages")
+  muted        Boolean  @default(false)
+  subscribedAt DateTime @default(now()) @map("subscribed_at")
+
+  anchor AnchorRecord @relation(fields: [anchorId], references: [id])
+
+  @@unique([userId, anchorId])
+  @@map("anchor_subscriptions")
+  @@index([userId])
+}
+
+// A "Lens" — operationally a saved bundle of anchor subscriptions plus a name.
+model SavedLens {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  name      String
+  anchorIds String[] @default([]) @map("anchor_ids")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("saved_lenses")
+  @@index([userId])
 }

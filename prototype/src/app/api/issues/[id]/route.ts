@@ -1,5 +1,5 @@
 import { ok, handleError } from "@/server/api-utils";
-import { requireAuth } from "@/server/auth/middleware";
+import { getAuthUser, requireAuth } from "@/server/auth/middleware";
 import { getIssue, updateIssue } from "@/server/issues";
 
 export async function GET(
@@ -8,7 +8,8 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    const issue = await getIssue(id);
+    const user = await getAuthUser(request);
+    const issue = await getIssue(id, user?.id);
     return ok(issue);
   } catch (err) {
     return handleError(err);

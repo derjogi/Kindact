@@ -10,17 +10,29 @@ import CollapsibleDescription from "@/components/CollapsibleDescription";
 import SummaryWithRefs from "@/components/SummaryWithRefs";
 import ThreadList from "@/components/ThreadList";
 import DiscussionSearch from "@/components/DiscussionSearch";
-import { fetchIssue, fetchDeliberation } from "@/lib/api";
+import CellBadge from "@/components/CellBadge";
+import AnchorPill from "@/components/AnchorPill";
+import CellContextStrip from "@/components/CellContextStrip";
+import GuestContributorModal from "@/components/GuestContributorModal";
+import JurisdictionalClaimsPanel from "@/components/JurisdictionalClaimsPanel";
+import RelatedAcrossCells from "@/components/RelatedAcrossCells";
+import {
+  fetchIssue,
+  fetchDeliberation,
+  joinCell,
+  joinCellAsGuest,
+  subscribeAnchor,
+} from "@/lib/api";
 import { useStore } from "@/lib/store";
 
 const statusColors: Record<string, string> = {
-  draft: "bg-stone-400",
-  deliberating: "bg-emerald-500",
-  vote_ready: "bg-blue-500",
-  "vote-ready": "bg-blue-500",
-  adopted: "bg-violet-500",
-  implementing: "bg-amber-500",
-  completed: "bg-stone-600",
+  draft: "bg-on-surface-variant",
+  deliberating: "bg-status-deliberating",
+  vote_ready: "bg-status-voting",
+  "vote-ready": "bg-status-voting",
+  adopted: "bg-status-adopted",
+  implementing: "bg-status-implementing",
+  completed: "bg-status-completed",
 };
 
 const statusLabels: Record<string, string> = {
@@ -65,6 +77,9 @@ export default function IssueDetail({
 
   // Search state
   const [searchQuery, setSearchQuery] = useState<string | null>(null);
+
+  // Guest contributor modal
+  const [guestModalOpen, setGuestModalOpen] = useState(false);
 
   const mainRef = useRef<HTMLDivElement>(null);
 
@@ -115,16 +130,18 @@ export default function IssueDetail({
     const el = document.getElementById(`comment-${commentId}`);
     if (el) {
       el.scrollIntoView({ behavior: "smooth", block: "center" });
-      el.classList.add("bg-yellow-50");
-      setTimeout(() => el.classList.remove("bg-yellow-50"), 2000);
+      el.classList.add("bg-primary-container");
+      setTimeout(() => el.classList.remove("bg-primary-container"), 2000);
     }
   }, []);
 
   if (loading) {
     return (
-      <Layout>
+      <Layout wide>
         <div className="flex items-center justify-center py-24">
-          <div className="text-stone-400 text-sm">Loading issue…</div>
+          <div className="font-meta text-on-surface-variant text-sm">
+            Loading issue…
+          </div>
         </div>
       </Layout>
     );
@@ -132,8 +149,8 @@ export default function IssueDetail({
 
   if (error || !issue) {
     return (
-      <Layout>
-        <p className="text-center text-stone-400 py-12">
+      <Layout wide>
+        <p className="text-center font-meta text-on-surface-variant py-12">
           {error ?? "Issue not found."}
         </p>
       </Layout>
@@ -192,45 +209,76 @@ export default function IssueDetail({
   ];
 
   return (
-    <Layout>
+    <Layout wide>
       <div className="flex gap-6" ref={mainRef}>
         {/* Main content (~84%) */}
         <div className="flex-1 min-w-0 space-y-4">
           {/* Back link */}
           <Link
             href="/"
-            className="text-sm text-stone-400 hover:text-stone-600 transition-colors"
+            className="font-meta text-xs uppercase tracking-widest text-on-surface-variant hover:text-primary-dim transition-colors"
           >
             ← Back to Issues
           </Link>
 
           {/* Header */}
-          <div className="bg-white rounded-lg border border-stone-200 p-5">
+          <div className="bg-surface-container-lowest rounded-md p-6">
             <div className="flex flex-col lg:flex-row lg:gap-6">
               <div className="flex-1 min-w-0">
-                <h1 className="text-xl font-semibold text-stone-900">
+                <h1 className="font-display text-3xl font-bold text-on-surface leading-tight">
                   {issue.title}
                 </h1>
-                <p className="mt-1 text-stone-600">{issue.summary}</p>
 
-                <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-stone-500">
+                {/* Cell + anchors line — 029 issue detail header */}
+                {(issue.cell || (issue.anchorLinks?.length ?? 0) > 0) && (
+                  <div className="mt-2 flex flex-wrap items-center gap-1.5 text-sm text-on-surface-variant">
+                    {issue.cell ? (
+                      <>
+                        <span>Posted in</span>
+                        <CellBadge cell={issue.cell} />
+                      </>
+                    ) : null}
+                    {(issue.anchorLinks?.length ?? 0) > 0 ? (
+                      <>
+                        <span className="text-on-surface-variant">·</span>
+                        <span>publishes to</span>
+                        {(issue.anchorLinks as Array<{ anchor: { id: string; anchorId: string; kind: "topic" | "location" | "event" | "cell"; displayName: string } }>).map(
+                          (al) => (
+                            <AnchorPill key={al.anchor.id} anchor={al.anchor} />
+                          ),
+                        )}
+                      </>
+                    ) : null}
+                  </div>
+                )}
+
+                <p className="mt-3 font-sans text-base leading-relaxed text-on-surface-variant">
+                  {issue.summary}
+                </p>
+
+                <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 font-meta text-sm text-on-surface-variant">
                   <span className="flex items-center gap-1.5">
                     <span
-                      className={`w-2 h-2 rounded-full ${statusColors[issue.status] ?? "bg-stone-400"}`}
+                      className={`w-2 h-2 rounded-full ${statusColors[issue.status] ?? "bg-on-surface-variant"}`}
                     />
                     {statusLabels[issue.status] ?? issue.status}
                   </span>
                   <span className="capitalize">{issue.scope}</span>
                   <span>{issue.participants} participants</span>
+                  {issue.viewerCellRelation === "guest" ? (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-tertiary-container text-tertiary text-xs">
+                      Guest contributor
+                    </span>
+                  ) : null}
                 </div>
 
                 {/* Metrics — hover populates source panel */}
                 {metrics.length > 0 && (
-                  <div className="mt-3 flex flex-wrap gap-2">
+                  <div className="mt-4 flex flex-wrap gap-2">
                     {metrics.map((m) => (
                       <div
                         key={String(m.dimension ?? m.id)}
-                        className="px-3 py-2 bg-stone-50 rounded-lg border border-stone-100 text-sm cursor-default"
+                        className="px-3 py-2 bg-surface-container-low rounded-md font-meta text-sm cursor-default"
                         onMouseEnter={() => {
                           const dim = String(m.dimension);
                           const metricComments = comments
@@ -247,12 +295,12 @@ export default function IssueDetail({
                         }}
                         onMouseLeave={handleClearSources}
                       >
-                        <span className="text-stone-500">{String(m.dimension)}:</span>{" "}
-                        <span className="font-medium text-stone-800">
+                        <span className="text-on-surface-variant">{String(m.dimension)}:</span>{" "}
+                        <span className="font-semibold text-on-surface">
                           {String(m.value)}
                         </span>
                         {m.confidence ? (
-                          <span className="ml-1 text-xs text-stone-400">
+                          <span className="ml-1 text-xs text-on-surface-variant">
                             ({String(m.confidence)} conf.)
                           </span>
                         ) : null}
@@ -262,7 +310,7 @@ export default function IssueDetail({
                 )}
 
                 {issue.rewardIntent?.amount && (
-                  <div className="mt-3 text-sm text-stone-500">
+                  <div className="mt-4 font-meta text-sm text-on-surface-variant">
                     💰 Reward: {issue.rewardIntent.amount}
                   </div>
                 )}
@@ -270,22 +318,22 @@ export default function IssueDetail({
 
               {/* Boundary indicators — hover populates source panel */}
               {boundaries.length > 0 && (
-                <div className="mt-4 lg:mt-0 lg:border-l lg:border-stone-100 lg:pl-6 shrink-0">
-                  <h3 className="text-xs font-medium text-stone-400 uppercase tracking-wide mb-2">
+                <div className="mt-4 lg:mt-0 lg:pl-6 shrink-0">
+                  <h3 className="font-meta text-[10px] uppercase tracking-widest text-on-surface-variant mb-2">
                     Impact
                   </h3>
                   <div className="flex flex-wrap lg:flex-col gap-2">
                     {boundaries.map((b) => {
                       const dir = String(b.direction);
                       const style = dir === "improve"
-                        ? { color: "text-emerald-600", arrow: "↑" }
+                        ? { color: "text-status-deliberating", arrow: "↑" }
                         : dir === "regress"
-                          ? { color: "text-rose-600", arrow: "↓" }
-                          : { color: "text-stone-400", arrow: "→" };
+                          ? { color: "text-status-implementing", arrow: "↓" }
+                          : { color: "text-on-surface-variant", arrow: "→" };
                       return (
                         <div
                           key={String(b.id)}
-                          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-stone-50 border border-stone-100 text-sm cursor-default"
+                          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-surface-container-low font-meta text-sm cursor-default"
                           onMouseEnter={() => {
                             const label = String(b.label);
                             const boundaryComments = comments
@@ -303,7 +351,7 @@ export default function IssueDetail({
                           onMouseLeave={handleClearSources}
                         >
                           <span>{String(b.icon)}</span>
-                          <span className="text-stone-600 text-xs">{String(b.label)}</span>
+                          <span className="text-on-surface text-xs">{String(b.label)}</span>
                           <span className={`font-semibold text-xs ${style.color}`}>
                             {style.arrow} {String(b.delta)}
                           </span>
@@ -315,6 +363,34 @@ export default function IssueDetail({
               )}
             </div>
           </div>
+
+          {/* 029: Cell context strip (member / guest / subscribed / public / denied) */}
+          {issue.cell ? (
+            <CellContextStrip
+              issueId={issue.id}
+              cell={issue.cell}
+              anchorLinks={(issue.anchorLinks ?? []) as Parameters<typeof CellContextStrip>[0]["anchorLinks"]}
+              viewerCellRelation={(issue.viewerCellRelation as "member" | "guest" | "none") ?? "none"}
+              viewerSubscribedAnchorIds={(issue.viewerSubscribedAnchorIds as string[]) ?? []}
+              onJoinCell={async () => {
+                await joinCell(issue.cell.id);
+                await loadData();
+              }}
+              onSubscribeAnchor={async (anchorId: string) => {
+                await subscribeAnchor(anchorId);
+                await loadData();
+              }}
+              onOpenGuestModal={() => setGuestModalOpen(true)}
+            />
+          ) : null}
+
+          {/* 029: Jurisdictional claims */}
+          {issue.cell?.jurisdictionalClaims?.length ? (
+            <JurisdictionalClaimsPanel
+              cellId={issue.cell.cellId}
+              claims={issue.cell.jurisdictionalClaims as string[]}
+            />
+          ) : null}
 
           {/* Collapsible Description */}
           <CollapsibleDescription
@@ -339,16 +415,16 @@ export default function IssueDetail({
           )}
 
           {/* Tabs */}
-          <div className="bg-white rounded-lg border border-stone-200 overflow-hidden">
-            <div className="flex border-b border-stone-200 overflow-x-auto scrollbar-hide">
+          <div className="bg-surface-container-lowest rounded-md overflow-hidden">
+            <div className="flex bg-surface-container-low overflow-x-auto scrollbar-hide">
               {tabs.map((tab) => (
                 <button
                   key={tab.key}
                   onClick={() => setActiveTab(tab.key)}
-                  className={`px-4 py-2.5 min-h-[44px] text-sm whitespace-nowrap transition-colors ${
+                  className={`px-5 py-3 min-h-[44px] font-meta text-sm whitespace-nowrap transition-colors ${
                     activeTab === tab.key
-                      ? "text-stone-900 font-medium border-b-2 border-stone-800"
-                      : "text-stone-400 hover:text-stone-600"
+                      ? "bg-surface-container-lowest text-on-surface font-medium"
+                      : "text-on-surface-variant hover:text-on-surface"
                   }`}
                 >
                   {tab.label}
@@ -356,7 +432,7 @@ export default function IssueDetail({
               ))}
             </div>
 
-            <div className="p-5">
+            <div className="p-6">
               {activeTab === "discussion" && (
                 <>
                   <DiscussionSearch
@@ -376,7 +452,7 @@ export default function IssueDetail({
               {activeTab === "procon" && (
                 <div className="space-y-3">
                   {args.length === 0 ? (
-                    <p className="text-sm text-stone-400">
+                    <p className="font-meta text-sm text-on-surface-variant">
                       No arguments yet. Be the first to add one.
                     </p>
                   ) : (
@@ -390,25 +466,25 @@ export default function IssueDetail({
                           <div key={String(arg.id)}>
                             <HoverToolbar>
                               <div
-                                className={`p-3 rounded-lg border-l-4 ${
+                                className={`p-4 rounded-md border-l-4 bg-surface-container-low ${
                                   arg.type === "pro"
-                                    ? "border-emerald-400 bg-emerald-50/50"
-                                    : "border-rose-400 bg-rose-50/50"
+                                    ? "border-status-deliberating"
+                                    : "border-status-implementing"
                                 }`}
                               >
-                                <div className="flex items-center gap-2 text-xs text-stone-400 mb-1">
+                                <div className="flex items-center gap-2 font-meta text-xs text-on-surface-variant mb-1">
                                   <span>{String(arg.alias ?? "")}</span>
                                   <span
-                                    className={`px-1.5 py-0.5 rounded font-medium ${
+                                    className={`px-1.5 py-0.5 rounded text-[10px] uppercase tracking-wider font-semibold ${
                                       arg.type === "pro"
-                                        ? "text-emerald-600"
-                                        : "text-rose-600"
+                                        ? "text-status-deliberating"
+                                        : "text-status-implementing"
                                     }`}
                                   >
-                                    {String(arg.type).toUpperCase()}
+                                    {String(arg.type)}
                                   </span>
                                 </div>
-                                <p className="text-sm text-stone-700">
+                                <p className="text-sm text-on-surface">
                                   {String(arg.text)}
                                 </p>
                               </div>
@@ -417,25 +493,25 @@ export default function IssueDetail({
                               <div key={String(child.id)} className="ml-6 mt-2">
                                 <HoverToolbar>
                                   <div
-                                    className={`p-3 rounded-lg border-l-4 ${
+                                    className={`p-4 rounded-md border-l-4 bg-surface-container-low ${
                                       child.type === "pro"
-                                        ? "border-emerald-400 bg-emerald-50/50"
-                                        : "border-rose-400 bg-rose-50/50"
+                                        ? "border-status-deliberating"
+                                        : "border-status-implementing"
                                     }`}
                                   >
-                                    <div className="flex items-center gap-2 text-xs text-stone-400 mb-1">
+                                    <div className="flex items-center gap-2 font-meta text-xs text-on-surface-variant mb-1">
                                       <span>{String(child.alias ?? "")}</span>
                                       <span
-                                        className={`px-1.5 py-0.5 rounded font-medium ${
+                                        className={`px-1.5 py-0.5 rounded text-[10px] uppercase tracking-wider font-semibold ${
                                           child.type === "pro"
-                                            ? "text-emerald-600"
-                                            : "text-rose-600"
+                                            ? "text-status-deliberating"
+                                            : "text-status-implementing"
                                         }`}
                                       >
-                                        {String(child.type).toUpperCase()}
+                                        {String(child.type)}
                                       </span>
                                     </div>
-                                    <p className="text-sm text-stone-700">
+                                    <p className="text-sm text-on-surface">
                                       {String(child.text)}
                                     </p>
                                   </div>
@@ -450,7 +526,7 @@ export default function IssueDetail({
               )}
 
               {activeTab === "history" && (
-                <div className="text-sm text-stone-400 space-y-2">
+                <div className="font-meta text-sm text-on-surface-variant space-y-2">
                   <p>📝 Issue created — {issue.createdAt}</p>
                   <p>📝 Description updated — 2d ago</p>
                   <p>📊 Metrics added (cost, time) — 1d ago</p>
@@ -467,6 +543,13 @@ export default function IssueDetail({
             rejectCount={issue.decisionState?.rejectCount ?? 0}
             onVoted={loadData}
           />
+
+          {/* 029: Related across cells */}
+          {issue.relatedAcrossCells?.length ? (
+            <RelatedAcrossCells
+              items={issue.relatedAcrossCells as Parameters<typeof RelatedAcrossCells>[0]["items"]}
+            />
+          ) : null}
         </div>
 
         {/* Source Panel (~16%) — hidden on mobile */}
@@ -490,6 +573,21 @@ export default function IssueDetail({
           mobile
         />
       </div>
+
+      {/* 029: Guest contributor modal */}
+      {issue.cell ? (
+        <GuestContributorModal
+          open={guestModalOpen}
+          cell={issue.cell}
+          issueId={issue.id}
+          issueTitle={issue.title}
+          onClose={() => setGuestModalOpen(false)}
+          onConfirm={async () => {
+            await joinCellAsGuest(issue.cell.id, issue.id);
+            await loadData();
+          }}
+        />
+      ) : null}
     </Layout>
   );
 }

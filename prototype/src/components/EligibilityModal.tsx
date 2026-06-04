@@ -93,32 +93,32 @@ export default function EligibilityModal({
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+        className="absolute inset-0 bg-on-surface/40 backdrop-blur-sm"
         onClick={onClose}
       />
 
       {/* Modal */}
-      <div className="relative bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-5">
+      <div className="relative bg-surface-container-lowest rounded-md elevation-floating max-w-md w-full p-7 space-y-5">
         <div>
-          <h2 className="text-lg font-semibold text-stone-900">
+          <h2 className="font-display text-2xl font-bold text-on-surface">
             Before you vote
           </h2>
-          <p className="text-sm text-stone-500 mt-1">
+          <p className="font-sans text-sm text-on-surface-variant mt-1">
             Quick check to make sure you&apos;re familiar with this issue.
           </p>
         </div>
 
         {/* Stakeholder check */}
-        <div className="flex items-center gap-2 text-sm bg-emerald-50 text-emerald-700 px-3 py-2 rounded-lg">
+        <div className="flex items-center gap-2 font-meta text-sm bg-primary-container text-on-primary-container px-3 py-2 rounded-md">
           <span>✅</span>
           <span>Stakeholder check — auto-verified</span>
         </div>
 
         {/* Questions */}
-        <div className="space-y-4">
+        <div className="space-y-5">
           {questions.map((q, qi) => (
             <div key={qi}>
-              <p className="text-sm font-medium text-stone-700 mb-2">
+              <p className="text-sm font-medium text-on-surface mb-2">
                 {qi + 1}. {q.question}
               </p>
               <div className="space-y-1.5">
@@ -126,13 +126,13 @@ export default function EligibilityModal({
                   const selected = answers[qi] === oi;
                   const isCorrect = oi === q.correctIndex;
                   let optionStyle =
-                    "border-stone-200 hover:border-stone-300 hover:bg-stone-50";
+                    "bg-surface-container-low hover:bg-surface-container text-on-surface";
                   if (submitted && selected) {
                     optionStyle = isCorrect
-                      ? "border-emerald-400 bg-emerald-50 text-emerald-800"
-                      : "border-rose-400 bg-rose-50 text-rose-800";
+                      ? "bg-primary-container text-on-primary-container"
+                      : "bg-tertiary-container text-status-implementing";
                   } else if (selected) {
-                    optionStyle = "border-stone-800 bg-stone-50";
+                    optionStyle = "bg-primary-container text-on-primary-container";
                   }
 
                   return (
@@ -144,7 +144,7 @@ export default function EligibilityModal({
                         next[qi] = oi;
                         setAnswers(next);
                       }}
-                      className={`w-full text-left px-3 py-2 text-sm rounded-lg border transition-colors ${optionStyle}`}
+                      className={`w-full text-left px-3 py-2.5 text-sm rounded-md transition-colors ${optionStyle}`}
                     >
                       {opt}
                     </button>
@@ -158,28 +158,28 @@ export default function EligibilityModal({
         {/* Result / actions */}
         {submitted ? (
           <div
-            className={`text-sm text-center py-2 rounded-lg ${
+            className={`font-meta text-sm text-center py-2 rounded-md ${
               passed
-                ? "bg-emerald-50 text-emerald-700"
-                : "bg-rose-50 text-rose-700"
+                ? "bg-primary-container text-on-primary-container"
+                : "bg-tertiary-container text-status-implementing"
             }`}
           >
             {passed
-              ? "✅ Passed! Redirecting to vote..."
+              ? "✅ Passed! Redirecting to vote…"
               : "❌ Some answers were incorrect. Please review the issue summary and try again."}
           </div>
         ) : (
           <div className="flex justify-end gap-3">
             <button
               onClick={onClose}
-              className="px-4 py-2 text-sm text-stone-500 hover:text-stone-700"
+              className="px-4 py-2 font-meta text-sm text-on-surface-variant hover:text-on-surface"
             >
               Cancel
             </button>
             <button
               onClick={handleSubmit}
               disabled={!allAnswered}
-              className="px-5 py-2 text-sm bg-stone-800 text-white rounded-lg hover:bg-stone-700 disabled:opacity-40 disabled:cursor-not-allowed"
+              className="btn-primary px-5 py-2 font-meta text-sm rounded-md"
             >
               Submit
             </button>
@@ -193,7 +193,7 @@ export default function EligibilityModal({
               setSubmitted(false);
               setPassed(false);
             }}
-            className="w-full text-sm text-stone-500 hover:text-stone-700 py-1"
+            className="w-full font-meta text-sm text-on-surface-variant hover:text-on-surface py-1"
           >
             Try again
           </button>
