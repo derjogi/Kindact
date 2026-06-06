@@ -1,0 +1,68 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Kindact",
+  "version": "0.2.1",
+  "identifier": "com.kindact.app",
+  "build": {
+    "frontendDist": "../dist",
+    "devUrl": "http://localhost:5174",
+    "beforeDevCommand": "npm run dev",
+    "beforeBuildCommand": "npm run build"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Kindact",
+        "width": 900,
+        "height": 700,
+        "minWidth": 700,
+        "minHeight": 500,
+        "resizable": true,
+        "fullscreen": false,
+        "center": true
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "externalBin": [
+      "binaries/kindact-holochain",
+      "binaries/kindact-lair-keystore"
+    ],
+    "resources": [
+      "resources/proofpoll_v1_3_happ.happ"
+    ],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "macOS": {
+      "signingIdentity": null,
+      "entitlements": "entitlements.plist",
+      "hardenedRuntime": true
+    },
+    "windows": {
+      "signCommand": {
+        "cmd": "pwsh",
+        "args": [
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "scripts/sign-windows.ps1",
+          "%1"
+        ]
+      }
+    }
+  },
+  "plugins": {
+    "shell": {
+      "open": true
+    }
+  }
+}

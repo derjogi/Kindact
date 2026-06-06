@@ -1,0 +1,86 @@
+[package]
+name = "kindact"
+version = "0.2.1"
+description = "Kindact - Verified polls with Flowsta identity linking"
+authors = ["Kindact"]
+license = "MIT"
+edition = "2021"
+rust-version = "1.77.2"
+
+[lib]
+name = "app_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2.5.4", features = [] }
+
+[dependencies]
+serde_json = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+log = "0.4"
+tauri = { version = "2.10.0", features = ["devtools"] }
+tauri-plugin-log = "2"
+tauri-plugin-shell = "2"
+tokio = { version = "1", features = ["full"] }
+
+# Lair keystore client API. Holochain 0.6.1 pins lair_keystore_api to exactly
+# 0.6.3 — match it so the bundled lair-keystore binary (0.6.3) and this
+# client can never drift.
+lair_keystore_api = "=0.6.3"
+
+# Holochain conductor client (AdminWebsocket + AppWebsocket). Conductor 0.6.1
+# → Rust client 0.8.1 (released 2026-05-12 for Holochain 0.6.1).
+holochain_client = { version = "=0.8.1", default-features = false }
+holochain_types = "=0.6.1"
+
+# Used by build_canonical_backup to dump + classify the full source chain
+# (SourceChainDumpRecord, EntryType/Action) for the CAL §4.2.1 export. Already
+# pulled in transitively by holochain_types 0.6.1; pinned to move in lockstep.
+holochain_state_types = "=0.6.1"
+holochain_integrity_types = "=0.6.1"
+
+# Error handling
+thiserror = "1.0"
+
+# Random passphrase generation
+rand = "0.8"
+
+# Msgpack decoding for entry types
+rmp-serde = "1"
+
+# Base64 for signature decoding
+base64 = "0.22"
+
+# Hex encoding for the unknown-entry-type fallback in decode_record_for_export,
+# so the user still sees *something* in their Vault export per CAL §4.2.1.
+hex = "0.4"
+
+# HTTP client for IPC notifications to Vault
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
+
+# Percent-decode lair connection-URL paths so we match the actual filesystem
+# path (matters on macOS where "Application Support" contains a space).
+percent-encoding = "2"
+
+# (libc dependency moved to the Unix-only target block below)
+
+# Unix-only: process liveness check via `kill(pid, 0)` in
+# `spawn_health_monitor`. Windows uses a stubbed check (see conductor.rs).
+[target.'cfg(unix)'.dependencies]
+libc = "0.2"
+
+# Windows-only: EnumWindows + ShowWindow(SW_HIDE) to hide spawned console
+# windows, plus a kill-on-close Job Object (Win32_System_JobObjects) so the
+# lair-keystore.exe / holochain.exe sidecars die with the app instead of
+# orphaning (see process_ext.rs).
+[target.'cfg(target_os = "windows")'.dependencies]
+windows-sys = { version = "0.59", features = [
+    "Win32_Foundation",
+    "Win32_UI_WindowsAndMessaging",
+    "Win32_System_Diagnostics_ToolHelp",
+    "Win32_System_JobObjects",
+    # CreateJobObjectW takes a *const SECURITY_ATTRIBUTES (Win32_Security), and
+    # JOBOBJECT_EXTENDED_LIMIT_INFORMATION embeds Threading::IO_COUNTERS.
+    "Win32_Security",
+    "Win32_System_Threading",
+] }
