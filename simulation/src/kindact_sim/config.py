@@ -27,7 +27,12 @@ def build_experiment(scenario_name: str, n_runs: int = 1, seed: int = 42,
                                   population_mix=agent_config.population_mix)
 
     params = dict(scenario.params)
-    params['rng'] = np.random.default_rng(seed)
+    # Store the base seed instead of a shared rng object. cadCAD copies the
+    # params (and pickles them for parallel runs), so a single pre-built rng
+    # would start from an identical state in every run, making Monte Carlo runs
+    # byte-for-byte identical. The rng is created lazily per run from
+    # base_seed + run_index (see policies.agent_decisions).
+    params['_base_seed'] = seed
     params['_scenario_name'] = scenario_name
     params['_agent_config'] = agent_config
     params['_progress_cb'] = progress_cb

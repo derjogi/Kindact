@@ -1,0 +1,35 @@
+{
+  "name": "69NoPurchases",
+  "population_mix": {
+    "contributor": 0.2,
+    "merchant": 0.1,
+    "speculator": 0.2,
+    "impact_buyer": 0.02,
+    "fraudster": 0.08,
+    "panicker": 0.4
+  },
+  "flux_schedule": [
+    {
+      "month": 0,
+      "weights": {
+        "contributor": 0.2,
+        "merchant": 0.1,
+        "speculator": 0.25,
+        "impact_buyer": 0.02,
+        "fraudster": 0.08,
+        "panicker": 0.35
+      }
+    },
+    {
+      "month": 18,
+      "weights": {
+        "contributor": 0.1,
+        "merchant": 0.05,
+        "speculator": 0.15,
+        "impact_buyer": 0.0,
+        "fraudster": 0.1,
+        "panicker": 0.6
+      }
+    }
+  ]
+}

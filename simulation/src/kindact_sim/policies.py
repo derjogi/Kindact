@@ -33,8 +33,26 @@ def compute_dynamic_issue_rate(
     return max(base_rate * 0.05, rate)
 
 
+def _get_run_rng(_params: dict, s: dict) -> np.random.Generator:
+    """Return the rng for the current cadCAD run, creating it lazily.
+
+    A single shared rng pre-built in config would start from an identical state
+    in every run (cadCAD copies/pickles params per run), making Monte Carlo runs
+    identical. Instead we seed per run from base_seed + run_index so each run is
+    an independent but reproducible stream. The created rng is cached on _params
+    so that this run's later substeps and mechanisms reuse the same stream.
+    """
+    rng = _params.get('rng')
+    if rng is None:
+        run_index = s.get('run', s.get('subset', 0))
+        base_seed = _params.get('_base_seed', 42)
+        rng = np.random.default_rng(base_seed + run_index)
+        _params['rng'] = rng
+    return rng
+
+
 def agent_decisions(_params: dict, substep: int, sH: list, s: dict, **kwargs) -> dict:
-    rng: np.random.Generator = _params['rng']
+    rng: np.random.Generator = _get_run_rng(_params, s)
 
     # Apply scenario events for this timestep
     scenario_name = _params.get('_scenario_name')
@@ -88,12 +106,18 @@ def agent_decisions(_params: dict, substep: int, sH: list, s: dict, **kwargs) ->
     redemptions = 0.0
     desired_redemptions = 0.0
     reserve_purchases = 0.0
+    reserve_mint_cc = 0.0
     fraud_minting = 0.0
     issues_created_count = 0
     agent_updates: list[tuple[int, float]] = []
 
     exchange_open = phase != Phase.BOOTSTRAP and reserve >= 100_000
-    daily_redeem_cap = 0.01 * reserve
+    # Cap is 1% of the fiat reserve per timestep, expressed in CC so it can be
+    # compared against the CC-denominated `redemptions` accumulator. Redeeming
+    # the full cap costs exactly 1% of the reserve in fiat. Redemptions only
+    # occur when the exchange is open (reserve >= 100k, non-bootstrap), so the
+    # exchange_rate is strictly positive whenever this cap is actually used.
+    daily_redeem_cap = (0.01 * reserve / exchange_rate) if exchange_rate > 0 else 0.0
 
     for idx, agent in enumerate(agents):
         # Dormant agents do nothing (still lose to demurrage in mechanisms)
@@ -152,6 +176,9 @@ def agent_decisions(_params: dict, substep: int, sH: list, s: dict, **kwargs) ->
                     buy_fiat = max(0, buy_fiat)
                     reserve_purchases += buy_fiat
                     cc_received = buy_fiat / max(exchange_rate * 1.03, 0.001)
+                    # The reserve issues new CC against the incoming fiat, so it
+                    # must enter total supply (not just the agent wallet).
+                    reserve_mint_cc += cc_received
                     agent_updates.append((agent.id, cc_received - fee))
                 else:
                     agent_updates.append((agent.id, -fee))
@@ -301,6 +328,7 @@ def agent_decisions(_params: dict, substep: int, sH: list, s: dict, **kwargs) ->
         'redemptions': redemptions,
         'desired_redemptions': desired_redemptions,
         'reserve_purchases': reserve_purchases,
+        'reserve_mint_cc': reserve_mint_cc,
         'hypercert_fiat_sales': hypercert_fiat_sales,
         'fraud_minting': fraud_minting,
         'new_agents_count': new_agents_count,
