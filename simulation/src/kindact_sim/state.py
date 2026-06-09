@@ -49,6 +49,8 @@ def make_agents_from_weights(
             panic_threshold=float(rng.uniform(0.1, 0.4)),
             confidence=float(rng.uniform(0.3, 0.7)),
             intrinsic_motivation=float(motivations[i]),
+            holding_horizon=float(rng.uniform(3.0, 18.0)),
+            risk_tolerance=float(rng.uniform(0.2, 0.9)),
         ))
     return agents
 

@@ -32,6 +32,12 @@ class Agent:
     acceptance_willingness: float = 0.5
     activity_level: float = 1.0
     months_dormant: int = 0
+    # Speculator traits: expected months they plan to hold (drives sensitivity
+    # to demurrage) and risk tolerance (lower → demands a bigger return margin
+    # before buying, exits faster). Heterogeneity makes them enter/exit at
+    # different exchange rates instead of all flipping at one fixed threshold.
+    holding_horizon: float = 6.0
+    risk_tolerance: float = 0.5
 
 
 @dataclass(slots=True)

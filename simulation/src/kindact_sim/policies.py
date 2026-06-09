@@ -166,24 +166,52 @@ def agent_decisions(_params: dict, substep: int, sH: list, s: dict, **kwargs) ->
             agent_updates.append((agent.id, trade_income - fee - redeem_amount))
 
         elif agent.agent_type == AgentType.SPECULATOR:
+            # Speculators act on the expected return to holding $CC, not a fixed
+            # price gate. The redemption rate is structurally capped at par
+            # (~1.0), so the appreciation runway shrinks to zero as the rate
+            # approaches par. Holding costs demurrage every month and buying
+            # pays a spread, so the expected return turns negative *before* par.
+            # Each speculator has its own holding horizon and risk tolerance, so
+            # they enter and exit at different rates (a gradual taper and a flip
+            # to selling near par) instead of all switching at one threshold.
             demurrage = s['demurrage_rate']
+            spread = 0.03
             reserve_readiness = min(1.0, (reserve / 100_000) ** 0.5) if reserve > 0 else 0.0
-            can_redeem = exchange_open
-            if agent.confidence > 0.6 and exchange_rate < 0.8:
-                expected_appreciation = (1.0 - exchange_rate)
-                if expected_appreciation > demurrage * 3:
-                    buy_fiat = rng.uniform(50, 200) * (agent.confidence - 0.5) * 2 * reserve_readiness
-                    buy_fiat = max(0, buy_fiat)
-                    reserve_purchases += buy_fiat
-                    cc_received = buy_fiat / max(exchange_rate * 1.03, 0.001)
-                    # The reserve issues new CC against the incoming fiat, so it
-                    # must enter total supply (not just the agent wallet).
-                    reserve_mint_cc += cc_received
-                    agent_updates.append((agent.id, cc_received - fee))
-                else:
-                    agent_updates.append((agent.id, -fee))
-            elif can_redeem and agent.confidence < 0.3 and agent.balance > 0:
-                desired = agent.balance * 0.5
+
+            # Belief about the exit price: more confident speculators expect
+            # fuller convergence to par; the price can't realistically exceed it.
+            expected_exit = exchange_rate + agent.confidence * (1.0 - exchange_rate)
+            hold_factor = (1.0 - demurrage) ** agent.holding_horizon
+
+            # Return to buying now (pays the spread) vs. return to keeping units
+            # already held (the spread is sunk).
+            buy_price = max(exchange_rate * (1.0 + spread), 0.001)
+            buy_return = expected_exit * hold_factor / buy_price - 1.0
+            hold_return = expected_exit * hold_factor / max(exchange_rate, 0.001) - 1.0
+
+            # Risk-averse speculators demand a larger margin before committing.
+            required_margin = 0.15 * (1.0 - agent.risk_tolerance)
+
+            if buy_return > required_margin and reserve_readiness > 0:
+                # Buy size scales with the edge over the required margin, so
+                # buying tapers smoothly to zero as the rate nears the stop point.
+                edge = buy_return - required_margin
+                intensity = min(1.0, edge / 0.3)
+                conviction = max(0.0, (agent.confidence - 0.5) * 2) * (0.5 + agent.risk_tolerance)
+                buy_fiat = rng.uniform(50, 200) * intensity * conviction * reserve_readiness
+                buy_fiat = max(0.0, buy_fiat)
+                reserve_purchases += buy_fiat
+                cc_received = buy_fiat / buy_price
+                # The reserve issues new CC against the incoming fiat, so it
+                # must enter total supply (not just the agent wallet).
+                reserve_mint_cc += cc_received
+                agent_updates.append((agent.id, cc_received - fee))
+            elif exchange_open and agent.balance > 0 and hold_return < 0:
+                # Near/at par the asset has no upside left but still bleeds
+                # demurrage, so rational speculators rotate out. The more
+                # risk-averse exit a larger share of their position.
+                exit_frac = min(1.0, 0.3 + 0.5 * (1.0 - agent.risk_tolerance))
+                desired = agent.balance * exit_frac
                 desired_redemptions += desired
                 redeem_amount = min(desired, daily_redeem_cap - redemptions)
                 redeem_amount = max(0, redeem_amount)

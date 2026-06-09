@@ -92,15 +92,63 @@ def test_speculator_full_purchase_when_reserve_funded():
 
 
 def test_speculator_no_buy_when_rate_near_parity():
-    """Speculators shouldn't buy when exchange rate is high (no appreciation left above demurrage)."""
+    """Speculators shouldn't buy near par: the appreciation runway (capped at
+    par) no longer beats demurrage + spread over their holding horizon."""
     spec = Agent(id=0, agent_type=AgentType.SPECULATOR, balance=0, confidence=0.9)
     s = _make_state(phase=Phase.GROWTH, agents=[spec], reserve=200_000, exchange_rate=0.98)
     s['demurrage_rate'] = 0.01
     params = {'reward_per_issue': 50.0, 'issues_per_user_month': 2.0, 'verification_quality': 0.9,
               'growth_rate': 0, 'hypercert_sale_prob': 0.0, 'hypercert_avg_price': 1000.0, 'rng': np.random.default_rng(42)}
     result = agent_decisions(params, 1, [], s)
-    # exchange_rate 0.98 → expected appreciation = 0.02 < demurrage*3 = 0.03
     assert result['reserve_purchases'] == 0
+
+
+def test_speculator_buys_above_old_fixed_gate():
+    """The old hard 0.8 gate is gone. A confident, risk-tolerant speculator still
+    buys at a rate of 0.85 when the expected return beats demurrage + spread."""
+    spec = Agent(id=0, agent_type=AgentType.SPECULATOR, balance=0, confidence=0.95,
+                 risk_tolerance=0.9, holding_horizon=6.0)
+    s = _make_state(phase=Phase.GROWTH, agents=[spec], reserve=200_000, exchange_rate=0.85)
+    s['demurrage_rate'] = 0.01
+    params = {'reward_per_issue': 50.0, 'issues_per_user_month': 2.0, 'verification_quality': 0.9,
+              'growth_rate': 0, 'hypercert_sale_prob': 0.0, 'hypercert_avg_price': 1000.0, 'rng': np.random.default_rng(42)}
+    result = agent_decisions(params, 1, [], s)
+    assert result['reserve_purchases'] > 0
+
+
+def test_risk_tolerance_shifts_stop_point():
+    """Heterogeneous risk tolerance → no single cliff. At the same rate, a
+    risk-averse speculator has already stopped while a risk-tolerant one buys."""
+    base = {'reward_per_issue': 50.0, 'issues_per_user_month': 2.0, 'verification_quality': 0.9,
+            'growth_rate': 0, 'hypercert_sale_prob': 0.0, 'hypercert_avg_price': 1000.0}
+    averse = Agent(id=0, agent_type=AgentType.SPECULATOR, balance=0, confidence=0.95,
+                   risk_tolerance=0.2, holding_horizon=6.0)
+    s_a = _make_state(phase=Phase.GROWTH, agents=[averse], reserve=200_000, exchange_rate=0.88)
+    s_a['demurrage_rate'] = 0.01
+    res_averse = agent_decisions({**base, 'rng': np.random.default_rng(1)}, 1, [], s_a)
+
+    tolerant = Agent(id=0, agent_type=AgentType.SPECULATOR, balance=0, confidence=0.95,
+                     risk_tolerance=0.95, holding_horizon=6.0)
+    s_t = _make_state(phase=Phase.GROWTH, agents=[tolerant], reserve=200_000, exchange_rate=0.88)
+    s_t['demurrage_rate'] = 0.01
+    res_tol = agent_decisions({**base, 'rng': np.random.default_rng(1)}, 1, [], s_t)
+
+    assert res_averse['reserve_purchases'] == 0
+    assert res_tol['reserve_purchases'] > 0
+
+
+def test_speculator_rotates_out_near_par():
+    """Near par a holder has no upside left but still bleeds demurrage, so a
+    speculator redeems (rotates out) rather than holding."""
+    spec = Agent(id=0, agent_type=AgentType.SPECULATOR, balance=1000, confidence=0.9,
+                 risk_tolerance=0.5, holding_horizon=6.0)
+    s = _make_state(phase=Phase.GROWTH, agents=[spec], reserve=200_000, exchange_rate=0.99)
+    s['demurrage_rate'] = 0.01
+    params = {'reward_per_issue': 50.0, 'issues_per_user_month': 2.0, 'verification_quality': 0.9,
+              'growth_rate': 0, 'hypercert_sale_prob': 0.0, 'hypercert_avg_price': 1000.0, 'rng': np.random.default_rng(42)}
+    result = agent_decisions(params, 1, [], s)
+    assert result['reserve_purchases'] == 0
+    assert result['redemptions'] > 0
 
 
 def test_speculator_no_purchase_when_reserve_zero():
