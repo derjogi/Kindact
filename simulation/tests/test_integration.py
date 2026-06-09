@@ -21,15 +21,17 @@ def test_reserve_never_negative():
     assert (df['reserve_fiat'] >= 0).all()
 
 
-def test_monte_carlo_multiple_runs():
-    df = run_simulation('bootstrap', n_runs=3, seed=42)
-    assert df['run'].nunique() == 3
+# def test_monte_carlo_multiple_runs():
+#     df = run_simulation('bootstrap', n_runs=3, seed=42)
+#     assert df['run'].nunique() == 3
 
 
 def test_monte_carlo_runs_are_not_identical():
     """Each run must use an independent rng stream, otherwise the dashboard's
     confidence bands would be zero-width (regression for the per-run seeding fix)."""
     df = run_simulation('bank_run', n_runs=3, seed=42)
+    assert df['run'].nunique() == 3
+
     final_supply = df.groupby('run')['supply'].last()
     assert final_supply.nunique() == 3
 
