@@ -56,6 +56,34 @@ with st.sidebar:
     )
     hypercert_price = st.slider("Avg Hypercert price ($)", 100, 5000, _rp.get('hypercert_price', 1000), 100)
 
+    with st.expander("🪙 Speculation & Reward Dynamics", expanded=False):
+        speculation_intensity = st.slider(
+            "Speculation intensity", 0.0, 2.0, _rp.get('speculation_intensity', 0.4), 0.05,
+            help="Multiplier on speculator buy size. Demurrage + redemption caps make "
+                 "holding $CC costly, so a well-designed currency attracts modest "
+                 "speculation. 1.0 = original behaviour; <1.0 dampens speculative CC creation.",
+        )
+        st.caption("**Reward-maximization ratchet** — models the tragedy-of-the-commons "
+                   "pressure to raise rewards. Effective reward = reward × multiplier.")
+        reward_pressure = st.slider(
+            "Reward pressure (%/month)", 0.0, 10.0,
+            _rp.get('reward_pressure', 0.0) * 100, 0.5,
+            help="Baseline monthly upward drift in reward_per_issue. 0 = ratchet off.",
+        ) / 100
+        commons_internalization = st.slider(
+            "Commons internalization", 0.0, 1.0, _rp.get('commons_internalization', 0.5), 0.05,
+            help="How much of the shared dilution cost a community feels. "
+                 "0 = free-rider → runaway inflation; 1 = fully self-restrained.",
+        )
+        reward_brake_strength = st.slider(
+            "Reward brake strength", 0.0, 5.0, _rp.get('reward_brake_strength', 1.0), 0.1,
+            help="How strongly perceived dilution (low backing/exchange rate) counters pressure.",
+        )
+        reward_max_multiple = st.slider(
+            "Reward max multiple", 1.0, 50.0, _rp.get('reward_max_multiple', 10.0), 1.0,
+            help="Clamp on the reward multiplier to prevent numeric explosion.",
+        )
+
     # --- Agent Configuration ---
     st.header("Agent Population")
     saved_configs = AgentConfig.list_saved()
@@ -181,6 +209,11 @@ with st.sidebar:
                         'verification_q': verification_q,
                         'hypercert_prob': hypercert_prob,
                         'hypercert_price': hypercert_price,
+                        'speculation_intensity': speculation_intensity,
+                        'reward_pressure': reward_pressure,
+                        'commons_internalization': commons_internalization,
+                        'reward_brake_strength': reward_brake_strength,
+                        'reward_max_multiple': reward_max_multiple,
                         'n_runs': n_runs,
                         'seed': seed,
                         'timesteps': timesteps,
@@ -258,6 +291,11 @@ if run_button:
         'growth_rate': int(growth_rate),
         'hypercert_sale_prob': float(hypercert_prob),
         'hypercert_avg_price': float(hypercert_price),
+        'speculation_intensity': float(speculation_intensity),
+        'reward_pressure': float(reward_pressure),
+        'commons_internalization': float(commons_internalization),
+        'reward_brake_strength': float(reward_brake_strength),
+        'reward_max_multiple': float(reward_max_multiple),
     }
 
     agent_config = AgentConfig(

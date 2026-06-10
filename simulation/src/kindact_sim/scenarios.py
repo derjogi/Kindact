@@ -120,6 +120,21 @@ _DEFAULT_PARAMS = {
     'hypercert_no_sale_months': 5,
     'access_fee_fraction': 0.05,
     'access_fee_amount': 10.0,
+    # Speculation: multiplier on speculator buy size. <1.0 dampens speculative
+    # CC creation (demurrage + redemption cap already make holding $CC costly,
+    # so a well-designed demurrage currency attracts modest speculation).
+    'speculation_intensity': 0.4,
+    # Endogenous reward-maximization ratchet (tragedy of the commons). Each
+    # community privately benefits from raising reward_per_issue, while the
+    # dilution cost (falling backing/exchange rate) is shared. The effective
+    # reward is reward_per_issue * reward_multiplier, where the multiplier
+    # drifts up by `reward_pressure` each month, braked by the perceived
+    # dilution cost scaled by `commons_internalization`. Off by default
+    # (pressure=0 -> multiplier stays 1.0).
+    'reward_pressure': 0.0,            # baseline monthly upward drift (e.g. 0.02 = +2%/mo)
+    'reward_brake_strength': 1.0,      # how strongly perceived dilution counters pressure
+    'commons_internalization': 0.5,   # [0,1]: 0 = free-rider/runaway, 1 = fully self-restrained
+    'reward_max_multiple': 10.0,       # clamp to avoid numeric explosion
 }
 
 SCENARIOS: dict[str, ScenarioConfig] = {

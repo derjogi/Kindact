@@ -66,6 +66,37 @@ def update_total_issues(_params, substep, sH, s, _input, **kwargs):
     return ('total_issues_created', s['total_issues_created'] + _input.get('issues_created_count', 0))
 
 
+def update_reward_multiplier(_params, substep, sH, s, _input, **kwargs):
+    """Endogenous reward-maximization ratchet (tragedy of the commons).
+
+    The multiplier drifts up by `reward_pressure` each month (the always-present
+    incentive to raise rewards), counteracted by a brake proportional to the
+    perceived dilution cost. Dilution is read off the freshly-updated exchange
+    rate: a low rate (poor backing) signals the currency is being diluted. How
+    much of that shared cost a community actually feels is set by
+    `commons_internalization` (0 = free-rider/runaway inflation, 1 = fully
+    self-restrained). The result is clamped to [1.0, reward_max_multiple].
+    """
+    pressure = _params.get('reward_pressure', 0.0)
+    if pressure == 0.0:
+        return ('reward_multiplier', s.get('reward_multiplier', 1.0))
+
+    brake_strength = _params.get('reward_brake_strength', 1.0)
+    internalization = _params.get('commons_internalization', 0.5)
+    max_multiple = _params.get('reward_max_multiple', 10.0)
+
+    # supply and reserve_fiat were updated in the first PSUB block, so this is
+    # the current (post-mint/redeem) backing.
+    rate = compute_exchange_rate(s['reserve_fiat'], s['supply'], s['r_target'])
+    dilution_signal = min(1.0, max(0.0, 1.0 - rate))
+    brake = internalization * brake_strength * dilution_signal
+
+    m = s.get('reward_multiplier', 1.0)
+    new_m = m * (1.0 + pressure - brake)
+    new_m = min(max_multiple, max(1.0, new_m))
+    return ('reward_multiplier', new_m)
+
+
 def update_total_burned(_params, substep, sH, s, _input, **kwargs):
     burned = _input.get('access_fee_burn', 0) + _input.get('redemptions', 0)
     demurrage_burn = s['supply'] * s['demurrage_rate']
@@ -263,6 +294,8 @@ def _build_event_entry(_params, s, _input):
         'reserve_out_redemptions': round(redemptions * s['exchange_rate'], 2),
         # Supply
         'supply_before': round(supply, 2),
+        # Reward ratchet
+        'reward_multiplier': round(s.get('reward_multiplier', 1.0), 4),
         # Hypercerts
         'hc_sold_count': _input.get('_hc_sold_count', 0),
         # Issue creation

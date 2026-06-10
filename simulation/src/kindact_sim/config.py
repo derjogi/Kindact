@@ -7,7 +7,7 @@ from kindact_sim.policies import agent_decisions
 from kindact_sim.mechanisms import (
     update_supply, update_reserve, update_exchange_rate,
     update_phase, update_total_minted, update_total_burned,
-    update_total_issues,
+    update_total_issues, update_reward_multiplier,
     update_agents, update_hypercerts, update_redemption_queue,
     update_timestep, update_events_log, store_policy_signals,
 )
@@ -59,6 +59,7 @@ def build_experiment(scenario_name: str, n_runs: int = 1, seed: int = 42,
             'variables': {
                 'exchange_rate': update_exchange_rate,
                 'phase': update_phase,
+                'reward_multiplier': update_reward_multiplier,
                 'agents': update_agents,
                 'redemption_queue': update_redemption_queue,
                 'timestep': update_timestep,

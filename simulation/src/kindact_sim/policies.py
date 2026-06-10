@@ -67,9 +67,13 @@ def agent_decisions(_params: dict, substep: int, sH: list, s: dict, **kwargs) ->
     reserve: float = s['reserve_fiat']
     supply: float = s['supply']
 
-    reward = params['reward_per_issue']
+    # Effective reward applies the endogenous reward-maximization ratchet
+    # (reward_multiplier is a state variable updated each timestep; defaults
+    # to 1.0 when the ratchet is off or in unit tests that omit it).
+    reward = params['reward_per_issue'] * s.get('reward_multiplier', 1.0)
     base_issue_rate = params['issues_per_user_month']
     verification_q = params['verification_quality']
+    speculation_intensity = params.get('speculation_intensity', 0.4)
 
     # Dynamic issue creation rate based on platform saturation
     n_active = sum(1 for a in agents if a.activity_level >= 0.1)
@@ -198,7 +202,8 @@ def agent_decisions(_params: dict, substep: int, sH: list, s: dict, **kwargs) ->
                 edge = buy_return - required_margin
                 intensity = min(1.0, edge / 0.3)
                 conviction = max(0.0, (agent.confidence - 0.5) * 2) * (0.5 + agent.risk_tolerance)
-                buy_fiat = rng.uniform(50, 200) * intensity * conviction * reserve_readiness
+                buy_fiat = (rng.uniform(50, 200) * intensity * conviction
+                            * reserve_readiness * speculation_intensity)
                 buy_fiat = max(0.0, buy_fiat)
                 reserve_purchases += buy_fiat
                 cc_received = buy_fiat / buy_price

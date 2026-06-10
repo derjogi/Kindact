@@ -48,7 +48,7 @@ Each agent has a type that determines their primary economic role. All active ag
 | Aspect | Detail |
 |---|---|
 | **Buy condition** | `confidence > 0.6` AND `exchange_rate < 0.8` AND expected appreciation > `demurrage × 3` |
-| **Buy size** | `uniform(50, 200) × (confidence - 0.5) × 2 × reserve_readiness`, where reserve_readiness = `sqrt(reserve / 100k)` capped at 1.0 |
+| **Buy size** | `uniform(50, 200) × (confidence - 0.5) × 2 × reserve_readiness × speculation_intensity`, where reserve_readiness = `sqrt(reserve / 100k)` capped at 1.0. `speculation_intensity` (default **0.4**) is a global dampener — demurrage + redemption caps make holding $CC costly, so a well-designed currency attracts modest speculation. Set to 1.0 for the original behaviour. |
 | **Buy mechanics** | Purchases $CC with fiat at a 3% spread (`exchange_rate × 1.03`), adding fiat to reserve |
 | **Sell condition** | `confidence < 0.3` and exchange open → redeems 50% of balance |
 | **Psychology** | Rational profit-seekers. Buy the dip when confident, sell on loss of confidence. Require the system to have substantial reserves before committing large sums (reserve_readiness) |
@@ -386,7 +386,28 @@ rate = base_rate × (1 - saturation × 0.95)   (floor: 5% of base)
 | Growth | total_minted ≥ 100,000 AND reserve < r_target | Exchange opens when reserve ≥ 100k. Active growth period |
 | Maturity | reserve ≥ r_target (default $1M) | Full backing target achieved |
 
-### 6.6 Exchange Rate
+### 6.6 Reward-Maximization Ratchet (Endogenous Reward)
+
+Models the **tragedy-of-the-commons** pressure on `reward_per_issue`: each community privately benefits from raising its reward (more $CC minted now), while the dilution cost (falling backing → lower exchange rate) is shared across all holders. So there is a persistent upward drift that no single community is incentivised to restrain.
+
+The *effective* reward used for minting is `reward_per_issue × reward_multiplier`, where the multiplier is a state variable updated each timestep:
+
+```
+dilution_signal = clamp(1 - exchange_rate, 0, 1)
+brake           = commons_internalization × reward_brake_strength × dilution_signal
+reward_multiplier ← clamp( multiplier × (1 + reward_pressure - brake), 1.0, reward_max_multiple )
+```
+
+| Param | Default | Meaning |
+|---|---|---|
+| `reward_pressure` | 0.0 | Baseline monthly upward drift. **0 = ratchet off** (multiplier stays 1.0; preserves legacy behaviour) |
+| `commons_internalization` | 0.5 | [0,1]: 0 = free-rider → runaway inflation; 1 = fully self-restrained |
+| `reward_brake_strength` | 1.0 | How strongly perceived dilution counters pressure |
+| `reward_max_multiple` | 10.0 | Clamp to avoid numeric explosion |
+
+**The commons trap:** because the brake is driven by the *level* of backing (`1 - exchange_rate`), communities feel free to inflate precisely when the currency looks healthy (high exchange rate → weak brake). With low `commons_internalization` this lets reward run away once backing improves — eroding the very backing that looked safe.
+
+### 6.7 Exchange Rate
 
 ```
 backing_ratio = reserve / supply
