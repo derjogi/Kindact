@@ -1,5 +1,5 @@
 ---
-status: planned
+status: in-progress
 created: 2026-06-06
 priority: high
 tags:
@@ -9,7 +9,10 @@ depends_on:
 - '003'
 parent: '001'
 created_at: 2026-06-06T21:28:57.228996727Z
-updated_at: 2026-06-06T21:32:05.386480622Z
+updated_at: 2026-07-16T10:29:58.533424377Z
+transitions:
+- status: in-progress
+  at: 2026-07-16T10:29:58.533424377Z
 ---
 
 # Phase 2 — Issues + Comments (replace polls)

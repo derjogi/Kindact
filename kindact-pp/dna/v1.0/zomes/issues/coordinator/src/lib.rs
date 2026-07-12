@@ -1,25 +1,26 @@
-//! ProofPoll coordinator zome (v1.3).
+//! Kindact issues coordinator zome (kindact_v1_0).
 //!
-//! Extends v1.2 with encrypted entry functions:
-//!   - `create_encrypted_entry` — store encrypted data on the public DHT
-//!   - `get_vote_rationale` — fetch encrypted rationale for a vote
-//!   - `get_my_drafts` — fetch all encrypted draft polls for the current agent
-//!   - `delete_encrypted_entry` — author-only deletion with link cleanup
-//!   - `publish_draft` — decrypt a draft and create a real poll
+//! Exposes the issue + comment data model and community moderation:
+//!   - issues: `create_issue` / `get_issue` / `get_all_issues` / `delete_issue`
+//!   - comments: `post_comment` / `get_comments`
+//!   - flagging: `flag_issue` / `get_issue_flags` / `remove_flag` / `get_flag_threshold`
+//!   - encrypted private entries + migration helpers (infrastructure, carried
+//!     forward from the ProofPoll fork)
 //!
-//! Everything else (polls, votes, flagging, migration) is carried forward unchanged.
+//! Voting (`Vote` entries, seconding, tallies) is defined in the integrity
+//! schema but wired up in a later phase — no vote function lives here yet.
 
 use hdk::prelude::*;
-use polls_integrity::*;
+use issues_integrity::*;
 
 #[hdk_dependent_entry_types]
 enum EntryZomes {
-    Integrity(polls_integrity::EntryTypes),
+    Integrity(issues_integrity::EntryTypes),
 }
 
 // ── Configuration ─────────────────────────────────────────────────────
 
-/// Minimum flags from unique agents before the UI hides a poll.
+/// Minimum flags from unique agents before the UI hides an issue.
 ///
 /// Forking developers: change this to suit your community size.
 pub const FLAG_HIDE_THRESHOLD: u32 = 3;
@@ -27,28 +28,21 @@ pub const FLAG_HIDE_THRESHOLD: u32 = 3;
 // ── Input types ───────────────────────────────────────────────────────
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct CreatePollInput {
+pub struct CreateIssueInput {
     pub title: String,
     pub description: String,
-    pub options: Vec<String>,
-    pub closes_at: Option<i64>,
-    /// Whether this poll shows voter identities. Defaults to Anonymous.
-    pub poll_type: PollType,
+    pub tags: Vec<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct CastVoteInput {
-    pub poll_action_hash: ActionHash,
-    pub option_index: u32,
-    /// Voter's display name — required for public polls, None for anonymous.
-    pub display_name: Option<String>,
-    /// Voter's profile picture — required for public polls, None for anonymous.
-    pub profile_picture: Option<String>,
+pub struct CreateCommentInput {
+    pub issue_action_hash: ActionHash,
+    pub content: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct FlagPollInput {
-    pub poll_action_hash: ActionHash,
+pub struct FlagIssueInput {
+    pub issue_action_hash: ActionHash,
     pub reason: FlagReason,
 }
 
@@ -58,52 +52,44 @@ pub struct RegisterMigratedPollInput {
     pub new_action_hash: ActionHash,
 }
 
-// ── Poll functions ─────────────────────────────────────────────────────
+// ── Issue functions ────────────────────────────────────────────────────
 
 #[hdk_extern]
-pub fn create_poll(input: CreatePollInput) -> ExternResult<ActionHash> {
+pub fn create_issue(input: CreateIssueInput) -> ExternResult<ActionHash> {
     let now = sys_time()?.as_seconds_and_nanos().0;
 
-    if let Some(closes_at) = input.closes_at {
-        if closes_at <= now {
-            return Err(wasm_error!("Poll closing time must be in the future"));
-        }
-    }
-
-    let poll = Poll {
+    let issue = Issue {
         title: input.title,
         description: input.description,
-        options: input.options,
+        tags: input.tags,
         created_at: now,
-        closes_at: input.closes_at,
-        poll_type: input.poll_type,
     };
 
-    let action_hash = create_entry(&EntryZomes::Integrity(EntryTypes::Poll(poll)))?;
+    let action_hash = create_entry(&EntryZomes::Integrity(EntryTypes::Issue(issue)))?;
 
-    let anchor = all_polls_anchor()?;
-    create_link(anchor, action_hash.clone(), LinkTypes::AllPolls, ())?;
+    let anchor = all_issues_anchor()?;
+    create_link(anchor, action_hash.clone(), LinkTypes::AllIssues, ())?;
 
     Ok(action_hash)
 }
 
 #[hdk_extern]
-pub fn get_poll(action_hash: ActionHash) -> ExternResult<Option<Record>> {
+pub fn get_issue(action_hash: ActionHash) -> ExternResult<Option<Record>> {
     get(action_hash, GetOptions::default())
 }
 
 #[hdk_extern]
-pub fn get_all_polls(_: ()) -> ExternResult<Vec<Record>> {
-    let anchor = all_polls_anchor()?;
+pub fn get_all_issues(_: ()) -> ExternResult<Vec<Record>> {
+    let anchor = all_issues_anchor()?;
     let links = get_links(
-        LinkQuery::try_new(anchor, LinkTypes::AllPolls)?,
+        LinkQuery::try_new(anchor, LinkTypes::AllIssues)?,
         GetStrategy::default(),
     )?;
 
     let mut records = Vec::new();
     for link in links {
         let hash = ActionHash::try_from(link.target)
-            .map_err(|_| wasm_error!("Invalid poll link target"))?;
+            .map_err(|_| wasm_error!("Invalid issue link target"))?;
         if let Some(record) = get(hash, GetOptions::default())? {
             records.push(record);
         }
@@ -113,17 +99,17 @@ pub fn get_all_polls(_: ()) -> ExternResult<Vec<Record>> {
 }
 
 #[hdk_extern]
-pub fn delete_poll(action_hash: ActionHash) -> ExternResult<ActionHash> {
+pub fn delete_issue(action_hash: ActionHash) -> ExternResult<ActionHash> {
     let record = get(action_hash.clone(), GetOptions::default())?
-        .ok_or(wasm_error!("Poll not found"))?;
+        .ok_or(wasm_error!("Issue not found"))?;
     let my_agent = agent_info()?.agent_initial_pubkey;
     if *record.action().author() != my_agent {
-        return Err(wasm_error!("Only the poll creator can delete it"));
+        return Err(wasm_error!("Only the issue creator can delete it"));
     }
 
-    let anchor = all_polls_anchor()?;
+    let anchor = all_issues_anchor()?;
     let links = get_links(
-        LinkQuery::try_new(anchor, LinkTypes::AllPolls)?,
+        LinkQuery::try_new(anchor, LinkTypes::AllIssues)?,
         GetStrategy::default(),
     )?;
     for link in links {
@@ -137,129 +123,50 @@ pub fn delete_poll(action_hash: ActionHash) -> ExternResult<ActionHash> {
     delete_entry(action_hash)
 }
 
-// ── Vote functions ─────────────────────────────────────────────────────
-
-/// Call the agent-linking zome (same cell) to get the agents directly linked
-/// to `agent`. Local same-cell call by the cell's own agent → no cap secret.
-fn linked_agents(agent: AgentPubKey) -> ExternResult<Vec<AgentPubKey>> {
-    let response = call(
-        CallTargetCell::Local,
-        "agent_linking",
-        "get_linked_agents".into(),
-        None,
-        agent,
-    )?;
-    match response {
-        ZomeCallResponse::Ok(io) => io
-            .decode()
-            .map_err(|e| wasm_error!(format!("decode linked agents: {:?}", e))),
-        other => Err(wasm_error!(format!(
-            "get_linked_agents call failed: {:?}",
-            other
-        ))),
-    }
-}
-
-/// The full set of agent keys belonging to this person: the current agent plus
-/// every ProofPoll agent linked to the same Flowsta Vault identity (across the
-/// user's other devices/installs). Used so a reinstalled user can't vote twice.
-///
-/// Two hops: `linked_agents(me)` → the Vault agent(s) I'm linked to; then
-/// `linked_agents(vault)` → all the local ProofPoll agents linked to that Vault
-/// identity (the agent-linking zome indexes the link from the Vault pubkey too).
-///
-/// Degrades gracefully: if the agent-linking zome can't be reached for any
-/// reason, falls back to just the current agent (the prior per-agent behaviour)
-/// rather than blocking the vote.
-fn my_identity_agents(my_agent: &AgentPubKey) -> BTreeSet<AgentPubKey> {
-    let mut set = BTreeSet::new();
-    set.insert(my_agent.clone());
-    if let Ok(hubs) = linked_agents(my_agent.clone()) {
-        for hub in hubs {
-            if let Ok(siblings) = linked_agents(hub.clone()) {
-                for s in siblings {
-                    set.insert(s);
-                }
-            }
-            set.insert(hub);
-        }
-    }
-    set
-}
+// ── Comment functions ──────────────────────────────────────────────────
 
 #[hdk_extern]
-pub fn cast_vote(input: CastVoteInput) -> ExternResult<ActionHash> {
-    let poll_record = get(input.poll_action_hash.clone(), GetOptions::default())?
-        .ok_or(wasm_error!("Poll not found"))?;
-
-    let poll: Poll = poll_record
+pub fn post_comment(input: CreateCommentInput) -> ExternResult<ActionHash> {
+    // Ensure the target is a real Issue — comments cannot be attached to
+    // arbitrary action hashes.
+    let issue_record = get(input.issue_action_hash.clone(), GetOptions::default())?
+        .ok_or(wasm_error!("Issue not found"))?;
+    let _issue: Issue = issue_record
         .entry()
         .to_app_option()
-        .map_err(|_| wasm_error!("Could not deserialize poll"))?
-        .ok_or(wasm_error!("Poll entry is None"))?;
+        .map_err(|_| wasm_error!("Could not deserialize issue"))?
+        .ok_or(wasm_error!("Target is not an issue"))?;
 
-    if input.option_index as usize >= poll.options.len() {
-        return Err(wasm_error!("Invalid option index"));
-    }
-
-    if let Some(closes_at) = poll.closes_at {
-        let now = sys_time()?.as_seconds_and_nanos().0;
-        if now > closes_at {
-            return Err(wasm_error!("Poll is closed"));
-        }
-    }
-
-    // Require identity fields on public polls
-    if poll.poll_type == PollType::Public && input.display_name.is_none() {
-        return Err(wasm_error!("Display name is required for public polls"));
-    }
-
-    // Check for double-vote — across ALL of this person's agents, not just the
-    // current one. ProofPoll mints a fresh agent key per install, so a
-    // per-agent check would let a reinstalled (or multi-device) user vote
-    // again. We dedup against the user's full linked-agent set instead.
-    let my_agent = agent_info()?.agent_initial_pubkey;
-    let my_agents = my_identity_agents(&my_agent);
-    let existing_links = get_links(
-        LinkQuery::try_new(input.poll_action_hash.clone(), LinkTypes::PollToVotes)?,
-        GetStrategy::default(),
-    )?;
-    for link in &existing_links {
-        if my_agents.contains(&link.author) {
-            return Err(wasm_error!("You have already voted on this poll"));
-        }
-    }
-
-    let vote = Vote {
-        poll_action_hash: input.poll_action_hash.clone(),
-        option_index: input.option_index,
-        display_name: input.display_name,
-        profile_picture: input.profile_picture,
+    let now = sys_time()?.as_seconds_and_nanos().0;
+    let comment = Comment {
+        issue_action_hash: input.issue_action_hash.clone(),
+        content: input.content,
+        created_at: now,
     };
 
-    let vote_hash = create_entry(&EntryZomes::Integrity(EntryTypes::Vote(vote)))?;
+    let comment_hash = create_entry(&EntryZomes::Integrity(EntryTypes::Comment(comment)))?;
 
     create_link(
-        input.poll_action_hash,
-        vote_hash.clone(),
-        LinkTypes::PollToVotes,
+        input.issue_action_hash,
+        comment_hash.clone(),
+        LinkTypes::IssueToComment,
         (),
     )?;
 
-    Ok(vote_hash)
+    Ok(comment_hash)
 }
 
 #[hdk_extern]
-pub fn get_poll_votes(poll_action_hash: ActionHash) -> ExternResult<Vec<Record>> {
+pub fn get_comments(issue_action_hash: ActionHash) -> ExternResult<Vec<Record>> {
     let links = get_links(
-        LinkQuery::try_new(poll_action_hash, LinkTypes::PollToVotes)?,
+        LinkQuery::try_new(issue_action_hash, LinkTypes::IssueToComment)?,
         GetStrategy::default(),
     )?;
 
     let mut records = Vec::new();
     for link in links {
         let hash = ActionHash::try_from(link.target)
-            .map_err(|_| wasm_error!("Invalid vote link target"))?;
+            .map_err(|_| wasm_error!("Invalid comment link target"))?;
         if let Some(record) = get(hash, GetOptions::default())? {
             records.push(record);
         }
@@ -268,27 +175,27 @@ pub fn get_poll_votes(poll_action_hash: ActionHash) -> ExternResult<Vec<Record>>
     Ok(records)
 }
 
-// ── Flag functions (unchanged from v1.1) ──────────────────────────────
+// ── Flag functions ─────────────────────────────────────────────────────
 
 #[hdk_extern]
-pub fn flag_poll(input: FlagPollInput) -> ExternResult<ActionHash> {
-    let _poll_record = get(input.poll_action_hash.clone(), GetOptions::default())?
-        .ok_or(wasm_error!("Poll not found"))?;
+pub fn flag_issue(input: FlagIssueInput) -> ExternResult<ActionHash> {
+    let _issue_record = get(input.issue_action_hash.clone(), GetOptions::default())?
+        .ok_or(wasm_error!("Issue not found"))?;
 
     let my_agent = agent_info()?.agent_initial_pubkey;
     let existing_flags = get_links(
-        LinkQuery::try_new(input.poll_action_hash.clone(), LinkTypes::PollToFlags)?,
+        LinkQuery::try_new(input.issue_action_hash.clone(), LinkTypes::IssueToFlags)?,
         GetStrategy::default(),
     )?;
     for link in &existing_flags {
         if link.author == my_agent {
-            return Err(wasm_error!("You have already flagged this poll"));
+            return Err(wasm_error!("You have already flagged this issue"));
         }
     }
 
     let now = sys_time()?.as_seconds_and_nanos().0;
     let flag = Flag {
-        poll_action_hash: input.poll_action_hash.clone(),
+        issue_action_hash: input.issue_action_hash.clone(),
         reason: input.reason,
         created_at: now,
     };
@@ -296,9 +203,9 @@ pub fn flag_poll(input: FlagPollInput) -> ExternResult<ActionHash> {
     let flag_hash = create_entry(&EntryZomes::Integrity(EntryTypes::Flag(flag)))?;
 
     create_link(
-        input.poll_action_hash,
+        input.issue_action_hash,
         flag_hash.clone(),
-        LinkTypes::PollToFlags,
+        LinkTypes::IssueToFlags,
         (),
     )?;
 
@@ -306,9 +213,9 @@ pub fn flag_poll(input: FlagPollInput) -> ExternResult<ActionHash> {
 }
 
 #[hdk_extern]
-pub fn get_poll_flags(poll_action_hash: ActionHash) -> ExternResult<Vec<Record>> {
+pub fn get_issue_flags(issue_action_hash: ActionHash) -> ExternResult<Vec<Record>> {
     let links = get_links(
-        LinkQuery::try_new(poll_action_hash, LinkTypes::PollToFlags)?,
+        LinkQuery::try_new(issue_action_hash, LinkTypes::IssueToFlags)?,
         GetStrategy::default(),
     )?;
 
@@ -341,7 +248,7 @@ pub fn remove_flag(flag_action_hash: ActionHash) -> ExternResult<ActionHash> {
         .ok_or(wasm_error!("Flag entry is None"))?;
 
     let links = get_links(
-        LinkQuery::try_new(flag.poll_action_hash, LinkTypes::PollToFlags)?,
+        LinkQuery::try_new(flag.issue_action_hash, LinkTypes::IssueToFlags)?,
         GetStrategy::default(),
     )?;
     for link in links {
@@ -360,7 +267,7 @@ pub fn get_flag_threshold(_: ()) -> ExternResult<u32> {
     Ok(FLAG_HIDE_THRESHOLD)
 }
 
-// ── Encrypted entry functions (v1.3) ──────────────────────────────────
+// ── Encrypted entry functions (infrastructure) ────────────────────────
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct CreateEncryptedEntryInput {
@@ -415,7 +322,7 @@ pub fn get_vote_rationale(vote_action_hash: ActionHash) -> ExternResult<Option<R
     Ok(None)
 }
 
-/// Get all encrypted draft polls for the current agent.
+/// Get all encrypted draft entries for the current agent.
 #[hdk_extern]
 pub fn get_my_drafts(_: ()) -> ExternResult<Vec<Record>> {
     let agent = agent_info()?.agent_initial_pubkey;
@@ -438,7 +345,7 @@ pub fn get_my_drafts(_: ()) -> ExternResult<Vec<Record>> {
 /// Delete an encrypted entry (author-only) and clean up its links.
 /// Uses `related_hash` to determine link type:
 ///   Some(hash) → vote rationale (linked from vote via VoteToRationale)
-///   None → draft poll (linked from agent anchor via AgentDrafts)
+///   None → draft (linked from agent anchor via AgentDrafts)
 #[hdk_extern]
 pub fn delete_encrypted_entry(action_hash: ActionHash) -> ExternResult<ActionHash> {
     let record = get(action_hash.clone(), GetOptions::default())?
@@ -468,7 +375,7 @@ pub fn delete_encrypted_entry(action_hash: ActionHash) -> ExternResult<ActionHas
             }
         }
     } else {
-        // Draft poll — clean up AgentDrafts link
+        // Draft — clean up AgentDrafts link
         let anchor = agent_drafts_anchor(&my_agent)?;
         let links = get_links(
             LinkQuery::try_new(anchor, LinkTypes::AgentDrafts)?,
@@ -486,7 +393,7 @@ pub fn delete_encrypted_entry(action_hash: ActionHash) -> ExternResult<ActionHas
     delete_entry(action_hash)
 }
 
-// ── Migration functions (v1.2 → v1.3) ────────────────────────────────
+// ── Migration functions (dormant infrastructure) ──────────────────────
 
 #[hdk_extern]
 pub fn register_migrated_poll(input: RegisterMigratedPollInput) -> ExternResult<ActionHash> {

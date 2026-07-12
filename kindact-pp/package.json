@@ -19,7 +19,7 @@
     "tauri": "tauri"
   },
   "devDependencies": {
-    "@builder.io/qwik": "^1.19.0",
+    "@builder.io/qwik": "^1.20.0",
     "@builder.io/qwik-city": "^1.19.0",
     "@tailwindcss/vite": "^4.2.0",
     "@tauri-apps/api": "~2.10.1",

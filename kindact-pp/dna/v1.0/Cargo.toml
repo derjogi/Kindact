@@ -1,7 +1,7 @@
 [workspace]
 members = [
-    "zomes/polls/integrity",
-    "zomes/polls/coordinator",
+    "zomes/issues/integrity",
+    "zomes/issues/coordinator",
 ]
 resolver = "2"
 
