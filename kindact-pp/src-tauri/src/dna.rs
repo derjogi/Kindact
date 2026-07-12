@@ -1,12 +1,15 @@
 //! DNA installation and app client setup for Kindact.
 //!
-//! Supports multiple DNA versions for migration. The "active" version is v1.1;
-//! v1.0 is kept installed (read-only) when migrating existing data.
+//! Kindact ships a single DNA version (`kindact_v1_0`). The multi-version
+//! migration *machinery* (extra client slots, migration reads) is retained
+//! but dormant: `install_dnas()` installs only the active version and
+//! `setup_app_interface()` returns `None` for every legacy client. It lights
+//! up the first time a second DNA version ships (see `migration.rs`).
 //!
 //! ## For forking developers
 //!
 //! This file manages the Holochain app lifecycle:
-//!   - `install_dnas()` — Installs your hApp bundles, handles version upgrades
+//!   - `install_dnas()` — Installs your hApp bundle
 //!   - `setup_app_interface()` — Creates WebSocket connections for zome calls
 //!
 //! Change the version constants at the top to match your app/hApp names.
@@ -31,37 +34,38 @@ use std::path::Path;
 //   3. Update install_dnas() to install the new version
 //   4. Add migration logic in migration.rs
 
-pub const APP_ID_V1_0: &str = "proofpoll_v1_0";
-pub const APP_ID_V1_1: &str = "proofpoll_v1_1";
-pub const APP_ID_V1_2: &str = "proofpoll_v1_2";
-pub const APP_ID_V1_3: &str = "proofpoll_v1_3";
+pub const APP_ID_V1_0: &str = "kindact_v1_0";
 
-const HAPP_FILE_V1_0: &str = "proofpoll_v1_0_happ.happ";
-const HAPP_FILE_V1_1: &str = "proofpoll_v1_1_happ.happ";
-const HAPP_FILE_V1_2: &str = "proofpoll_v1_2_happ.happ";
-const HAPP_FILE_V1_3: &str = "proofpoll_v1_3_happ.happ";
+const HAPP_FILE_V1_0: &str = "kindact_v1_0_happ.happ";
 
 /// The active version for all new reads and writes.
-pub const ACTIVE_APP_ID: &str = APP_ID_V1_3;
+pub const ACTIVE_APP_ID: &str = APP_ID_V1_0;
 
 /// Result of the DNA installation phase.
+///
+/// Kindact runs a single DNA version, so `needs_migration` is always `false`
+/// and every `v1_x_available` flag is always `false`. These fields are kept
+/// so the migration plumbing stays wired (and ready to light up) when a
+/// second DNA version is introduced.
 pub struct InstallResult {
     pub agent_pub_key: AgentPubKey,
-    /// True if v1.2 data exists and needs to be migrated to v1.3.
+    /// Always false — there is no prior version to migrate from yet.
     pub needs_migration: bool,
-    /// True if v1.0 is installed and usable (for legacy reads).
+    /// Always false — no legacy v1.0 cell is installed.
     pub v1_0_available: bool,
-    /// True if v1.1 is installed and usable (for migration reads).
+    /// Always false — no legacy v1.1 cell is installed.
     pub v1_1_available: bool,
-    /// True if v1.2 is installed and usable (for migration reads).
+    /// Always false — no legacy v1.2 cell is installed.
     pub v1_2_available: bool,
 }
 
-/// Install Kindact DNAs, handling upgrades across all versions.
+/// Install the Kindact DNA (single version `kindact_v1_0`).
 ///
-/// - Fresh install: installs v1.3 only.
-/// - Upgrade from v1.2: installs v1.3 alongside v1.2, flags migration needed.
-/// - Already current: re-enables v1.3, keeps older versions for migration reads.
+/// - Fresh install: installs `kindact_v1_0`.
+/// - Already installed: re-enables it (reinstalling if it was left disabled).
+///
+/// The multi-version migration machinery is dormant: this always reports
+/// `needs_migration = false` and no legacy versions available.
 pub async fn install_dnas(
     admin_port: u16,
     resource_dir: &Path,
@@ -78,115 +82,43 @@ pub async fn install_dnas(
         .await
         .map_err(|e| format!("Failed to list apps: {}", e))?;
 
-    let mut v1_0_installed = false;
-    let mut v1_0_agent_key: Option<AgentPubKey> = None;
-    let mut v1_1_installed = false;
-    let mut v1_1_agent_key: Option<AgentPubKey> = None;
-    let mut v1_2_installed = false;
-    let mut v1_2_agent_key: Option<AgentPubKey> = None;
-    let mut v1_3_installed = false;
-    let mut v1_3_agent_key: Option<AgentPubKey> = None;
+    let mut installed = false;
+    let mut agent_key: Option<AgentPubKey> = None;
 
     for app in &existing_apps {
         if app.installed_app_id == APP_ID_V1_0 {
             if matches!(app.status, holochain_types::prelude::AppStatus::Disabled(_)) {
-                // Disabled v1.0 — try to re-enable for legacy reads
-                log::warn!("v1.0 DNA disabled, attempting re-enable...");
-                match admin_ws.enable_app(APP_ID_V1_0.to_string()).await {
-                    Ok(_) => {
-                        v1_0_installed = true;
-                        v1_0_agent_key = Some(app.agent_pub_key.clone());
-                    }
-                    Err(e) => {
-                        log::warn!("Could not re-enable v1.0: {}. Legacy reads will be unavailable.", e);
-                    }
-                }
-            } else {
-                v1_0_installed = true;
-                v1_0_agent_key = Some(app.agent_pub_key.clone());
-            }
-        }
-        if app.installed_app_id == APP_ID_V1_1 {
-            if matches!(app.status, holochain_types::prelude::AppStatus::Disabled(_)) {
-                // Disabled v1.1 — try to re-enable for migration reads
-                log::warn!("v1.1 DNA disabled, attempting re-enable...");
-                match admin_ws.enable_app(APP_ID_V1_1.to_string()).await {
-                    Ok(_) => {
-                        v1_1_installed = true;
-                        v1_1_agent_key = Some(app.agent_pub_key.clone());
-                    }
-                    Err(e) => {
-                        log::warn!("Could not re-enable v1.1: {}. Migration reads may be unavailable.", e);
-                    }
-                }
-            } else {
-                v1_1_installed = true;
-                v1_1_agent_key = Some(app.agent_pub_key.clone());
-                // Re-enable to recover any disabled cells
-                if let Err(e) = admin_ws.enable_app(APP_ID_V1_1.to_string()).await {
-                    log::warn!("Could not re-enable v1.1: {}", e);
-                }
-            }
-        }
-        if app.installed_app_id == APP_ID_V1_2 {
-            if matches!(app.status, holochain_types::prelude::AppStatus::Disabled(_)) {
-                log::warn!("v1.2 DNA disabled, attempting re-enable...");
-                match admin_ws.enable_app(APP_ID_V1_2.to_string()).await {
-                    Ok(_) => {
-                        v1_2_installed = true;
-                        v1_2_agent_key = Some(app.agent_pub_key.clone());
-                    }
-                    Err(e) => {
-                        log::warn!("Could not re-enable v1.2: {}. Migration reads may be unavailable.", e);
-                    }
-                }
-            } else {
-                v1_2_installed = true;
-                v1_2_agent_key = Some(app.agent_pub_key.clone());
-                if let Err(e) = admin_ws.enable_app(APP_ID_V1_2.to_string()).await {
-                    log::warn!("Could not re-enable v1.2: {}", e);
-                }
-            }
-        }
-        if app.installed_app_id == APP_ID_V1_3 {
-            if matches!(app.status, holochain_types::prelude::AppStatus::Disabled(_)) {
-                log::warn!("v1.3 DNA disabled, reinstalling...");
+                log::warn!("Kindact DNA disabled, reinstalling...");
                 admin_ws
-                    .uninstall_app(APP_ID_V1_3.to_string(), false)
+                    .uninstall_app(APP_ID_V1_0.to_string(), false)
                     .await
-                    .map_err(|e| format!("Failed to uninstall disabled v1.3: {}", e))?;
+                    .map_err(|e| format!("Failed to uninstall disabled Kindact DNA: {}", e))?;
             } else {
-                v1_3_installed = true;
-                v1_3_agent_key = Some(app.agent_pub_key.clone());
+                installed = true;
+                agent_key = Some(app.agent_pub_key.clone());
                 admin_ws
-                    .enable_app(APP_ID_V1_3.to_string())
+                    .enable_app(APP_ID_V1_0.to_string())
                     .await
-                    .map_err(|e| format!("Failed to re-enable v1.3: {}", e))?;
+                    .map_err(|e| format!("Failed to re-enable Kindact DNA: {}", e))?;
             }
         }
     }
 
-    // Install v1.3 if not present — reuse the most recent agent
-    // key so identity links survive.
-    if !v1_3_installed {
-        let agent_key = v1_2_agent_key.as_ref()
-            .or(v1_1_agent_key.as_ref())
-            .or(v1_0_agent_key.as_ref())
-            .cloned();
-
-        let happ_path = resource_dir.join(HAPP_FILE_V1_3);
+    // Install the DNA if not already present.
+    if !installed {
+        let happ_path = resource_dir.join(HAPP_FILE_V1_0);
         if !happ_path.exists() {
             return Err(format!(
-                "Kindact v1.3 hApp bundle not found at {:?}",
+                "Kindact hApp bundle not found at {:?}",
                 happ_path
             ));
         }
 
-        log::info!("Installing Kindact v1.3 DNA from {:?}...", happ_path);
+        log::info!("Installing Kindact DNA from {:?}...", happ_path);
         let payload = InstallAppPayload {
             source: AppBundleSource::Path(happ_path),
-            agent_key,
-            installed_app_id: Some(APP_ID_V1_3.to_string()),
+            agent_key: None,
+            installed_app_id: Some(APP_ID_V1_0.to_string()),
             network_seed: None,
             roles_settings: None,
             ignore_genesis_failure: false,
@@ -195,59 +127,61 @@ pub async fn install_dnas(
         let app_info = admin_ws
             .install_app(payload)
             .await
-            .map_err(|e| format!("Failed to install v1.3 DNA: {}", e))?;
+            .map_err(|e| format!("Failed to install Kindact DNA: {}", e))?;
 
         admin_ws
-            .enable_app(APP_ID_V1_3.to_string())
+            .enable_app(APP_ID_V1_0.to_string())
             .await
-            .map_err(|e| format!("Failed to enable v1.3 DNA: {}", e))?;
+            .map_err(|e| format!("Failed to enable Kindact DNA: {}", e))?;
 
-        v1_3_agent_key = Some(app_info.agent_pub_key);
-        log::info!("Kindact v1.3 DNA installed and enabled");
+        agent_key = Some(app_info.agent_pub_key);
+        log::info!("Kindact DNA installed and enabled");
     }
 
-    // Force re-enable v1.3 to recover any disabled cells from previous runs
-    if let Err(e) = admin_ws.enable_app(APP_ID_V1_3.to_string()).await {
-        log::warn!("Could not re-enable v1.3: {}", e);
+    // Force re-enable to recover any disabled cells from previous runs.
+    if let Err(e) = admin_ws.enable_app(APP_ID_V1_0.to_string()).await {
+        log::warn!("Could not re-enable Kindact DNA: {}", e);
     }
 
-    // Verify v1.3 is enabled
+    // Verify the DNA is enabled.
     let enabled_apps = admin_ws
         .list_apps(Some(AppStatusFilter::Enabled))
         .await
         .map_err(|e| format!("Failed to verify installed apps: {}", e))?;
 
-    let v1_3_enabled = enabled_apps
+    let enabled = enabled_apps
         .iter()
-        .any(|app| app.installed_app_id == APP_ID_V1_3);
+        .any(|app| app.installed_app_id == APP_ID_V1_0);
 
-    if !v1_3_enabled {
-        return Err("Kindact v1.3 DNA installation verification failed".to_string());
+    if !enabled {
+        return Err("Kindact DNA installation verification failed".to_string());
     }
 
-    let agent_pub_key = v1_3_agent_key.ok_or("No agent key after installation")?;
-
-    // Migration needed if v1.2 exists and v1.3 was just installed
-    let needs_migration = v1_2_installed && !v1_3_installed;
+    let agent_pub_key = agent_key.ok_or("No agent key after installation")?;
 
     Ok(InstallResult {
         agent_pub_key,
-        needs_migration,
-        v1_0_available: v1_0_installed,
-        v1_1_available: v1_1_installed,
-        v1_2_available: v1_2_installed,
+        needs_migration: false,
+        v1_0_available: false,
+        v1_1_available: false,
+        v1_2_available: false,
     })
 }
 
-/// Attach an app interface, authorize signing credentials, and connect
-/// AppWebsockets for all installed versions.
+/// Attach an app interface, authorize signing credentials, and connect the
+/// active AppWebsocket.
 ///
-/// Returns (app_port, v1.3_active_client, optional_v1_2_client, optional_v1_1_client, optional_v1_0_client).
+/// Kindact runs a single DNA version, so the three legacy client slots in the
+/// returned tuple are always `None`. The `v1_x_available` parameters are kept
+/// (and ignored) so the migration plumbing stays wired for a future second
+/// version.
+///
+/// Returns (app_port, active_client, None, None, None).
 pub async fn setup_app_interface(
     admin_port: u16,
-    v1_0_available: bool,
-    v1_1_available: bool,
-    v1_2_available: bool,
+    _v1_0_available: bool,
+    _v1_1_available: bool,
+    _v1_2_available: bool,
 ) -> Result<(u16, AppWebsocket, Option<AppWebsocket>, Option<AppWebsocket>, Option<AppWebsocket>), String> {
     let admin_ws = AdminWebsocket::connect(
         format!("localhost:{}", admin_port),
@@ -272,7 +206,7 @@ pub async fn setup_app_interface(
     // life with disabled cells and zome calls silently fail.
     ensure_apps_enabled(&admin_ws).await;
 
-    // Authorize signing credentials for ALL provisioned cells (both versions).
+    // Authorize signing credentials for every provisioned cell.
     let signer = ClientAgentSigner::default();
     let apps = admin_ws
         .list_apps(Some(AppStatusFilter::Enabled))
@@ -356,142 +290,29 @@ pub async fn setup_app_interface(
 
     let signer_arc: std::sync::Arc<dyn holochain_client::AgentSigner + Send + Sync> = signer.into();
 
-    // Connect the active (v1.3) AppWebsocket.
-    let token_v1_3 = admin_ws
+    // Connect the active AppWebsocket.
+    let token = admin_ws
         .issue_app_auth_token(
             IssueAppAuthenticationTokenPayload::for_installed_app_id(ACTIVE_APP_ID.into())
                 .expiry_seconds(0)
                 .single_use(false),
         )
         .await
-        .map_err(|e| format!("Failed to issue v1.3 auth token: {}", e))?;
+        .map_err(|e| format!("Failed to issue app auth token: {}", e))?;
 
-    let app_ws_v1_3 = AppWebsocket::connect(
+    let app_ws = AppWebsocket::connect(
         format!("localhost:{}", app_port),
-        token_v1_3.token,
-        signer_arc.clone(),
+        token.token,
+        signer_arc,
         Some("kindact".to_string()),
     )
     .await
-    .map_err(|e| format!("Failed to connect v1.3 app WebSocket: {}", e))?;
+    .map_err(|e| format!("Failed to connect app WebSocket: {}", e))?;
 
-    log::info!("v1.3 App WebSocket connected on port {}", app_port);
+    log::info!("App WebSocket connected on port {}", app_port);
 
-    // Connect the v1.2 AppWebsocket if available (for migration reads).
-    let app_ws_v1_2 = if v1_2_available {
-        match admin_ws
-            .issue_app_auth_token(
-                IssueAppAuthenticationTokenPayload::for_installed_app_id(APP_ID_V1_2.into())
-                    .expiry_seconds(0)
-                    .single_use(false),
-            )
-            .await
-        {
-            Ok(token_v1_2) => {
-                match AppWebsocket::connect(
-                    format!("localhost:{}", app_port),
-                    token_v1_2.token,
-                    signer_arc.clone(),
-                    Some("kindact".to_string()),
-                )
-                .await
-                {
-                    Ok(ws) => {
-                        log::info!("v1.2 App WebSocket connected for migration reads");
-                        Some(ws)
-                    }
-                    Err(e) => {
-                        log::warn!("Could not connect v1.2 WebSocket: {}. Migration reads will be skipped.", e);
-                        None
-                    }
-                }
-            }
-            Err(e) => {
-                log::warn!("Could not issue v1.2 auth token: {}. Migration reads will be skipped.", e);
-                None
-            }
-        }
-    } else {
-        None
-    };
-
-    // Connect the v1.1 AppWebsocket if available (for migration reads).
-    let app_ws_v1_1 = if v1_1_available {
-        match admin_ws
-            .issue_app_auth_token(
-                IssueAppAuthenticationTokenPayload::for_installed_app_id(APP_ID_V1_1.into())
-                    .expiry_seconds(0)
-                    .single_use(false),
-            )
-            .await
-        {
-            Ok(token_v1_1) => {
-                match AppWebsocket::connect(
-                    format!("localhost:{}", app_port),
-                    token_v1_1.token,
-                    signer_arc.clone(),
-                    Some("kindact".to_string()),
-                )
-                .await
-                {
-                    Ok(ws) => {
-                        log::info!("v1.1 App WebSocket connected for migration reads");
-                        Some(ws)
-                    }
-                    Err(e) => {
-                        log::warn!("Could not connect v1.1 WebSocket: {}. Migration reads will be skipped.", e);
-                        None
-                    }
-                }
-            }
-            Err(e) => {
-                log::warn!("Could not issue v1.1 auth token: {}. Migration reads will be skipped.", e);
-                None
-            }
-        }
-    } else {
-        None
-    };
-
-    // Connect the v1.0 AppWebsocket if available (for legacy reads).
-    let app_ws_v1_0 = if v1_0_available {
-        match admin_ws
-            .issue_app_auth_token(
-                IssueAppAuthenticationTokenPayload::for_installed_app_id(APP_ID_V1_0.into())
-                    .expiry_seconds(0)
-                    .single_use(false),
-            )
-            .await
-        {
-            Ok(token_v1_0) => {
-                match AppWebsocket::connect(
-                    format!("localhost:{}", app_port),
-                    token_v1_0.token,
-                    signer_arc,
-                    Some("kindact".to_string()),
-                )
-                .await
-                {
-                    Ok(ws) => {
-                        log::info!("v1.0 App WebSocket connected for legacy reads");
-                        Some(ws)
-                    }
-                    Err(e) => {
-                        log::warn!("Could not connect v1.0 WebSocket: {}. Legacy reads will be skipped.", e);
-                        None
-                    }
-                }
-            }
-            Err(e) => {
-                log::warn!("Could not issue v1.0 auth token: {}. Legacy reads will be skipped.", e);
-                None
-            }
-        }
-    } else {
-        None
-    };
-
-    Ok((app_port, app_ws_v1_3, app_ws_v1_2, app_ws_v1_1, app_ws_v1_0))
+    // Single-version app: no legacy clients to connect.
+    Ok((app_port, app_ws, None, None, None))
 }
 
 /// Re-enable any disabled apps + verify cells are actually ready before

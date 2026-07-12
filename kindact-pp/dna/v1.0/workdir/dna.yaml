@@ -1,8 +1,8 @@
 ---
 manifest_version: "0"
-name: proofpoll_v1_0
+name: kindact_v1_0
 integrity:
-  network_seed: "proofpoll-network-v1.0"
+  network_seed: "kindact-network-v1.0"
   properties: ~
   zomes:
     - name: agent_linking_integrity

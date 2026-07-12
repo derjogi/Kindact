@@ -34,7 +34,7 @@
       "binaries/kindact-lair-keystore"
     ],
     "resources": [
-      "resources/proofpoll_v1_3_happ.happ"
+      "resources/kindact_v1_0_happ.happ"
     ],
     "icon": [
       "icons/32x32.png",

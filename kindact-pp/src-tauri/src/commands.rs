@@ -293,7 +293,7 @@ fn generate_passphrase() -> String {
 // Change POLLS_ZOME to match your coordinator zome name.
 
 /// Must match the role `id` in your happ.yaml.
-const ROLE_NAME: &str = "proofpoll";
+const ROLE_NAME: &str = "kindact";
 /// Your app's coordinator zome name (from dna.yaml).
 const POLLS_ZOME: &str = "polls";
 /// Flowsta agent-linking zome — keep as-is for identity integration.

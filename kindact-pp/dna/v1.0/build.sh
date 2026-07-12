@@ -1,25 +1,25 @@
 #!/bin/bash
 
-# Build script for ProofPoll DNA v1.2
+# Build script for Kindact DNA v1.0 (kindact_v1_0)
 #
-# v1.2 adds:
-#   - PollType (Anonymous | Public) on Poll
-#   - display_name and profile_picture on Vote (public polls only)
+# The single Kindact DNA version. Bundles two zomes:
+#   - agent_linking (Flowsta identity linking, from flowsta-agent-linking)
+#   - polls (Kindact app zome — becomes `issues` in a later phase)
 #
 # Prerequisites:
-#   - hc CLI 0.6.0: cargo install holochain_cli --version 0.6.0
-#   - flowsta-agent-linking repo cloned at ../../flowsta-agent-linking/
+#   - hc CLI 0.6.x: cargo install holochain_cli --version 0.6.1
+#   - flowsta-agent-linking repo cloned at ../../../flowsta-agent-linking/
 
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 AGENT_LINKING_DIR="$SCRIPT_DIR/../../../flowsta-agent-linking"
 
-echo "Building ProofPoll DNA v1.2"
+echo "Building Kindact DNA v1.0 (kindact_v1_0)"
 
 if ! command -v hc &> /dev/null; then
     echo "Error: Holochain CLI (hc) not found"
-    echo "Install with: cargo install holochain_cli --version 0.6.0"
+    echo "Install with: cargo install holochain_cli --version 0.6.1"
     exit 1
 fi
 
@@ -35,7 +35,7 @@ RUSTFLAGS='--cfg getrandom_backend="custom"' CARGO_TARGET_DIR="$AGENT_LINKING_DI
     cargo build --release --target wasm32-unknown-unknown \
     --manifest-path "$AGENT_LINKING_DIR/Cargo.toml"
 
-echo "Building polls zomes (v1.2)..."
+echo "Building polls zomes..."
 RUSTFLAGS='--cfg getrandom_backend="custom"' CARGO_TARGET_DIR=target \
     cargo build --release --target wasm32-unknown-unknown
 
@@ -56,7 +56,7 @@ hc app pack workdir
 RESOURCES_DIR="$SCRIPT_DIR/../../src-tauri/resources"
 if [ -d "$RESOURCES_DIR" ] || [ -d "$SCRIPT_DIR/../../src-tauri" ]; then
     mkdir -p "$RESOURCES_DIR"
-    cp workdir/proofpoll_v1_2_happ.happ "$RESOURCES_DIR/"
+    cp workdir/kindact_v1_0_happ.happ "$RESOURCES_DIR/"
     echo "Copied hApp to src-tauri/resources/"
 fi
 
@@ -64,5 +64,5 @@ echo ""
 echo "Build complete!"
 echo ""
 echo "Outputs:"
-echo "  - DNA: workdir/proofpoll_v1_2.dna"
-echo "  - hApp: workdir/proofpoll_v1_2_happ.happ"
+echo "  - DNA: workdir/kindact_v1_0.dna"
+echo "  - hApp: workdir/kindact_v1_0_happ.happ"

@@ -60,7 +60,7 @@ This spec is the umbrella; each phase is a child spec. The full prose plan lives
 Each phase is a child spec and leaves a runnable app. MVP is complete at Phase 5.
 
 - [x] **Phase 0** — Fork & rename → [002-fork-rename](../002-fork-rename/README.md)
-- [ ] **Phase 1** — Reset to a single Kindact DNA version → [003-single-dna-version](../003-single-dna-version/README.md)
+- [x] **Phase 1** — Reset to a single Kindact DNA version → [003-single-dna-version](../003-single-dna-version/README.md)
 - [ ] **Phase 2** — Issues + comments (replace polls) → [004-issues-and-comments](../004-issues-and-comments/README.md)
 - [ ] **Phase 3** — Tag sidebar & filter → [005-tag-sidebar-filter](../005-tag-sidebar-filter/README.md)
 - [ ] **Phase 4** — Transition to voting (2-agent seconding) → [006-voting-transition](../006-voting-transition/README.md)

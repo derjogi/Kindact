@@ -1,27 +1,18 @@
 #!/bin/bash
 
-# Build all ProofPoll DNA versions.
+# Build the Kindact DNA.
 #
-# All hApp bundles must be present in src-tauri/resources/ for the
-# migration system to work. Run this script before `cargo tauri dev`
+# Kindact ships a single DNA version (kindact_v1_0). The resulting hApp
+# bundle must be present in src-tauri/resources/ before `cargo tauri dev`
 # or `cargo tauri build`.
+#
+# The migration machinery in src-tauri/src/migration.rs is kept dormant
+# for now; it activates the first time a second DNA version ships.
 
 set -e
 
-echo "=== Building ProofPoll DNA v1.0 ==="
-(cd dna && bash build.sh)
-
-echo ""
-echo "=== Building ProofPoll DNA v1.1 ==="
-(cd dna/v1.1 && bash build.sh)
-
-echo ""
-echo "=== Building ProofPoll DNA v1.2 ==="
-(cd dna/v1.2 && bash build.sh)
-
-echo ""
-echo "=== Building ProofPoll DNA v1.3 ==="
-(cd dna/v1.3 && bash build.sh)
+echo "=== Building Kindact DNA v1.0 (kindact_v1_0) ==="
+(cd dna/v1.0 && bash build.sh)
 
 echo ""
 echo "=== Build complete ==="
