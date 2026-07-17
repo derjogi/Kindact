@@ -7,8 +7,8 @@
  * ## For forking developers
  *
  * This file has four sections:
- *   1. **App types + functions** (top) — Poll, Vote, Flag types and their
- *      invoke() wrappers. Replace these with your own data model.
+ *   1. **App types + functions** (top) — Issue, Comment, and Flag types and
+ *      their invoke() wrappers.
  *   2. **Identity linking** — Flowsta integration. Keep as-is.
  *   3. **Flagging** — Community moderation. Keep or adapt.
  *   4. **Migration status** — DNA version upgrade tracking. Keep as-is.
@@ -21,96 +21,73 @@ import { invoke } from "@tauri-apps/api/core";
 
 // ── App-specific types (replace with your data model) ─────────────────
 
-export type PollType = "Anonymous" | "Public";
-
-export interface Poll {
+export interface Issue {
   title: string;
   description: string;
-  options: string[];
+  tags: string[];
   created_at: number;
-  closes_at: number | null;
-  /** "Anonymous" or "Public". Null for pre-v1.2 polls (treated as Anonymous). */
-  poll_type: PollType | null;
 }
 
-export interface PollListItem {
+export interface IssueListItem {
   hash: string;
-  poll: Poll;
+  issue: Issue;
   author: string;
-  /** Which DHT this poll lives on. Pass back to castVote and getPollVotes. */
-  dna_version: "1.0" | "1.1" | "1.2" | "1.3";
 }
 
-export interface PollDetail {
-  poll: Poll;
+export interface IssueDetail {
+  issue: Issue;
   author: string;
-  /** Which DHT this poll lives on. Pass back to castVote and getPollVotes. */
-  dna_version: "1.0" | "1.1" | "1.2" | "1.3";
 }
 
-export interface VoteData {
-  vote: { hash: string; poll_action_hash: string; option_index: number };
+export interface CommentData {
+  hash: string;
+  comment: {
+    issue_action_hash: string;
+    content: string;
+    created_at: number;
+  };
   author: string;
-  /** Set on public v1.2 polls. Null otherwise. */
-  display_name: string | null;
-  /** Set on public v1.2 polls. Null otherwise. */
-  profile_picture: string | null;
 }
 
 // ── App-specific operations (replace with your invoke() wrappers) ─────
 
-export async function createPoll(input: {
+export async function createIssue(input: {
   title: string;
   description: string;
-  options: string[];
-  closes_at: number | null;
-  poll_type: PollType;
+  tags: string[];
 }): Promise<string> {
-  // Tauri v2 maps camelCase from JS → snake_case in Rust, so we must send
-  // camelCase keys even though the TypeScript interface uses snake_case.
-  return invoke<string>("create_poll", {
+  return invoke<string>("create_issue", {
     title: input.title,
     description: input.description,
-    options: input.options,
-    closesAt: input.closes_at,
-    pollType: input.poll_type,
+    tags: input.tags,
   });
 }
 
-export async function getPoll(actionHash: string): Promise<PollDetail | null> {
-  return invoke<PollDetail | null>("get_poll", { actionHash });
+export async function getIssue(
+  actionHash: string,
+): Promise<IssueDetail | null> {
+  return invoke<IssueDetail | null>("get_issue", { actionHash });
 }
 
-export async function getAllPolls(): Promise<PollListItem[]> {
-  return invoke<PollListItem[]>("get_all_polls");
+export async function getAllIssues(): Promise<IssueListItem[]> {
+  return invoke<IssueListItem[]>("get_all_issues");
 }
 
-export async function deletePoll(actionHash: string): Promise<string> {
-  return invoke<string>("delete_poll", { actionHash });
+export async function deleteIssue(actionHash: string): Promise<string> {
+  return invoke<string>("delete_issue", { actionHash });
 }
 
-export async function castVote(
-  pollActionHash: string,
-  optionIndex: number,
-  dnaVersion: "1.0" | "1.1" | "1.2",
-  pollType?: PollType,
+export async function postComment(
+  issueActionHash: string,
+  content: string,
 ): Promise<string> {
-  return invoke<string>("cast_vote", {
-    pollActionHash,
-    optionIndex,
-    dnaVersion,
-    pollType: pollType ?? null,
-  });
+  return invoke<string>("post_comment", { issueActionHash, content });
 }
 
-export async function getPollVotes(
-  pollActionHash: string,
-  dnaVersion: "1.0" | "1.1" | "1.2",
-): Promise<VoteData[]> {
-  return invoke<VoteData[]>("get_poll_votes", {
-    pollActionHash,
-    dnaVersion,
-  });
+export async function getComments(
+  issueActionHash: string,
+): Promise<CommentData[]> {
+  return invoke<CommentData[]>("get_comments", { issueActionHash });
 }
 
 // ── Profile cache (Flowsta infrastructure — keep as-is) ───────────────
@@ -156,9 +133,7 @@ export async function commitIdentityLink(
   });
 }
 
-export async function getLinkedAgents(
-  agentPubKey: string,
-): Promise<string[]> {
+export async function getLinkedAgents(agentPubKey: string): Promise<string[]> {
   return invoke<string[]>("get_linked_agents", {
     agentPubKey,
   });
@@ -213,21 +188,21 @@ export type FlagReason = "Spam" | "Misleading" | "OffTopic" | "Inappropriate";
 
 export interface FlagData {
   hash: string;
-  flag: { poll_action_hash: string; reason: string; created_at: number };
+  flag: { issue_action_hash: string; reason: string; created_at: number };
   author: string;
 }
 
-export async function flagPoll(
-  pollActionHash: string,
+export async function flagIssue(
+  issueActionHash: string,
   reason: FlagReason,
 ): Promise<string> {
-  return invoke<string>("flag_poll", { pollActionHash, reason });
+  return invoke<string>("flag_issue", { issueActionHash, reason });
 }
 
-export async function getPollFlags(
-  pollActionHash: string,
+export async function getIssueFlags(
+  issueActionHash: string,
 ): Promise<FlagData[]> {
-  return invoke<FlagData[]>("get_poll_flags", { pollActionHash });
+  return invoke<FlagData[]>("get_issue_flags", { issueActionHash });
 }
 
 export async function removeFlag(flagActionHash: string): Promise<string> {
@@ -276,44 +251,8 @@ export interface DraftPollItem {
   created_at: number;
 }
 
-export async function saveVoteRationale(
-  voteActionHash: string,
-  rationaleText: string,
-): Promise<string> {
-  return invoke<string>("save_vote_rationale", {
-    voteActionHash,
-    rationaleText,
-  });
-}
-
-export async function getVoteRationale(
-  voteActionHash: string,
-): Promise<string | null> {
-  return invoke<string | null>("get_vote_rationale", { voteActionHash });
-}
-
-export async function saveDraftPoll(input: {
-  title: string;
-  description: string;
-  options: string[];
-  closes_at: number | null;
-  poll_type: PollType;
-}): Promise<string> {
-  return invoke<string>("save_draft_poll", {
-    title: input.title,
-    description: input.description,
-    options: input.options,
-    closesAt: input.closes_at,
-    pollType: input.poll_type,
-  });
-}
-
 export async function getMyDrafts(): Promise<DraftPollItem[]> {
   return invoke<DraftPollItem[]>("get_my_drafts");
-}
-
-export async function publishDraft(draftActionHash: string): Promise<string> {
-  return invoke<string>("publish_draft", { draftActionHash });
 }
 
 export async function deleteDraft(draftActionHash: string): Promise<string> {

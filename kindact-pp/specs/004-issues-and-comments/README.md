@@ -9,7 +9,7 @@ depends_on:
 - '003'
 parent: '001'
 created_at: 2026-06-06T21:28:57.228996727Z
-updated_at: 2026-07-16T10:29:58.533424377Z
+updated_at: 2026-07-17T22:51:35+12:00
 transitions:
 - status: in-progress
   at: 2026-07-16T10:29:58.533424377Z
@@ -17,7 +17,7 @@ transitions:
 
 # Phase 2 — Issues + Comments (replace polls)
 
-> **Status**: planned · **Priority**: high · **Created**: 2026-06-06
+> **Status**: implementation complete; runtime verification pending · **Priority**: high · **Created**: 2026-06-06
 
 ## Overview
 
@@ -58,12 +58,12 @@ pub struct Vote { pub issue_action_hash: ActionHash, pub approve: bool }
 
 ## Plan
 
-- [ ] Rename zome dir `polls` → `issues`; update `dna.yaml` zome names
-- [ ] Replace `Poll`→`Issue` (+tags), add `Comment`, repurpose `Vote`; update `EntryTypes`/`LinkTypes`/anchors/validation
-- [ ] Coordinator: `create_issue`/`get_all_issues`/`get_issue`/`delete_issue` + `post_comment`/`get_comments`
-- [ ] Tauri commands + `invoke_handler` + backup `match` arms
-- [ ] `holochain.ts` types/wrappers
-- [ ] Issue list / create / detail routes
+- [x] Rename zome dir `polls` → `issues`; update `dna.yaml` zome names
+- [x] Replace `Poll`→`Issue` (+tags), add `Comment`, repurpose `Vote`; update `EntryTypes`/`LinkTypes`/anchors/validation
+- [x] Coordinator: `create_issue`/`get_all_issues`/`get_issue`/`delete_issue` + `post_comment`/`get_comments`
+- [x] Tauri commands + `invoke_handler` + backup `match` arms
+- [x] `holochain.ts` types/wrappers
+- [x] Issue list / create / detail routes
 
 ## Test
 
@@ -78,16 +78,16 @@ pub struct Vote { pub issue_action_hash: ActionHash, pub approve: bool }
 
 ---
 
-## Implementation Prep (not started — paused for review)
+## Implementation record
 
-> Status: **planned / not started.** Full plan devised + oracle-reviewed in thread
-> [T-019f3c3d](https://ampcode.com/threads/T-019f3c3d-8cfa-74cd-8c62-6b645c4e97d8). Resume from the checklist below.
+> Status: **implemented; runtime smoke test pending.** The original plan was
+> oracle-reviewed in thread [T-019f3c3d](https://ampcode.com/threads/T-019f3c3d-8cfa-74cd-8c62-6b645c4e97d8).
 
 ### Verification prerequisites (what to install before implementing)
 
-Phase 2 rewrites the Rust-Tauri layer (`commands.rs`/`lib.rs`) and all routes (TS) — neither compiles in the current env. To let those be compiler-verified (not just reviewed):
+Phase 2 rewrites the Rust-Tauri layer (`commands.rs`/`lib.rs`) and all routes (TS). Both now compile in this environment. A full desktop runtime smoke test still needs the GTK/WebKit packages below:
 
-1. **Frontend type-check:** `npm install` (no `node_modules` present).
+1. **Frontend type-check/build:** dependencies are installed; use `bun run build`.
 2. **Rust-Tauri compile-check** (needs sudo — GTK/webkit dev libs absent):
    ```bash
    sudo apt install -y libwebkit2gtk-4.1-dev libgtk-3-dev libatk1.0-dev \

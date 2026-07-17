@@ -280,7 +280,7 @@ export default component$(() => {
             </div>
 
             <p class="text-sm text-gray-400">
-              Your identity is verified. Each person gets one vote per poll, even across multiple devices.
+              Your identity is verified, so issues and comments can be attributed to one person across multiple devices.
             </p>
           </div>
 
@@ -371,8 +371,8 @@ export default component$(() => {
               Connect your Flowsta account
             </h2>
             <p class="text-sm text-gray-400 mb-6 max-w-sm mx-auto">
-              Signing in proves you're a real person, so each person gets one
-              vote — even if they have multiple devices.
+              Signing in proves you're a real person and keeps your issue and
+              comment authorship connected across multiple devices.
             </p>
 
             {/* Status messages */}

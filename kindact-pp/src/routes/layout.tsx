@@ -372,7 +372,7 @@ export default component$(() => {
                 href="/"
                 class={`text-sm ${isActive("/") ? "text-indigo-400 font-medium" : "text-gray-400 hover:text-gray-200"}`}
               >
-                Polls
+                Issues
               </Link>
               {linked.value ? (
                 <Link
@@ -390,14 +390,7 @@ export default component$(() => {
                   Create
                 </button>
               )}
-              {linked.value && (
-                <Link
-                  href="/drafts/"
-                  class={`text-sm ${isActive("/drafts/") ? "text-indigo-400 font-medium" : "text-gray-400 hover:text-gray-200"}`}
-                >
-                  Drafts
-                </Link>
-              )}
+
               <Link
                 href="/identity/"
                 class={`text-sm ${isActive("/identity/") ? "text-indigo-400 font-medium" : "text-gray-400 hover:text-gray-200"}`}
@@ -568,9 +561,9 @@ export default component$(() => {
                     </p>
                     <p class="mt-1 text-xs text-amber-300/90">
                       Kindact was connected to a Flowsta account that no
-                      longer matches the one in your Vault. Existing polls
-                      and votes are still yours, but you'll need to
-                      reconnect to create or vote on new ones.
+                      longer matches the one in your Vault. Existing issues
+                      and comments are still yours, but you'll need to
+                      reconnect to create or comment on new ones.
                     </p>
                     <div class="mt-3 flex flex-wrap gap-2">
                       <button
@@ -611,7 +604,7 @@ export default component$(() => {
           >
             <h2 class="text-lg font-semibold text-white mb-2">Sign in required</h2>
             <p class="text-gray-400 text-sm mb-6">
-              Sign in with Flowsta to create and vote on polls.
+              Sign in with Flowsta to create issues and join discussions.
             </p>
             <button
               type="button"

@@ -239,7 +239,6 @@ pub fn run() {
             commands::decode_record_for_export,
             commands::build_canonical_backup,
             // ── Encrypted entries (v1.3) ───────────────────────────
-            commands::save_draft_poll,
             commands::get_my_drafts,
             commands::delete_draft,
         ])

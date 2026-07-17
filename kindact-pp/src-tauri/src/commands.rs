@@ -1168,54 +1168,7 @@ pub struct DraftPollItem {
 
 /// Get and decrypt a vote rationale.
 
-/// Save a draft poll (encrypted on the DHT).
-#[tauri::command]
-pub async fn save_draft_poll(
-    state: tauri::State<'_, std::sync::Arc<AppState>>,
-    title: String,
-    description: String,
-    options: Vec<String>,
-    closes_at: Option<i64>,
-    poll_type: Option<String>,
-) -> Result<String, String> {
-    let agent_bytes = get_agent_ed25519_bytes(&state)?;
 
-    let draft = serde_json::json!({
-        "title": title,
-        "description": description,
-        "options": options,
-        "closes_at": closes_at,
-        "poll_type": poll_type.unwrap_or_else(|| "Anonymous".to_string()),
-    });
-    let plaintext = serde_json::to_vec(&draft).map_err(|e| e.to_string())?;
-
-    let (nonce, cipher) = {
-        let lair = state.lair_client.lock().await;
-        let lair = lair.as_ref().ok_or("Lair not connected")?;
-        crate::crypto::encrypt_to_self(lair, agent_bytes, &plaintext).await?
-    };
-    #[derive(serde::Serialize, Debug)]
-    struct Input {
-        cipher: Vec<u8>,
-        nonce: Vec<u8>,
-        link_as: String,
-        related_hash: Option<ActionHash>,
-    }
-
-    let input = Input {
-        cipher,
-        nonce: nonce.to_vec(),
-        link_as: "draft_poll".to_string(),
-        related_hash: None,
-    };
-
-    let client = state.app_client.lock().await;
-    let client = client.as_ref().ok_or("Conductor not ready")?;
-    let payload = ExternIO::encode(input).map_err(|e| e.to_string())?;
-    let result = call_zome(client, ISSUES_ZOME, "create_encrypted_entry", payload).await?;
-    let hash: ActionHash = result.decode().map_err(|e| e.to_string())?;
-    Ok(hash.to_string())
-}
 
 /// Get all draft polls (decrypted).
 #[tauri::command]
@@ -1377,18 +1330,18 @@ pub async fn decode_record_for_export(
 /// same payload shape the SDK's `dumpCellStateForBackup` would produce, so
 /// the Flowsta Vault recognises it as canonical and:
 ///   - persists a per-entry-type summary alongside the backup metadata
-///     (rendered as "12 polls, 38 votes" on the Your Data and overview UIs),
+///     (rendered as issue/comment counts on the Your Data and overview UIs),
 ///   - inlines the `human_readable` view of each record into the user's CAL
 ///     §4.2.1 data export (full or per-app), and
 ///   - leaves the signed `raw_record` inside the encrypted backup.
 ///
 /// Architecture note: this captures the user's ENTIRE source chain via the
-/// admin `dump_full_state`, not just Poll/Vote app entries — so the CAL export
+/// admin `dump_full_state`, not just Issue/Comment app entries — so the CAL export
 /// is the user's complete, signed chain. Each `raw_record` is a verbatim
 /// `SourceChainDumpRecord` (a fully portable signed record).
 ///
 /// On top of the raw records we layer the human-readable view + per-type
-/// counts for the app entries we can decode (Poll, Vote) — this is what Vault
+/// counts for the app entries we can decode (Issue, Comment, Vote) — this is what Vault
 /// renders on the Your Data page and inlines into the CAL §4.2.1 export.
 /// Infrastructure records (Dna, AgentValidationPkg, CapGrant, …) carry their
 /// raw_record but no human_readable (they're chain plumbing, not user data).
