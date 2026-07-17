@@ -75,8 +75,8 @@ pub fn run() {
             // tauri.conf.json land under a `resources/` subdir there, so
             // we append that to match dev's layout.
             #[cfg(debug_assertions)]
-            let resource_dir = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-                .join("resources");
+            let resource_dir =
+                std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("resources");
             #[cfg(not(debug_assertions))]
             let resource_dir = app
                 .path()
@@ -141,7 +141,10 @@ pub fn run() {
                         *startup_state.app_client_v1_0.lock().await = result.app_client_v1_0;
                         *startup_state.lair_client.lock().await = Some(result.lair_client);
                         *startup_state.conductor_status.lock().unwrap() =
-                            conductor::ConductorStatus::Ready { admin_port, app_port };
+                            conductor::ConductorStatus::Ready {
+                                admin_port,
+                                app_port,
+                            };
 
                         // Start background health monitor
                         conductor::spawn_health_monitor(
@@ -154,18 +157,14 @@ pub fn run() {
                         // migration hasn't completed yet.
                         let should_migrate = needs_migration || {
                             let ms = startup_state.migration_state.lock().await;
-                            v1_2_available
-                                && ms.status != migration::MigrationStatus::Complete
+                            v1_2_available && ms.status != migration::MigrationStatus::Complete
                         };
                         if should_migrate {
                             let migration_state = startup_state.clone();
                             tauri::async_runtime::spawn(async move {
                                 log::info!("Starting migration to {}...", dna::ACTIVE_APP_ID);
-                                match migration::run_migration(
-                                    &migration_state,
-                                    &migration_handle,
-                                )
-                                .await
+                                match migration::run_migration(&migration_state, &migration_handle)
+                                    .await
                                 {
                                     Ok(()) => {
                                         log::info!("Migration completed successfully");
@@ -212,16 +211,16 @@ pub fn run() {
             // ── Infrastructure (keep as-is) ───────────────────────
             commands::get_app_status,
             commands::launch_vault,
-            // ── Your app commands (replace these) ─────────────────
-            commands::create_poll,
-            commands::get_poll,
-            commands::get_all_polls,
-            commands::delete_poll,
-            commands::cast_vote,
-            commands::get_poll_votes,
+            // ── Issues + comments ──────────────────────────────────
+            commands::create_issue,
+            commands::get_issue,
+            commands::get_all_issues,
+            commands::delete_issue,
+            commands::post_comment,
+            commands::get_comments,
             // ── Community moderation (keep or adapt) ──────────────
-            commands::flag_poll,
-            commands::get_poll_flags,
+            commands::flag_issue,
+            commands::get_issue_flags,
             commands::remove_flag,
             commands::get_flag_threshold,
             // ── Flowsta identity linking (keep as-is) ─────────────
@@ -233,7 +232,6 @@ pub fn run() {
             commands::get_identity_link,
             commands::revoke_identity_link,
             // ── Data export + migration (keep as-is) ──────────────
-            commands::get_export_data,
             commands::get_migration_status,
             commands::abandon_pending_votes,
             // ── CAL-compliant backup + reinstall recovery ──────────
@@ -241,11 +239,8 @@ pub fn run() {
             commands::decode_record_for_export,
             commands::build_canonical_backup,
             // ── Encrypted entries (v1.3) ───────────────────────────
-            commands::save_vote_rationale,
-            commands::get_vote_rationale,
             commands::save_draft_poll,
             commands::get_my_drafts,
-            commands::publish_draft,
             commands::delete_draft,
         ])
         .run(tauri::generate_context!())
