@@ -607,6 +607,25 @@ dependencies = [
 ]
 
 [[package]]
+name = "issues_coordinator"
+version = "0.3.0"
+dependencies = [
+ "hdk",
+ "holochain_serialized_bytes",
+ "issues_integrity",
+ "serde",
+]
+
+[[package]]
+name = "issues_integrity"
+version = "0.3.0"
+dependencies = [
+ "hdi",
+ "holochain_serialized_bytes",
+ "serde",
+]
+
+[[package]]
 name = "itoa"
 version = "1.0.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -682,25 +701,6 @@ name = "pin-utils"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8b870d8c151b6f2fb93e84a13146138f05d02ed11c7e7c54f8826aaaf7c9f184"
-
-[[package]]
-name = "polls_coordinator_v1_3"
-version = "0.3.0"
-dependencies = [
- "hdk",
- "holochain_serialized_bytes",
- "polls_integrity_v1_3",
- "serde",
-]
-
-[[package]]
-name = "polls_integrity_v1_3"
-version = "0.3.0"
-dependencies = [
- "hdi",
- "holochain_serialized_bytes",
- "serde",
-]
 
 [[package]]
 name = "proc-macro-error"

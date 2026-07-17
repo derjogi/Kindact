@@ -4,7 +4,7 @@
 #
 # The single Kindact DNA version. Bundles two zomes:
 #   - agent_linking (Flowsta identity linking, from flowsta-agent-linking)
-#   - polls (Kindact app zome — becomes `issues` in a later phase)
+#   - issues (Kindact issue and comment zome)
 #
 # Prerequisites:
 #   - hc CLI 0.6.x: cargo install holochain_cli --version 0.6.1
@@ -35,7 +35,7 @@ RUSTFLAGS='--cfg getrandom_backend="custom"' CARGO_TARGET_DIR="$AGENT_LINKING_DI
     cargo build --release --target wasm32-unknown-unknown \
     --manifest-path "$AGENT_LINKING_DIR/Cargo.toml"
 
-echo "Building polls zomes..."
+echo "Building issues zomes..."
 RUSTFLAGS='--cfg getrandom_backend="custom"' CARGO_TARGET_DIR=target \
     cargo build --release --target wasm32-unknown-unknown
 
@@ -44,8 +44,8 @@ cp "$AGENT_LINKING_DIR/target/wasm32-unknown-unknown/release/flowsta_agent_linki
     workdir/agent_linking_integrity.wasm
 cp "$AGENT_LINKING_DIR/target/wasm32-unknown-unknown/release/flowsta_agent_linking_coordinator.wasm" \
     workdir/agent_linking_coordinator.wasm
-cp target/wasm32-unknown-unknown/release/polls_integrity.wasm workdir/
-cp target/wasm32-unknown-unknown/release/polls_coordinator.wasm workdir/
+cp target/wasm32-unknown-unknown/release/issues_integrity.wasm workdir/
+cp target/wasm32-unknown-unknown/release/issues_coordinator.wasm workdir/
 
 echo "Packing DNA..."
 hc dna pack workdir
