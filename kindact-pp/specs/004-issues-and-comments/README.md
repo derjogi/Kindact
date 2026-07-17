@@ -70,6 +70,7 @@ pub struct Vote { pub issue_action_hash: ActionHash, pub approve: bool }
 - [ ] Create an issue with tags → appears in the list
 - [ ] Open the issue, post a comment → shows attributed to your Flowsta display name
 - [ ] Author-only `delete_issue` enforced
+- [x] Integrity unit tests reject poisoned issue/comment/flag links and non-author issue deletion
 - [ ] Zome unit test: create issue + comment round-trips via anchor/link queries
 
 ## Notes

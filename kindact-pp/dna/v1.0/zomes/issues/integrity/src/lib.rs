@@ -154,6 +154,13 @@ pub enum LinkTypes {
     AgentDrafts,
 }
 
+#[derive(Clone, Copy)]
+enum LinkedEntryKind {
+    Issue,
+    Comment,
+    Flag,
+}
+
 // ── Anchors ───────────────────────────────────────────────────────────
 
 /// Returns a deterministic hash to use as the base for AllIssues links.
@@ -207,7 +214,7 @@ pub fn validate(op: Op) -> ExternResult<ValidateCallbackResult> {
         FlatOp::RegisterCreateLink {
             link_type,
             base_address,
-            target_address: _,
+            target_address,
             tag: _,
             action: _,
         } => match link_type {
@@ -218,12 +225,16 @@ pub fn validate(op: Op) -> ExternResult<ValidateCallbackResult> {
                         "AllIssues link must originate from the issues anchor".to_string(),
                     ));
                 }
-                Ok(ValidateCallbackResult::Valid)
+                validate_link_target(LinkedEntryKind::Issue, target_address, None)
             }
-            LinkTypes::IssueToComment => Ok(ValidateCallbackResult::Valid),
+            LinkTypes::IssueToComment => {
+                validate_issue_child_link(LinkedEntryKind::Comment, base_address, target_address)
+            }
             LinkTypes::IssueToSeconds => Ok(ValidateCallbackResult::Valid),
             LinkTypes::IssueToVotes => Ok(ValidateCallbackResult::Valid),
-            LinkTypes::IssueToFlags => Ok(ValidateCallbackResult::Valid),
+            LinkTypes::IssueToFlags => {
+                validate_issue_child_link(LinkedEntryKind::Flag, base_address, target_address)
+            }
             LinkTypes::AllTags => Ok(ValidateCallbackResult::Valid),
             LinkTypes::TagToIssue => Ok(ValidateCallbackResult::Valid),
             LinkTypes::VoteToRationale => Ok(ValidateCallbackResult::Valid),
@@ -238,8 +249,132 @@ pub fn validate(op: Op) -> ExternResult<ValidateCallbackResult> {
                 Ok(ValidateCallbackResult::Valid)
             }
         },
-        FlatOp::RegisterDeleteLink { .. } => Ok(ValidateCallbackResult::Valid),
+        FlatOp::RegisterDeleteLink {
+            link_type,
+            original_action,
+            action,
+            ..
+        } => match link_type {
+            LinkTypes::AllIssues | LinkTypes::IssueToComment | LinkTypes::IssueToFlags => Ok(
+                validate_link_delete_auth(&original_action.author, &action.author),
+            ),
+            _ => Ok(ValidateCallbackResult::Valid),
+        },
+        FlatOp::RegisterDelete(delete) => {
+            let original = must_get_valid_record(delete.action.deletes_address.clone())?;
+            if matches!(decode_entry_types(&original)?, EntryTypes::Issue(_)) {
+                Ok(validate_issue_delete_auth(
+                    original.action().author(),
+                    &delete.action.author,
+                ))
+            } else {
+                Ok(ValidateCallbackResult::Valid)
+            }
+        }
         _ => Ok(ValidateCallbackResult::Valid),
+    }
+}
+
+fn validate_issue_child_link(
+    child_kind: LinkedEntryKind,
+    base_address: AnyLinkableHash,
+    target_address: AnyLinkableHash,
+) -> ExternResult<ValidateCallbackResult> {
+    let base_hash = match ActionHash::try_from(base_address) {
+        Ok(hash) => hash,
+        Err(_) => {
+            return Ok(ValidateCallbackResult::Invalid(
+                "Issue child link base must be an action hash".to_string(),
+            ))
+        }
+    };
+    let base_result = validate_link_target(
+        LinkedEntryKind::Issue,
+        AnyLinkableHash::from(base_hash.clone()),
+        None,
+    )?;
+    if base_result != ValidateCallbackResult::Valid {
+        return Ok(base_result);
+    }
+    validate_link_target(child_kind, target_address, Some(&base_hash))
+}
+
+fn validate_link_target(
+    expected: LinkedEntryKind,
+    target_address: AnyLinkableHash,
+    issue_base: Option<&ActionHash>,
+) -> ExternResult<ValidateCallbackResult> {
+    let target_hash = match ActionHash::try_from(target_address) {
+        Ok(hash) => hash,
+        Err(_) => {
+            return Ok(ValidateCallbackResult::Invalid(
+                "Link target must be an action hash".to_string(),
+            ))
+        }
+    };
+    let record = must_get_valid_record(target_hash)?;
+    let entry = decode_entry_types(&record)?;
+    Ok(validate_linked_entry(expected, entry, issue_base))
+}
+
+pub fn decode_entry_types(record: &Record) -> ExternResult<EntryTypes> {
+    let entry = record
+        .entry()
+        .as_option()
+        .ok_or(wasm_error!("Record has no entry"))?;
+    let app_def = match record.action().entry_type() {
+        Some(EntryType::App(app_def)) => app_def,
+        _ => return Err(wasm_error!("Record is not an app entry")),
+    };
+    let unit = UnitEntryTypes::try_from(ScopedZomeType {
+        zome_index: app_def.zome_index,
+        zome_type: app_def.entry_index,
+    })
+    .map_err(|_| wasm_error!("Unknown issues entry type"))?;
+    EntryTypes::try_from((unit, entry)).map_err(|_| wasm_error!("Could not decode issues entry"))
+}
+
+fn validate_linked_entry(
+    expected: LinkedEntryKind,
+    entry: EntryTypes,
+    issue_base: Option<&ActionHash>,
+) -> ValidateCallbackResult {
+    let valid = match (expected, entry) {
+        (LinkedEntryKind::Issue, EntryTypes::Issue(_)) => true,
+        (LinkedEntryKind::Comment, EntryTypes::Comment(comment)) => {
+            issue_base == Some(&comment.issue_action_hash)
+        }
+        (LinkedEntryKind::Flag, EntryTypes::Flag(flag)) => {
+            issue_base == Some(&flag.issue_action_hash)
+        }
+        _ => false,
+    };
+    if valid {
+        ValidateCallbackResult::Valid
+    } else {
+        ValidateCallbackResult::Invalid("Link endpoints do not match the link type".to_string())
+    }
+}
+
+fn validate_issue_delete_auth(
+    original_author: &AgentPubKey,
+    delete_author: &AgentPubKey,
+) -> ValidateCallbackResult {
+    if original_author == delete_author {
+        ValidateCallbackResult::Valid
+    } else {
+        ValidateCallbackResult::Invalid("Only the issue author can delete it".to_string())
+    }
+}
+
+fn validate_link_delete_auth(
+    original_author: &AgentPubKey,
+    delete_author: &AgentPubKey,
+) -> ValidateCallbackResult {
+    if original_author == delete_author {
+        ValidateCallbackResult::Valid
+    } else {
+        ValidateCallbackResult::Invalid("Only the link author can delete it".to_string())
     }
 }
 
@@ -288,4 +423,70 @@ fn validate_encrypted_entry(ee: &EncryptedEntry) -> ExternResult<ValidateCallbac
         ));
     }
     Ok(ValidateCallbackResult::Valid)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn hash(byte: u8) -> ActionHash {
+        ActionHash::from_raw_36(vec![byte; 36])
+    }
+
+    #[test]
+    fn all_issues_target_must_be_an_issue() {
+        let result = validate_linked_entry(
+            LinkedEntryKind::Issue,
+            EntryTypes::Comment(Comment {
+                issue_action_hash: hash(1),
+                content: "comment".into(),
+                created_at: 0,
+            }),
+            None,
+        );
+        assert!(matches!(result, ValidateCallbackResult::Invalid(_)));
+    }
+
+    #[test]
+    fn comment_link_must_match_its_issue_base() {
+        let result = validate_linked_entry(
+            LinkedEntryKind::Comment,
+            EntryTypes::Comment(Comment {
+                issue_action_hash: hash(2),
+                content: "comment".into(),
+                created_at: 0,
+            }),
+            Some(&hash(1)),
+        );
+        assert!(matches!(result, ValidateCallbackResult::Invalid(_)));
+    }
+
+    #[test]
+    fn flag_link_accepts_matching_issue_base() {
+        let issue_hash = hash(3);
+        let result = validate_linked_entry(
+            LinkedEntryKind::Flag,
+            EntryTypes::Flag(Flag {
+                issue_action_hash: issue_hash.clone(),
+                reason: FlagReason::Spam,
+                created_at: 0,
+            }),
+            Some(&issue_hash),
+        );
+        assert_eq!(result, ValidateCallbackResult::Valid);
+    }
+
+    #[test]
+    fn only_original_author_can_delete_an_issue() {
+        let original = AgentPubKey::from_raw_36(vec![1; 36]);
+        let other = AgentPubKey::from_raw_36(vec![2; 36]);
+        assert!(matches!(
+            validate_issue_delete_auth(&original, &other),
+            ValidateCallbackResult::Invalid(_)
+        ));
+        assert_eq!(
+            validate_issue_delete_auth(&original, &original),
+            ValidateCallbackResult::Valid
+        );
+    }
 }

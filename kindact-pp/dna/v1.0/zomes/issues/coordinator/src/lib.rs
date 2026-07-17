@@ -54,6 +54,17 @@ pub struct RegisterMigratedPollInput {
 
 // ── Issue functions ────────────────────────────────────────────────────
 
+fn ensure_issue_entry_type(entry: EntryTypes) -> ExternResult<Issue> {
+    match entry {
+        EntryTypes::Issue(issue) => Ok(issue),
+        _ => Err(wasm_error!("Target is not an issue")),
+    }
+}
+
+fn ensure_issue_record(record: &Record) -> ExternResult<Issue> {
+    ensure_issue_entry_type(decode_entry_types(record)?)
+}
+
 #[hdk_extern]
 pub fn create_issue(input: CreateIssueInput) -> ExternResult<ActionHash> {
     let now = sys_time()?.as_seconds_and_nanos().0;
@@ -75,7 +86,11 @@ pub fn create_issue(input: CreateIssueInput) -> ExternResult<ActionHash> {
 
 #[hdk_extern]
 pub fn get_issue(action_hash: ActionHash) -> ExternResult<Option<Record>> {
-    get(action_hash, GetOptions::default())
+    let record = get(action_hash, GetOptions::default())?;
+    if let Some(record) = &record {
+        ensure_issue_record(record)?;
+    }
+    Ok(record)
 }
 
 #[hdk_extern]
@@ -100,8 +115,9 @@ pub fn get_all_issues(_: ()) -> ExternResult<Vec<Record>> {
 
 #[hdk_extern]
 pub fn delete_issue(action_hash: ActionHash) -> ExternResult<ActionHash> {
-    let record = get(action_hash.clone(), GetOptions::default())?
-        .ok_or(wasm_error!("Issue not found"))?;
+    let record =
+        get(action_hash.clone(), GetOptions::default())?.ok_or(wasm_error!("Issue not found"))?;
+    ensure_issue_record(&record)?;
     let my_agent = agent_info()?.agent_initial_pubkey;
     if *record.action().author() != my_agent {
         return Err(wasm_error!("Only the issue creator can delete it"));
@@ -131,11 +147,7 @@ pub fn post_comment(input: CreateCommentInput) -> ExternResult<ActionHash> {
     // arbitrary action hashes.
     let issue_record = get(input.issue_action_hash.clone(), GetOptions::default())?
         .ok_or(wasm_error!("Issue not found"))?;
-    let _issue: Issue = issue_record
-        .entry()
-        .to_app_option()
-        .map_err(|_| wasm_error!("Could not deserialize issue"))?
-        .ok_or(wasm_error!("Target is not an issue"))?;
+    ensure_issue_record(&issue_record)?;
 
     let now = sys_time()?.as_seconds_and_nanos().0;
     let comment = Comment {
@@ -179,8 +191,9 @@ pub fn get_comments(issue_action_hash: ActionHash) -> ExternResult<Vec<Record>> 
 
 #[hdk_extern]
 pub fn flag_issue(input: FlagIssueInput) -> ExternResult<ActionHash> {
-    let _issue_record = get(input.issue_action_hash.clone(), GetOptions::default())?
+    let issue_record = get(input.issue_action_hash.clone(), GetOptions::default())?
         .ok_or(wasm_error!("Issue not found"))?;
+    ensure_issue_record(&issue_record)?;
 
     let my_agent = agent_info()?.agent_initial_pubkey;
     let existing_flags = get_links(
@@ -267,6 +280,21 @@ pub fn get_flag_threshold(_: ()) -> ExternResult<u32> {
     Ok(FLAG_HIDE_THRESHOLD)
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn issue_commands_reject_comment_entries() {
+        let result = ensure_issue_entry_type(EntryTypes::Comment(Comment {
+            issue_action_hash: ActionHash::from_raw_36(vec![1; 36]),
+            content: "comment".into(),
+            created_at: 0,
+        }));
+        assert!(result.is_err());
+    }
+}
+
 // ── Encrypted entry functions (infrastructure) ────────────────────────
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -293,7 +321,12 @@ pub fn create_encrypted_entry(input: CreateEncryptedEntryInput) -> ExternResult<
     match input.link_as.as_str() {
         "vote_rationale" => {
             if let Some(vote_hash) = input.related_hash {
-                create_link(vote_hash, action_hash.clone(), LinkTypes::VoteToRationale, ())?;
+                create_link(
+                    vote_hash,
+                    action_hash.clone(),
+                    LinkTypes::VoteToRationale,
+                    (),
+                )?;
             }
         }
         "draft_poll" => {
